@@ -1045,35 +1045,6 @@ if (!function_exists('getAmtCustom')) {
     }
 }
 /**
- * getAmtStock
- * @param int
- * @return float
- */
-if (!function_exists('getAmtStock')) {
-    function getAmtStock($amount) {
-        if(!is_numeric($amount)){
-            $amount = 0;
-        }
-        $getCompanyInfo = getCompanyInfo();
-        $currency_position = $getCompanyInfo->currency_position;
-        $currency = $getCompanyInfo->currency;
-        $precision = $getCompanyInfo->precision;
-        if($precision == ''){
-            $precision = 0;
-        }else{
-            $precision = 3;
-        }
-        $decimals_separator = isset($getCompanyInfo->decimals_separator) && $getCompanyInfo->decimals_separator?$getCompanyInfo->decimals_separator:'.';
-        $thousands_separator = isset($getCompanyInfo->thousands_separator) && $getCompanyInfo->thousands_separator?$getCompanyInfo->thousands_separator:'';
-        if(isset($currency_position) && $currency_position != "Before Amount"){
-            $str_amount = (number_format(isset($amount) && $amount?$amount:0,$precision,$decimals_separator,$thousands_separator)).$currency;
-        }else{
-            $str_amount = $currency.(number_format(isset($amount) && $amount?$amount:0,$precision,$decimals_separator,$thousands_separator));
-        }
-        return $str_amount;
-    }
-}
-/**
  * getAmtCustomC
  * @param int
  * @return float
@@ -4527,7 +4498,17 @@ if (!function_exists('getFoodMenuNameCodeById')) {
         }
     }
 }
-
+/**
+ * rnd
+ * @param int
+ * @return string
+ */
+if (!function_exists('company')) {
+    function company() {
+        $rnd = rand(2, 5);
+        return $rnd;
+    }
+}
 /**
  * getItemNameByParentId
  * @param int
@@ -5509,7 +5490,6 @@ if (!function_exists('getItemParentName')) {
         }
     }
 
-
     /**
      * getVersionNumber
      * @param int
@@ -5529,3 +5509,7 @@ if (!function_exists('getItemParentName')) {
             return $version;
         }
     }
+
+
+
+

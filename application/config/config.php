@@ -68,7 +68,7 @@ $config['uri_protocol']	= 'AUTO';
 |
 | https://codeigniter.com/user_guide/general/urls.html
 */
-$config['url_suffix'] = '';
+$config['url_suffix'] = '.html';
 
 /*
 |--------------------------------------------------------------------------
@@ -329,7 +329,7 @@ $config['cache_query_string'] = FALSE;
 | https://codeigniter.com/user_guide/libraries/encryption.html
 |
 */
-$config['encryption_key'] = 'VlYzjw';
+$config['encryption_key'] = 'Intvsq';
 
 /*
 |--------------------------------------------------------------------------

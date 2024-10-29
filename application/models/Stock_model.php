@@ -220,61 +220,46 @@ class Stock_model extends CI_Model {
      */
     public function getItemForPOS($category_id = "", $item_id = "", $brand_id = "",$supplier_id='',$item_code='') {
         $grocerexp  = $this->session->userdata('grocery_experience');
+        $outlet_id = $this->session->userdata('outlet_id');
         $company_id = $this->session->userdata('company_id');
         $where = '';
+        $where2 = '';
         $order_statgus = "total_sale DESC";
-
-        if ($grocerexp) {
-            $order_statgus = "i.name ASC";  // Use table alias 'i' for consistency
+        if($grocerexp){
+            $order_statgus =  "item_name ASC";
         }
-
-        if ($brand_id != '') {
-            $where .= " AND i.brand_id = '$brand_id'";
+        if($brand_id!=''){
+            $where.= " AND i.brand_id = '$brand_id'";
         }
-
-        if ($category_id != '') {
-            $where .= " AND i.category_id = '$category_id'";
+        if($category_id!=''){
+            $where.= " AND i.category_id = '$category_id'";
         }
-
-        if ($item_id != '') {
-            $where .= " AND i.id = '$item_id'";
+        if($item_id!=''){
+            $where.= " AND i.id = '$item_id'";
         }
-
-        if ($supplier_id != '') {
-            $where .= " AND i.supplier_id = '$supplier_id'";
+        if($supplier_id!=''){
+            $where.= "  AND i.supplier_id = '$supplier_id'";
         }
-
-        if ($item_code != '') {
-            $where .= " AND i.code = '$item_code'";
+        if($item_code!=''){
+            $where.= "  AND i.code = '$item_code'";
         }
-
-        $query = "SELECT 
-                i.id, i.code, i.name as item_name, i.type, i.conversion_rate, i.generic_name, 
-                i.brand_id, i.sale_price, i.whole_sale_price, i.purchase_price, i.last_purchase_price, i.tax_information, i.photo, 
-                i.warranty, i.guarantee, i.description, i.category_id, i.parent_id, i.supplier_id,
-                b.name as brand_name, sup.name as supplier_name, 
-                pu.unit_name as purchase_unit_name, su.unit_name as sale_unit_name, 
-                ic.name as category_name
-            FROM 
-                tbl_items i 
+        $result = $this->db->query("SELECT i.*,i.name as item_name, i.last_purchase_price as last_purchase_price, b.name as brand_name,
+            (select SUM(stock_quantity) from tbl_set_opening_stocks where item_id=i.id AND outlet_id=$outlet_id AND del_status='Live') total_opening_stock, 
+            (select SUM(quantity_amount) from tbl_purchase_details where item_id=i.id AND outlet_id=$outlet_id AND del_status='Live') total_purchase, 
+            (select SUM(qty) from tbl_sales_details  where food_menu_id=i.id AND outlet_id=$outlet_id AND tbl_sales_details.del_status='Live' AND (tbl_sales_details.delivery_status ='Sent' OR tbl_sales_details.delivery_status ='Cash Received')) total_sale,
+            (select SUM(damage_quantity) from tbl_damage_details  where item_id=i.id AND outlet_id=$outlet_id AND tbl_damage_details.del_status='Live') total_damage,
+            (select COUNT(id) from tbl_installments  where item_id=i.id AND outlet_id=$outlet_id AND tbl_installments.del_status='Live') total_installment_sale,
+            (select SUM(return_quantity_amount) from tbl_purchase_return_details  where item_id=i.id AND outlet_id=$outlet_id AND tbl_purchase_return_details.del_status='Live' AND (tbl_purchase_return_details.return_status ='taken_by_sup_pro_not_returned' OR tbl_purchase_return_details.return_status ='taken_by_sup_money_returned')) total_purchase_return,
+            (select SUM(return_quantity_amount) from tbl_sale_return_details  where item_id=i.id AND outlet_id=$outlet_id AND tbl_sale_return_details.del_status='Live') total_sale_return,
+            (select SUM(quantity_amount) from tbl_transfer_items  where ingredient_id=i.id AND to_outlet_id=$outlet_id AND  tbl_transfer_items.del_status='Live' AND  tbl_transfer_items.status=1) total_transfer_plus,
+            (select SUM(quantity_amount) from tbl_transfer_items  where ingredient_id=i.id AND from_outlet_id=$outlet_id AND  tbl_transfer_items.del_status='Live' AND tbl_transfer_items.status=3) total_transfer_minus,
+            (select name from tbl_item_categories where id=i.category_id AND del_status='Live') category_name,
+            (select unit_name from tbl_units where id=i.purchase_unit_id AND del_status='Live') purchse_unit_name,
+            (select unit_name from tbl_units where id=i.sale_unit_id AND del_status='Live')  sale_unit_name
+            FROM tbl_items i 
             LEFT JOIN
                 tbl_brands b ON i.brand_id = b.id
-            LEFT JOIN
-                tbl_suppliers sup ON i.supplier_id = sup.id
-            LEFT JOIN
-                tbl_units pu ON i.purchase_unit_id = pu.id
-            LEFT JOIN
-                tbl_units su ON i.sale_unit_id = su.id
-            LEFT JOIN
-                tbl_item_categories ic ON i.category_id = ic.id
-            WHERE 
-                i.del_status = 'Live' 
-                AND i.company_id = '$company_id' 
-                $where 
-            ORDER BY 
-                $order_statgus";
-
-        $result = $this->db->query($query)->result();
+            WHERE i.del_status='Live' AND i.company_id = '$company_id' $where ORDER BY $order_statgus")->result();
         return $result;
     }
 
@@ -567,7 +552,7 @@ class Stock_model extends CI_Model {
                     SELECT exp.item_id,CONCAT(exp.expiry_imei_serial, '|', COALESCE(SUM(exp.stock_quantity), 0)) as stockq
                         FROM tbl_stock_detail2 exp
                         WHERE  exp.outlet_id = '$outlet_id'
-                        GROUP BY exp.expiry_imei_serial, item_id) 
+                        GROUP BY exp.expiry_imei_serial ) 
                     as c WHERE c.item_id=p.id GROUP BY c.item_id
             ) as allexpiry
         FROM tbl_items p
@@ -662,20 +647,20 @@ class Stock_model extends CI_Model {
                     CONCAT(p_var.name, '|', p_var.code, '|', p_var.alert_quantity, '|', COALESCE(p_var.last_three_purchase_avg, 0), '|', 
                     COALESCE((SELECT IFNULL(SUM(vst1.stock_quantity), 0) 
                             FROM tbl_stock_detail vst1
-                            WHERE p_var.id = vst1.item_id AND vst1.type = 1 AND vst1.outlet_id = '$outlet_id'), 0), '|',
+                            WHERE p_var.id = vst1.item_id AND vst1.type = 2 AND vst1.outlet_id = '$outlet_id'), 0), '|',
                     COALESCE((SELECT IFNULL(SUM(vst2.stock_quantity), 0) 
                             FROM tbl_stock_detail vst2
-                            WHERE p_var.id = vst2.item_id AND vst2.type = 2 AND vst2.outlet_id = '$outlet_id'), 0)
+                            WHERE p_var.id = vst2.item_id AND vst2.type = 1 AND vst2.outlet_id = '$outlet_id'), 0)
                 ) SEPARATOR '||')
                 FROM tbl_items p_var
-                WHERE p_var.parent_id = p.id AND p_var.type = '0' AND p_var.del_status = 'Live' $where_item_parent
+                WHERE p_var.parent_id = p.id AND p_var.del_status = 'Live' $where_item_parent
             ) as variations,
             (
                 SELECT GROUP_CONCAT(c.stockq SEPARATOR '||') FROM (
                     SELECT exp.item_id,CONCAT(exp.expiry_imei_serial, '|', COALESCE(SUM(exp.stock_quantity), 0)) as stockq
                         FROM tbl_stock_detail2 exp
                         WHERE  exp.outlet_id = '$outlet_id'
-                        GROUP BY exp.expiry_imei_serial, item_id) 
+                    ) 
                     as c WHERE c.item_id=p.id GROUP BY c.item_id
             ) as allexpiry
             FROM tbl_items p

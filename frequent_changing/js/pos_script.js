@@ -1,5 +1,9 @@
 $(function () {
     "use strict"
+
+    console.log(window.menu_objects)
+
+
     let stripePayementStatus = false;
     let paypalPayementStatus = false;
     toastr.options = {
@@ -18,8 +22,6 @@ $(function () {
     });
     br.update();
     let no_permission_for_this_module = $('#no_permission_for_this_module').val();
-    let pharmacy_search_place_holder_pos = $('#pharmacy_search_place_holder_pos').val();
-    let other_search_place_holder_pos = $('#other_search_place_holder_pos').val();
     let The = $('#The').val();
     let field_is_required = $('#field_is_required').val();
     let The_discount_code_field_required = $('#The_discount_code_field_required').val();
@@ -48,8 +50,6 @@ $(function () {
     let gst_state_code = $('#gst_state_code').val();
     let csrf_value_ = $("#csrf_value_").val();
     let op_precision = $("#op_precision").val();
-    let op_decimals_separator = $("#op_decimals_separator").val();
-    let op_thousands_separator = $("#op_thousands_separator").val();
     let allow_less_sale = $("#allow_less_sale").val();
     let check_issue_date_lan = $("#check_issue_date_lan").val();
     let check_no_lan = $("#check_no_lan").val();
@@ -73,71 +73,10 @@ $(function () {
     let session_uer_id = $("#session_uer_id").val();
     let role = $("#role").val();
     let grocery_experience = $("#grocery_experience").val();
-    let view_purchase_price = $("#view_purchase_price").val();
-    let Alternative_Medicine_will_shown_here = $("#Alternative_Medicine_will_shown_here").val();
-    let already_added = $("#already_added").val();
 
-
-    function getAmtPCustom(amount) {
-        if (isNaN(amount)) {
-            amount = 0;
-        }
-        let precision = op_precision || 0;
-        let decimalsSeparator = op_decimals_separator || '.';
-        let thousandsSeparator = op_thousands_separator || '';
-    
-        // Truncate the amount to the specified precision
-        let factor = Math.pow(10, precision);
-        amount = Math.floor(amount * factor) / factor;
-    
-        // Format the amount
-        let strAmount = amount.toLocaleString(undefined, {
-            minimumFractionDigits: precision,
-            maximumFractionDigits: precision,
-            useGrouping: !!thousandsSeparator
-        });
-    
-        // Replace default decimal separator with custom one
-        if (decimalsSeparator !== '.') {
-            strAmount = strAmount.replace('.', decimalsSeparator);
-        }
-    
-        // Replace default thousands separator with custom one
-        if (thousandsSeparator !== ',') {
-            strAmount = strAmount.replace(/,/g, thousandsSeparator);
-        }
-    
-        return strAmount;
-    }
-
-
-
-    function searchPlaceHolderSetter(){
-        let generic_name_search = $('input[name="generic_serch_option_checkbox"]:checked').val();
-        if(generic_name_search == 'Yes'){
-            $('#search').attr('placeholder', 'Search by generic name');
-        }else{
-            $('#search').attr('placeholder', 'Search by name, code, category');
-        }
-    }
-    searchPlaceHolderSetter();
-    
-
-
-    // Menu Access Check
-    $(".menu_assign_class").each(function() {
-        let this_access = $(this).attr("data-access");
-        if((window.menu_objects).indexOf(this_access) > -1) {
-    
-        } else {
-            if(this_access!=undefined){
-                $(this).remove();
-            }
-        }
-    });
 
     // Left Sidebar Menu
-    $('.have_sub_menu2').hover(function(){
+    $('.treeview2').hover(function(){
         $('.treeview').removeClass("active_sub_menu");
         $(".sidebar_sub_menu").css("display", "none");
     });
@@ -424,50 +363,48 @@ $(function () {
 
     // Code optimize by Azhar ** Final **
     function put_cart_content() {
-        let total_items_in_cart = Number($("#total_items_in_cart_with_quantity").text());
-        let sub_total = parseFloat($("#sub_total_show").text());
-        let discounted_sub_total_amount = parseFloat($("#discounted_sub_total_amount").text());
-        let total_vat = parseFloat($("#show_vat_modal").text());
-        let total_payable = parseFloat($("#total_payable").text());
-        let total_discount_amount = parseFloat($("#all_items_discount").text());
-        let delivery_charge = Number($("#show_charge_amount").text());
-        let sub_total_discount = Number($("#sub_total_discount").text());
-        let sub_total_discount_value = $("#show_discount_amount").text();
-
+        let total_items_in_cart = Number($("#total_items_in_cart_with_quantity").html());
+        let sub_total = parseFloat($("#sub_total_show").html()).toFixed(op_precision);
+        let discounted_sub_total_amount = parseFloat($("#discounted_sub_total_amount").html()).toFixed(op_precision);
+        let total_vat = parseFloat($("#show_vat_modal").text()).toFixed(op_precision);
+        let total_payable = parseFloat($("#total_payable").html()).toFixed(op_precision);
+        let total_discount_amount = parseFloat($("#all_items_discount").html()).toFixed(op_precision);
+        let delivery_charge = Number($("#delivery_charge").val()).toFixed(op_precision);
+        let sub_total_discount = Number($("#sub_total_discount").html()).toFixed(op_precision);
+        let sub_total_discount_value = $("#show_discount_amount").html();
         let order = {
-            total_items_in_cart: getAmtPCustom(total_items_in_cart),
-            sub_total: getAmtPCustom(sub_total),
-            total_vat: getAmtPCustom(total_vat),
-            total_payable: getAmtPCustom(total_payable),
-            total_discount_amount: getAmtPCustom(total_discount_amount),
-            actual_discount: getAmtPCustom(discounted_sub_total_amount),
-            sub_total_discount: getAmtPCustom(sub_total_discount),
-            delivery_charge: getAmtPCustom(delivery_charge),
-            sub_total_discount_value: getAmtPCustom(sub_total_discount_value),
+            total_items_in_cart: total_items_in_cart,
+            sub_total: sub_total,
+            total_vat: total_vat,
+            total_payable: total_payable,
+            total_discount_amount: total_discount_amount,
+            actual_discount: discounted_sub_total_amount,
+            sub_total_discount: sub_total_discount,
+            delivery_charge: delivery_charge,
+            sub_total_discount_value: sub_total_discount_value,
             items: []
         };
-
         if ($(".single_order").length > 0) {
             $(".single_order").each(function (i, obj) {
                 let item_id = Number($(this).attr("id").substr(15));
                 let item_name = $(this).find(".first_column").text();
-                let item_vat = $("#item_vat_percentage_table" + item_id).text() || '';
+                let item_vat = $("#item_vat_percentage_table" + item_id).html() || '';
                 let item_note = $(".item_modal_description_table_" + item_id).text() || '';
-                let item_unit_price = $("#item_price_table_" + item_id).text() || '';
-                let item_quantity = $("#item_quantity_table_" + item_id).text() || '';
-                let item_total_price_table = $("#item_total_price_table_" + item_id).text() || '';
-                let item_g_w = $("#item_g_w_table_" + item_id).text() || '';
-                let discount = $("#percentage_table_" + item_id).text() || '';
+                let item_unit_price = $("#item_price_table_" + item_id).html() || '';
+                let item_quantity = $("#item_quantity_table_" + item_id).html() || '';
+                let item_total_price_table = $("#item_total_price_table_" + item_id).html() || '';
+                let item_g_w = $("#item_g_w_table_" + item_id).html() || '';
+                let discount = $("#percentage_table_" + item_id).val() || '';
                 let item = {
                     item_id: $.trim(item_id),
                     item_name: $.trim(item_name),
                     item_note: $.trim(item_note),
                     item_g_w: $.trim(item_g_w),
-                    item_total_price_table: getAmtPCustom($.trim(item_total_price_table)),
-                    discount: getAmtPCustom($.trim(discount)),
-                    item_vat: getAmtPCustom($.trim(item_vat)),
-                    item_unit_price: getAmtPCustom($.trim(item_unit_price)),
-                    item_quantity: getAmtPCustom($.trim(item_quantity))
+                    item_total_price_table: $.trim(item_total_price_table),
+                    discount: $.trim(discount),
+                    item_vat: $.trim(item_vat),
+                    item_unit_price: $.trim(item_unit_price),
+                    item_quantity: $.trim(item_quantity)
                 };
                 order.items.push(item);
             });
@@ -1264,14 +1201,14 @@ $(function () {
     $('.brand_button').on('click', function () {
         let brand_id = $(this).attr('id').substr(15);
         $("#search").val('');
-        $('#alternative_item_render').html(`<h6>${Alternative_Medicine_will_shown_here} <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>`);
+        $("#alternative_item_render").empty();
         showAllItems(brand_id,'');
     });
 
     // Code optimize by Azhar ** Final **
     $(document).on('click', '.button_category_show_all', function () {
         $("#search").val('');
-        $('#alternative_item_render').html(`<h6>${Alternative_Medicine_will_shown_here} <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>`);
+        $("#alternative_item_render").empty();
         showAllItems('','');
     });
 
@@ -1281,14 +1218,14 @@ $(function () {
     $(document).on('keyup', '#search', function (e) {
         let searched_string = $(this).val().trim();
         let foundItems = searchItemAndConstructGallery(searched_string,'',1);
-        let searched_category_items_to_show = `<div id="searched_item_found" class="specific_category_items_holder d-block"><div class="single-inner-div ${grocery_experience == 'Medicine' || grocery_experience == 'Grocery' ? 'grocery_single_on' : 'grocery_single_off'}">`;
-        if(grocery_experience == 'Medicine' || grocery_experience == 'Grocery'){
+        let searched_category_items_to_show = `<div id="searched_item_found" class="specific_category_items_holder d-block"><div class="single-inner-div ${grocery_experience == 'ON' ? 'grocery_single_on' : 'grocery_single_off'}">`;
+        if(grocery_experience == 'ON'){
             for (let key in foundItems) {
                 if(foundItems[key].item_type != '0'){
                     if (foundItems.hasOwnProperty(key)) {
                         searched_category_items_to_show += `
                         <div item-type="${foundItems[key].item_type}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" class="single_item grocery_medicine_el    brand_${foundItems[key].brand_id} ${product_display == 'Image View' ? '' : 'bg-box-view'} d-flex align-items-center" id="item_${foundItems[key].item_id}">
-                            <p class="item_name mt-0" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name} (${foundItems[key].item_code}) ${grocery_experience != 'Medicine' ? foundItems[key].brand_name : foundItems[key].supplier_name}
+                            <p class="item_name mt-0" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name} (${foundItems[key].item_code}) ${foundItems[key].brand_name ? foundItems[key].brand_name : ''}
                             
                             ${foundItems[key].generic_name ? '<br> <small class="generic_small">Generic Name: '+foundItems[key].generic_name+'</small>' : ''}
                             
@@ -1306,8 +1243,8 @@ $(function () {
                     if (foundItems.hasOwnProperty(key)) {
                         searched_category_items_to_show += `
                         <div item-type="${foundItems[key].item_type}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" class="single_item brand_${foundItems[key].brand_id} ${product_display == 'Image View' ? '' : 'bg-box-view'}" id="item_${foundItems[key].item_id}">
-                            <div class="single-item-img">
-                                <img src="${foundItems[key].image}" alt="" class="${product_display == 'Image View' ? 'd-block' : 'd-none'}">
+                            <div class="single-item-img ${product_display == 'Image View' ? 'd-block' : 'd-none'}">
+                                <img src="${foundItems[key].image}" alt="">
                             </div>
                             <p class="item_name" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name}${foundItems[key].brand_name} (${foundItems[key].item_code})</p>
                             <p class="generic_name ${$.trim(foundItems[key].generic_name) ? '' : 'd-none'}" data-tippy-content="${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}">${$.trim(foundItems[key].generic_name) ? $.trim($.trim(foundItems[key].generic_name)) : ''}</p>
@@ -1319,60 +1256,58 @@ $(function () {
             }
         }
         if(searched_string){
-            if(foundItems[0]){
-                let array_as = {};            
-                if(foundItems[0].item_type != '0'){
-                    if (foundItems.hasOwnProperty(0)) {
-                        if(foundItems[0].generic_name){
-                            let foundItemsForItems = searchItemAndConstructGallery(foundItems[0].generic_name,'','');
-                            for (let key1 in foundItemsForItems) {
-                            if(foundItemsForItems[key1].item_type != '0'){
-                                if (foundItemsForItems.hasOwnProperty(key1)) {
-                                    if(!array_as[foundItemsForItems[key1].item_id]){
-                                        array_as[foundItemsForItems[key1].item_id] = foundItemsForItems[key1].item_id;
-                                    }
-                                }
-                            }
-                            }
+            let array_as = {};            
+            if(foundItems[0].item_type != '0'){
+                if (foundItems.hasOwnProperty(0)) {
+                    if(foundItems[0].generic_name){
+                        let foundItemsForItems = searchItemAndConstructGallery(foundItems[0].generic_name,'','');
+                        for (let key1 in foundItemsForItems) {
+                         if(foundItemsForItems[key1].item_type != '0'){
+                             if (foundItemsForItems.hasOwnProperty(key1)) {
+                                 if(!array_as[foundItemsForItems[key1].item_id]){
+                                     array_as[foundItemsForItems[key1].item_id] = foundItemsForItems[key1].item_id;
+                                 }
+                             }
+                          }
                         }
                     }
                 }
-                let alternativeProduct = '';
-                for (let ar in array_as) {
-                    let item_details = findItemByItemId(ar);
-                    if(item_details.item_type != '0'){
-                        let if_exist = true;
-                        for (let key in foundItems) {
-                            if(foundItems[key].item_id==ar){
-                                if_exist = false;
-                            }
-                        }
-                        if(if_exist==true){
-                            alternativeProduct+=`<div class="alternative-medicine single_item medicine_el  brand_${item_details.brand_id}" item-type="${item_details.item_type}" plain-id="${item_details.item_id}" data-last_purchase_price="${item_details.last_purchase_price}" data-whole_sale_price="${item_details.whole_sale_price}" data-sale_price="${item_details.price}" id="item_${item_details.item_id}">
-                            <p class="item_name" data-tippy-content="${item_details.item_name}(${item_details.item_code})">${item_details.item_name}${item_details.brand_name} (${item_details.item_code})</p>
-                            <p class="generic_name ${$.trim(item_details.generic_name) ? '' : 'd-none'}" data-tippy-content="${$.trim(item_details.generic_name) ? $.trim(item_details.generic_name) : ''}">${$.trim(item_details.generic_name) ? $.trim($.trim(item_details.generic_name)) : ''}</p>
-                            <p class="item_price">SP: <span id="price_${item_details.item_id}">${parseFloat(item_details.price).toFixed(op_precision)}</span></p>
-                            <span class="item_vat_percentage d-none">${item_details.vat_percentage}</span>
-                        </div>`;
-                        }
-                    }
-                }
-                if(alternativeProduct){
-                    $('#alternative_item_render').html('');
-                    $('#alternative_item_render').html(alternativeProduct);
-                    $('#main_left').addClass('alternative-exist');
-                }else{
-                    $('#main_left').removeClass('alternative-exist');
-                    $('#alternative_item_render').html(`<h6>${Alternative_Medicine_will_shown_here} <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>`);
-                }
-                setTimeout(function(){
-                    $(".grocery_medicine_el").eq(0).addClass('active_gm');
-                }, 100);
             }
+            let alternativeProduct = '';
+            for (let ar in array_as) {
+                let item_details = findItemByItemId(ar);
+                if(item_details.item_type != '0'){
+                    let if_exist = true;
+                    for (let key in foundItems) {
+                        if(foundItems[key].item_id==ar){
+                            if_exist = false;
+                        }
+                    }
+                    if(if_exist==true){
+                        alternativeProduct+=`<div class="alternative-medicine single_item medicine_el  brand_${item_details.brand_id}" item-type="${item_details.item_type}" plain-id="${item_details.item_id}" data-last_purchase_price="${item_details.last_purchase_price}" data-whole_sale_price="${item_details.whole_sale_price}" data-sale_price="${item_details.price}" id="item_${item_details.item_id}">
+                        <p class="item_name" data-tippy-content="${item_details.item_name}(${item_details.item_code})">${item_details.item_name}${item_details.brand_name} (${item_details.item_code})</p>
+                        <p class="generic_name ${$.trim(item_details.generic_name) ? '' : 'd-none'}" data-tippy-content="${$.trim(item_details.generic_name) ? $.trim(item_details.generic_name) : ''}">${$.trim(item_details.generic_name) ? $.trim($.trim(item_details.generic_name)) : ''}</p>
+                        <p class="item_price">SP: <span id="price_${item_details.item_id}">${parseFloat(item_details.price).toFixed(op_precision)}</span></p>
+                        <span class="item_vat_percentage d-none">${item_details.vat_percentage}</span>
+                    </div>`;
+                    }
+                }
+            }
+            if(alternativeProduct){
+                $('#alternative_item_render').html('');
+                $('#alternative_item_render').html(alternativeProduct);
+                $('#main_left').addClass('alternative-exist');
+            }else{
+                $('#main_left').removeClass('alternative-exist');
+                $('#alternative_item_render').html(`<h6>Generic Medicine will shown here <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>`);
+            }
+            setTimeout(function(){
+                $(".grocery_medicine_el").eq(0).addClass('active_gm');
+            }, 100);
         }else{
             $('#alternative_item_render').html('');
             $('#main_left').removeClass('alternative-exist');
-            $('#alternative_item_render').html(`<h6>${Alternative_Medicine_will_shown_here} <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>`);
+            $('#alternative_item_render').html(`<h6>Generic Medicine will shown here <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>`);
         }
         searched_category_items_to_show += `<div></div>`;
         $("#searched_item_found").remove();
@@ -1839,14 +1774,10 @@ $(function () {
         $('#modal_item_type').text(item_object.item_type);
         $('#modal_item_sale_unit').text(item_object.sale_unit_name);
         $('#modal_item_vat_percentage').text(item_object.tax_information);
-        if(view_purchase_price == 'Yes'){
-            $('#w_s_price').text(Number(item_object.whole_sale_price).toFixed(op_precision));
-            $('#m_p_price').text(Number(item_object.last_purchase_price / item_object.conversion_rate).toFixed(op_precision));
-        }else{
-            $('#w_s_price').text(Number(0).toFixed(op_precision));
-            $('#m_p_price').text(Number(0).toFixed(op_precision));
-        }
+        $('#m_p_price').text(Number(item_object.last_purchase_price).toFixed(op_precision));
+        $('#w_s_price').text(Number(item_object.whole_sale_price).toFixed(op_precision));
         $('#s_price').text(Number(item_object.price).toFixed(op_precision));
+
 
         // Promotion Check And Discount Set
         if(item_object.is_promo == 'Yes'){
@@ -1995,13 +1926,8 @@ $(function () {
         $('#modal_item_price_input_field').prop('readonly', false);
         $('#modal_discount').prop('readonly', false);
         $('#s_price').text(Number(salePrice).toFixed(op_precision));
-        if(view_purchase_price == 'Yes'){
-            $('#w_s_price').text(Number(wholePrice).toFixed(op_precision));
-            $('#m_p_price').text(Number(purchasePrice).toFixed(op_precision));
-        }else{
-            $('#w_s_price').text(Number(0).toFixed(op_precision));
-            $('#m_p_price').text(Number(0).toFixed(op_precision));
-        }
+        $('#w_s_price').text(Number(wholePrice).toFixed(op_precision));
+        $('#m_p_price').text(Number(purchasePrice).toFixed(op_precision));
         $('#modal_item_id').text(item_id);
         $('#modal_item_name').text(item_name);
         $('#modal_item_vat_percentage').text(modal_item_vat_percentage);
@@ -2466,8 +2392,7 @@ $(function () {
                     $('.main_top').find('button').css('background-color', '#F3F3F3');
                     $('.main_top').find('button').attr('data-selected', 'unselected');
                     $("#walk_in_customer").val('').trigger('change');
-                    $("#select_employee_id").val('').trigger('change');
-                    $('#place_edit_order').text('Payment');
+                    $('#place_edit_order').text('Place Order');
                 } 
             });
         }
@@ -2814,12 +2739,12 @@ $(function () {
         }
 
         // Item Modal Data Set
-        if (last_purchase_price != '' && last_purchase_price != null && view_purchase_price == 'Yes') {
+        if (last_purchase_price != '' && last_purchase_price != null) {
             $("#m_p_price").html(parseFloat(last_purchase_price).toFixed(op_precision));
         } else {
             $("#m_p_price").html(Number(0).toFixed(op_precision));
         }
-        if (whole_sale_price != '' && whole_sale_price != null && view_purchase_price == 'Yes') {
+        if (whole_sale_price != '' && whole_sale_price != null) {
             $("#w_s_price").html(parseFloat(whole_sale_price).toFixed(op_precision));
         } else {
             $("#w_s_price").html(Number(0).toFixed(op_precision));
@@ -3760,89 +3685,86 @@ $(function () {
         let customer_id = $(this).val();
         let priceType = $('option:selected', this).attr('price_type');
         let thisC = $(this);
+        $.ajax({
+            method: "GET",
+            dataType: 'json',
+            url: base_url+"Sale/findCustomerCreditLimit/"+customer_id,
+            success: function (response) {
+                $("#customer_credit_limit").val(Number(response.credit_limit.credit_limit).toFixed(op_precision));
+                $("#customer_previous_due").val(Number(response.due_amount).toFixed(op_precision));
+            }
+        });
+        if(edit_mode == ''){
+            let card_data = $('.order_holder').html();
+            if(card_data != ''){
+                let item_qty = 0;
+                let single_item_subtotal  = 0;
+                let singleItemDiscountSum = 0;
+                let whole_sale_price = 0;
+                let sale_price = 0;
+                let item_id;
+                let itemPrice = 0;
+                let item_type = '';
+                let item_obj;
+                $('.single_order').each(function(i,v){
+                    item_id = $(this).attr('id').substr(15);
+                    item_obj = findItemByItemId(item_id);
 
-        if(customer_id){
-            $.ajax({
-                method: "GET",
-                dataType: 'json',
-                url: base_url+"Sale/findCustomerCreditLimit/"+customer_id,
-                success: function (response) {
-                    $("#customer_credit_limit").val(Number(response.credit_limit.credit_limit).toFixed(op_precision));
-                    $("#customer_previous_due").val(Number(response.due_amount).toFixed(op_precision));
-                }
-            });
-            if(edit_mode == ''){
-                let card_data = $('.order_holder').html();
-                if(card_data != ''){
-                    let item_qty = 0;
-                    let single_item_subtotal  = 0;
-                    let singleItemDiscountSum = 0;
-                    let whole_sale_price = 0;
-                    let sale_price = 0;
-                    let item_id;
-                    let itemPrice = 0;
-                    let item_type = '';
-                    let item_obj;
-                    $('.single_order').each(function(i,v){
-                        item_id = $(this).attr('id').substr(15);
-                        item_obj = findItemByItemId(item_id);
+                    whole_sale_price = item_obj.whole_sale_price;
+                    sale_price = item_obj.price;
+                    item_type = item_obj.item_type;
 
-                        whole_sale_price = item_obj.whole_sale_price;
-                        sale_price = item_obj.price;
-                        item_type = item_obj.item_type;
-
-                        if(whole_sale_price == '0' && priceType == '2'){
-                            toastr['error'](("Whole sale is setup for this customer, and whole set is not set up for this product"), '');
+                    if(whole_sale_price == '0' && priceType == '2'){
+                        toastr['error'](("Whole sale is setup for this customer, and whole set is not set up for this product"), '');
+                    }
+                    if(item_obj.is_promo == "Yes"){
+                        discount = item_obj.promo_discount != '' ? item_obj.promo_discount : 0;
+                        $(this).find('.forth_column .inline_dis_column').prop('readonly', true);
+                    }else{
+                        discount = $('option:selected', thisC).attr('discount');
+                        if(discount == 0 || discount == "" || discount == NaN || discount == undefined || discount == null || discount == 'null'){
+                            discount = 0;
+                        }else{
+                            discount = discount;
                         }
-                        if(item_obj.is_promo == "Yes"){
-                            discount = item_obj.promo_discount != '' ? item_obj.promo_discount : 0;
+                        if(discount != 0){
                             $(this).find('.forth_column .inline_dis_column').prop('readonly', true);
                         }else{
-                            discount = $('option:selected', thisC).attr('discount');
-                            if(discount == 0 || discount == "" || discount == NaN || discount == undefined || discount == null || discount == 'null'){
-                                discount = 0;
-                            }else{
-                                discount = discount;
-                            }
-                            if(discount != 0){
-                                $(this).find('.forth_column .inline_dis_column').prop('readonly', true);
-                            }else{
-                                $(this).find('.forth_column .inline_dis_column').prop('readonly', false);
-                            }
+                            $(this).find('.forth_column .inline_dis_column').prop('readonly', false);
                         }
-                        item_qty = $(this).find('.third_column .cart_quantity').text();
-                        let old_sale_id = ($("#old_sale_id").val());
-                        let edit_sale_customer = Number($("#edit_sale_customer").val());
-                        if(old_sale_id && edit_sale_customer == customer_id){
-                            discount = $(this).find('.forth_column .inline_dis_column').attr("data-discount_for_edit");
-                        }
-                        $(this).find('.forth_column .inline_dis_column').val(discount);
-                        if(priceType == 1 && item_type != 'Service_Product'){
-                            $(this).find('.second_column span').eq(0).text(Number(sale_price).toFixed(op_precision));
-                            single_item_subtotal = singleSubtotalCalculateByPriceDiscount(sale_price, discount);
-                            itemPrice = sale_price;
-                        }else if(priceType == 2 && item_type != 'Service_Product'){
-                            $(this).find('.second_column span').eq(0).text(Number(whole_sale_price).toFixed(op_precision));
-                            single_item_subtotal = singleSubtotalCalculateByPriceDiscount(whole_sale_price, discount);
-                            itemPrice = whole_sale_price;
-                        }else{
-                            $(this).find('.second_column span').eq(0).text(Number(sale_price).toFixed(op_precision));
-                            single_item_subtotal = singleSubtotalCalculateByPriceDiscount(sale_price, discount);
-                            itemPrice = sale_price;
-                        }
-                        $(this).find('.fifth_column span').eq(0).text(Number(single_item_subtotal).toFixed(op_precision));
-                        $(this).find('.item_price_without_discount').text((Number(itemPrice) * Number(item_qty)).toFixed(op_precision));
-                        let mainPrice = $(this).find('.second_column span').eq(0).text();
-                        let cartQty = $(this).find('.third_column  .cart_quantity').text();
-                        let subTotal = $(this).find('.fifth_column span').eq(0).text();
-                        let singleItemDiscount = (Number(mainPrice) * Number(cartQty)) - Number(subTotal);
-                        singleItemDiscountSum += singleItemDiscount;
-                    });
-                    $('#all_items_discount').text(Number(singleItemDiscountSum).toFixed(op_precision));
-                    cartItemCalculationInPOS();
-                    if(edit_mode == ''){
-                        storageCartDataInLocal();
                     }
+                    item_qty = $(this).find('.third_column .cart_quantity').text();
+                    let old_sale_id = ($("#old_sale_id").val());
+                    let edit_sale_customer = Number($("#edit_sale_customer").val());
+                    if(old_sale_id && edit_sale_customer == customer_id){
+                        discount = $(this).find('.forth_column .inline_dis_column').attr("data-discount_for_edit");
+                    }
+                    $(this).find('.forth_column .inline_dis_column').val(discount);
+                    if(priceType == 1 && item_type != 'Service_Product'){
+                        $(this).find('.second_column span').eq(0).text(Number(sale_price).toFixed(op_precision));
+                        single_item_subtotal = singleSubtotalCalculateByPriceDiscount(sale_price, discount);
+                        itemPrice = sale_price;
+                    }else if(priceType == 2 && item_type != 'Service_Product'){
+                        $(this).find('.second_column span').eq(0).text(Number(whole_sale_price).toFixed(op_precision));
+                        single_item_subtotal = singleSubtotalCalculateByPriceDiscount(whole_sale_price, discount);
+                        itemPrice = whole_sale_price;
+                    }else{
+                        $(this).find('.second_column span').eq(0).text(Number(sale_price).toFixed(op_precision));
+                        single_item_subtotal = singleSubtotalCalculateByPriceDiscount(sale_price, discount);
+                        itemPrice = sale_price;
+                    }
+                    $(this).find('.fifth_column span').eq(0).text(Number(single_item_subtotal).toFixed(op_precision));
+                    $(this).find('.item_price_without_discount').text((Number(itemPrice) * Number(item_qty)).toFixed(op_precision));
+                    let mainPrice = $(this).find('.second_column span').eq(0).text();
+                    let cartQty = $(this).find('.third_column  .cart_quantity').text();
+                    let subTotal = $(this).find('.fifth_column span').eq(0).text();
+                    let singleItemDiscount = (Number(mainPrice) * Number(cartQty)) - Number(subTotal);
+                    singleItemDiscountSum += singleItemDiscount;
+                });
+                $('#all_items_discount').text(Number(singleItemDiscountSum).toFixed(op_precision));
+                cartItemCalculationInPOS();
+                if(edit_mode == ''){
+                    storageCartDataInLocal();
                 }
             }
         }
@@ -4278,8 +4200,8 @@ $(function () {
         $('.specific_category_items_holder').hide();
         setTimeout(function () {
             let foundItems = searchItemAndConstructGallery('',sorting,'');
-            let searched_category_items_to_show = `<div id="searched_item_found" class="specific_category_items_holder"><div class="single-inner-div ${grocery_experience == 'Medicine' || grocery_experience == 'Grocery' ? 'grocery_single_on' : 'grocery_single_off'}">`;
-            if(grocery_experience == 'Medicine' || grocery_experience == 'Grocery'){
+            let searched_category_items_to_show = `<div id="searched_item_found" class="specific_category_items_holder"><div class="single-inner-div ${grocery_experience == 'ON' ? 'grocery_single_on' : 'grocery_single_off'}">`;
+            if(grocery_experience == 'ON'){
                 let brand_id_tmp = Number(brand_id);
                 for (let key in foundItems) {
                     if(foundItems[key].item_type != '0'){
@@ -4289,7 +4211,7 @@ $(function () {
                                 if (brand_id_tmp == foundItems[key].brand_id) {
                                     searched_category_items_to_show += `
                                         <div item-type="${foundItems[key].item_type}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" is_promo="${foundItems[key].is_promo}" class="single_item grocery_medicine_el   all_brand brand_${foundItems[key].brand_id} ${product_display == 'Image View' ? '' : 'bg-box-view'} d-flex align-items-center" id="item_${foundItems[key].item_id}">
-                                            <p class="item_name mt-0" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name} (${foundItems[key].item_code}) ${grocery_experience != 'Medicine' ? foundItems[key].brand_name : foundItems[key].supplier_name}
+                                            <p class="item_name mt-0" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name} (${foundItems[key].item_code}) ${foundItems[key].brand_name ? foundItems[key].brand_name : ''}
                                             
                                             ${foundItems[key].generic_name ? '<br> <small class="generic_small">Generic Name: '+foundItems[key].generic_name+'</small>' : ''}
                                             </p>
@@ -4303,7 +4225,7 @@ $(function () {
                             } else {
                                 searched_category_items_to_show += `
                                     <div item-type="${foundItems[key].item_type}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" is_promo="${foundItems[key].is_promo}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" class="single_item grocery_medicine_el   all_brand brand_${foundItems[key].brand_id} ${product_display == 'Image View' ? '' : 'bg-box-view'} d-flex align-items-center" id="item_${foundItems[key].item_id}">
-                                        <p class="item_name mt-0" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name} (${foundItems[key].item_code}) ${grocery_experience != 'Medicine' ? foundItems[key].brand_name : foundItems[key].supplier_name} 
+                                        <p class="item_name mt-0" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name} (${foundItems[key].item_code}) ${foundItems[key].brand_name ? foundItems[key].brand_name : ''} 
                                         
                                         ${foundItems[key].generic_name ? '<br> <small class="generic_small">Generic Name: '+foundItems[key].generic_name+'</small>' : ''}
                                         </p>
@@ -4328,8 +4250,8 @@ $(function () {
                                 if (brand_id_tmp == foundItems[key].brand_id) {
                                     searched_category_items_to_show += `
                                         <div item-type="${foundItems[key].item_type}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" is_promo="${foundItems[key].is_promo}" class="single_item  all_brand brand_${foundItems[key].brand_id} ${product_display == 'Image View' ? '' : 'bg-box-view'}" id="item_${foundItems[key].item_id}">
-                                            <div class="single-item-img">
-                                                <img src="${foundItems[key].image}" alt="" class="${product_display == 'Image View' ? 'd-block' : 'd-none'}">
+                                            <div class="single-item-img ${product_display == 'Image View' ? 'd-block' : 'd-none'}">
+                                                <img src="${foundItems[key].image}" alt="">
                                             </div>
                                             <p class="item_name" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name}${foundItems[key].brand_name} (${foundItems[key].item_code})</p>
                                             <p class="generic_name ${$.trim(foundItems[key].generic_name) ? '' : 'd-none'}" data-tippy-content="${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}">${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}</p>
@@ -4340,8 +4262,8 @@ $(function () {
                             } else {
                                 searched_category_items_to_show += `
                                     <div item-type="${foundItems[key].item_type}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" is_promo="${foundItems[key].is_promo}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" class="single_item  all_brand brand_${foundItems[key].brand_id} ${product_display == 'Image View' ? '' : 'bg-box-view'}" id="item_${foundItems[key].item_id}">
-                                        <div class="single-item-img">
-                                            <img src="${foundItems[key].image}" alt="" class="${product_display == 'Image View' ? 'd-block' : 'd-none'}">
+                                        <div class="single-item-img ${product_display == 'Image View' ? 'd-block' : 'd-none'}">
+                                            <img src="${foundItems[key].image}" alt="">
                                         </div>
                                         <p class="item_name" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name}${foundItems[key].brand_name} (${foundItems[key].item_code})</p>
                                         <p class="generic_name ${$.trim(foundItems[key].generic_name) ? '' : 'd-none'}" data-tippy-content="${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}">${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}</p>
@@ -4369,7 +4291,7 @@ $(function () {
         $(this).addClass('sort_active');
         $('.sorting_item').removeClass('sort_active');
         $("#search").val('');
-        $('#alternative_item_render').html(`<h6>${Alternative_Medicine_will_shown_here} <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>`);
+        $("#alternative_item_render").empty();
         showAllItems('',sort_id);
     });
 
@@ -4378,8 +4300,8 @@ $(function () {
         $('.specific_category_items_holder').hide();
         setTimeout(function () {
             let foundItems = searchItemAndConstructGallery('','','');
-            let searched_category_items_to_show = `<div id="searched_item_found" class="specific_category_items_holder d-block"><div class="single-inner-div ${grocery_experience == 'Medicine' || grocery_experience == 'Grocery' ? 'grocery_single_on' : 'grocery_single_off'}">`;
-            if(grocery_experience == 'Medicine' || grocery_experience == 'Grocery'){
+            let searched_category_items_to_show = `<div id="searched_item_found" class="specific_category_items_holder d-block"><div class="single-inner-div ${grocery_experience == 'ON' ? 'grocery_single_on' : 'grocery_single_off'}">`;
+            if(grocery_experience == 'ON'){
                 let cat_id_tmp = Number(cat_id);
                 for (let key in foundItems) {
                     if(foundItems[key].item_type != '0'){
@@ -4388,7 +4310,7 @@ $(function () {
                                 if (cat_id_tmp == foundItems[key].cat_id) {
                                     searched_category_items_to_show += `
                                         <div is_promo="${foundItems[key].is_promo}" item-type="${foundItems[key].item_type}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" class="single_item grocery_medicine_el   all_brand brand_${foundItems[key].cat_id} ${product_display == 'Image View' ? '' : 'bg-box-view'} d-flex align-items-center" id="item_${foundItems[key].item_id}">
-                                            <p class="item_name mt-0" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name} (${foundItems[key].item_code}) ${grocery_experience != 'Medicine' ? foundItems[key].brand_name : foundItems[key].supplier_name}
+                                            <p class="item_name mt-0" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name} (${foundItems[key].item_code}) ${foundItems[key].brand_name ? foundItems[key].brand_name : ''}
                                         
                                             ${foundItems[key].generic_name ? '<br> <small class="generic_small">Generic Name: '+foundItems[key].generic_name+'</small>' : ''}
                                             </p>
@@ -4402,7 +4324,7 @@ $(function () {
                                 searched_category_items_to_show += `
                                     <div is_promo="${foundItems[key].is_promo}" item-type="${foundItems[key].item_type}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" class="single_item grocery_medicine_el   all_brand brand_${foundItems[key].cat_id} ${product_display == 'Image View' ? '' : 'bg-box-view'} d-flex align-items-center" id="item_${foundItems[key].item_id}">
 
-                                        <p class="item_name mt-0" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name} (${foundItems[key].item_code}) ${grocery_experience != 'Medicine' ? foundItems[key].brand_name : foundItems[key].supplier_name}
+                                        <p class="item_name mt-0" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name} (${foundItems[key].item_code}) ${foundItems[key].brand_name ? foundItems[key].brand_name : ''}
                                         
                                         ${foundItems[key].generic_name ? '<br> <small class="generic_small">Generic Name: '+foundItems[key].generic_name+'</small>' : ''}
                                         </p>
@@ -4426,8 +4348,8 @@ $(function () {
                                 if (cat_id_tmp == foundItems[key].cat_id) {
                                     searched_category_items_to_show += `
                                         <div is_promo="${foundItems[key].is_promo}" item-type="${foundItems[key].item_type}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" class="single_item  all_brand brand_${foundItems[key].cat_id} ${product_display == 'Image View' ? '' : 'bg-box-view'}" id="item_${foundItems[key].item_id}">
-                                            <div class="single-item-img">
-                                                <img src="${foundItems[key].image}" alt="" class="${product_display == 'Image View' ? 'd-block' : 'd-none'}">
+                                            <div class="single-item-img ${product_display == 'Image View' ? 'd-block' : 'd-none'}">
+                                                <img src="${foundItems[key].image}" alt="">
                                             </div>
                                             <p class="item_name" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name}${foundItems[key].brand_name} (${foundItems[key].item_code})</p>
                                             <p class="generic_name ${$.trim(foundItems[key].generic_name) ? '' : 'd-none'}" data-tippy-content="${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}">${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}</p>
@@ -4438,8 +4360,8 @@ $(function () {
                             } else {
                                 searched_category_items_to_show += `
                                     <div is_promo="${foundItems[key].is_promo}" item-type="${foundItems[key].item_type}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" class="single_item  all_brand brand_${foundItems[key].cat_id} ${product_display == 'Image View' ? '' : 'bg-box-view'}" id="item_${foundItems[key].item_id}">
-                                        <div class="single-item-img">
-                                            <img src="${foundItems[key].image}" alt="" class="${product_display == 'Image View' ? 'd-block' : 'd-none'}">
+                                        <div class="single-item-img ${product_display == 'Image View' ? 'd-block' : 'd-none'}">
+                                            <img src="${foundItems[key].image}" alt="">
                                         </div>
                                         <p class="item_name" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name}${foundItems[key].brand_name} (${foundItems[key].item_code})</p>
                                         <p class="generic_name ${$.trim(foundItems[key].generic_name) ? '' : 'd-none'}" data-tippy-content="${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}">${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}</p>
@@ -4556,6 +4478,7 @@ $(function () {
 
         //get subtotal discount amount
         let sub_total_discount_amount = ($('#sub_total_discount').val() != "") ? $('#sub_total_discount').val() : 0;
+
         //check wether value is valid or not
         removeLastTwoDigitWithPercentage(sub_total_discount_amount, $('#sub_total_discount'));
         sub_total_discount_amount = getSubTotalDiscountAmount(sub_total_discount_amount, sub_total_amount);
@@ -4625,7 +4548,9 @@ $(function () {
         if (total_vat_amount == "NaN" || tax_type==2) {
             total_vat_amount = 0;
         }
-        let total_payable = (parseFloat(discounted_sub_total_amount) + parseFloat(total_vat_amount) + parseFloat(delivery_charge_amount)).toFixed(op_precision);
+
+        let total_payable = (parseFloat(discounted_sub_total_amount) - parseFloat(sub_total_discount_tmp) + parseFloat(total_vat_amount) + parseFloat(delivery_charge_amount)).toFixed(op_precision);
+
         //set total payable amount to view and set rounding value.
         let pos_total_payable_type = $('#pos_total_payable_type').val();
         let total_payable_round;
@@ -4917,6 +4842,7 @@ $(function () {
                         }
                     });
                     if(check_exist==true){
+                        let already_added = $("#already_added").val();
                         toastr['error']((already_added), '');
                     }else{
                         if(is_quick == 'Yes'){
@@ -5050,12 +4976,25 @@ $(function () {
         } else if (account_type == "Paypal" && account_type != undefined) {
             $("#show_account_type").html(`
                 <div class="form-group">
+                    <label>Swip Card</label>
+                    <input type="text" name="swip_card" class="form-control" placeholder="Swip card here  then security code manually" id="swip_card">
+                </div>
+                <div class="form-group">
                     <label>Credit Card No</label>
                     <input type="text" name="credit_card_no" class="form-control" placeholder="Credit Card No" id="credit_card_no">
                 </div>
                 <div class="form-group">
                     <label>Holder Name</label>
                     <input type="text" name="holder_name" class="form-control" placeholder="Holder Name" id="holder_name">
+                </div>
+                <div class="form-group">
+                    <label>Card Type</label>
+                    <select name="card_type" id="card_type" class="form-control select2">
+                        <option value="Visa">Visa</option>
+                        <option value="Master Card">Master Card</option>
+                        <option value="Amex">Amex</option>
+                        <option value="Discover">Discover</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label>Month</label>
@@ -5077,12 +5016,25 @@ $(function () {
         } else if (account_type == "Stripe" && account_type != undefined) {
             $("#show_account_type").html(`
                 <div class="form-group">
+                    <label>Swip Card</label>
+                    <input type="text" name="swip_card" class="form-control" placeholder="Swip card here  then security code manually" id="swip_card">
+                </div>
+                <div class="form-group">
                     <label>Credit Card No</label>
                     <input type="text" name="credit_card_no" class="form-control" placeholder="Credit Card No" id="credit_card_no">
                 </div>
                 <div class="form-group">
                     <label>Holder Name</label>
                     <input type="text" name="holder_name" class="form-control" placeholder="Holder Name" id="holder_name">
+                </div>
+                <div class="form-group">
+                    <label>Card Type</label>
+                    <select name="card_type" id="card_type" class="form-control select2">
+                        <option value="Visa">Visa</option>
+                        <option value="Master Card">Master Card</option>
+                        <option value="Amex">Amex</option>
+                        <option value="Discover">Discover</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label>Month</label>
@@ -5319,17 +5271,6 @@ $(function () {
         let paymentTypeArr = [];
         let account_type = $('.list-for-payment-type .active').attr('data-type_value');
 
-        let  payment_exist_check = 'No';
-        $('.payment_list_counter .payment-type-name').each(function(){
-            if($(this).text() == $('.payment_element .active').text()){
-                payment_exist_check == 'Yes';
-            }
-        });
-        if(payment_exist_check == 'Yes'){
-            return false;
-        }
-
-
         if(account_type == 'Cash' && account_type != undefined){
             account_note = $('#p_note').val();
             if(account_note != ''){
@@ -5469,12 +5410,13 @@ $(function () {
         let payment_text = '' ;
         let payment_name = $("#payment_preview").text() ;
         let payment_acc_type = $("#payment_preview").attr('data-account_type') ;
-        $(".set_payment").each(function () {
+        $(".set_payment").each(function (i, obj) {
+            let this_txt = $(this).text();
             if($(this).hasClass('active')){
                 status = true;
                 payment_id = Number($(this).attr('data-id'));
                 acc_type = $(this).attr('data-type_value');
-                payment_text = $(this).text();
+                payment_text = this_txt;
             }
         });
         $("#finalize_given_amount_input").css("border","1px solid #bcbdbe");
@@ -5489,9 +5431,9 @@ $(function () {
             let loyalty_point_is_not_available = $("#loyalty_point_is_not_available").val();
             toastr['error']((finalize_amount_input+" "+loyalty_point_is_not_available), '');
         }else{
-            $(".payment_list_counter").each(function () {
-                let dataAccName = $(this).attr('data-payment_name');
-                if(payment_text == dataAccName){
+            $(".payment_list_counter").each(function (i, obj) {
+                let dataAccType = Number($(this).attr('data-account_type'));
+                if(acc_type===dataAccType){
                     check_exist = true;
                 }
             });
@@ -5500,7 +5442,7 @@ $(function () {
                 finalize_amount_input = (loyalty_rate * finalize_amount_input);
             }
             let tmp_amount_checker = finalize_amount_input;
-            if(payment_text == "Cash"){
+            if(payment_text=="Cash"){
                 tmp_amount_checker = Number($("#finalize_given_amount_input").val());
             }
             if(tmp_amount_checker){
@@ -5516,6 +5458,7 @@ $(function () {
                         <input type="hidden" class="paymentAccountDetails" name="sale_payment_info[]" value="${paymentTypeArr}" />
                     </li>`;
                     if(check_exist==true){
+                        let already_added = $("#already_added").val();
                         toastr['error']((already_added), '');
                     }else{
                         $(".set_payment").each(function (i, obj) {
@@ -6367,13 +6310,14 @@ $(function () {
         }
         let change_amount = (parseFloat(this_value) - parseFloat(finalize_total_payable));
         change_amount = change_amount && change_amount > 0 ? change_amount : 0;
+
         if (isNaN(change_amount)) {
             change_amount = 0;
         }
         if(this_value == ''){
             $("#finalize_change_amount_input").val(0);
         }else{
-            $("#finalize_change_amount_input").val(parseFloat(change_amount).toFixed(op_precision));
+            $("#finalize_change_amount_input").val(change_amount);
         }
         let finalize_amount = parseFloat(this_value) - parseFloat(change_amount);
         if (isNaN(finalize_amount)) {
@@ -6843,7 +6787,7 @@ $(function () {
     $(document).on('click', '.show_cart_list', function () {
         $('.main_middle').fadeIn(300);
         $('.main_right').hide(0);
-        if (grocery_experience == 'Medicine' || grocery_experience == 'Grocery') {
+        if (grocery_experience == 'ON') {
             if (window.matchMedia("(min-width: 320px) and (max-width: 991.98px)").matches) {
                 $('.grocery_main_part_on').css({
                     'grid-template-columns': '1fr',
@@ -6856,7 +6800,7 @@ $(function () {
     $(document).on('click', '.show_product', function () {
         $('.main_right').fadeIn(300);
         $('.main_middle').hide();
-        if (grocery_experience == 'Medicine' || grocery_experience == 'Grocery') {
+        if (grocery_experience == 'ON') {
             if (window.matchMedia("(min-width: 320px) and (max-width: 991.98px)").matches) {
                 $('.grocery_main_part_on').css({
                     'grid-template-columns': '70% 29%',
@@ -6941,7 +6885,7 @@ $(function () {
     // Key down event listener
 
 
-    if(grocery_experience == 'Medicine' || grocery_experience == 'Grocery'){
+    if(grocery_experience == 'ON'){
         $(document).on('focus', '#search_barcode', function(){
             let selector = $('.single-inner-div').find('.active_gm');
             selector.removeClass('active_gm');
@@ -6991,19 +6935,20 @@ $(function () {
                 $('#main_left').addClass('alternative-exist');
             }else{
                 $('#main_left').removeClass('alternative-exist');
-                $('#alternative_item_render').html(`<h6>${Alternative_Medicine_will_shown_here} <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>`);
+                $('#alternative_item_render').html(`<h6>Generic Medicine will shown here <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>`);
             }
         }else{
-            $('#alternative_item_render').html(`<h6>${Alternative_Medicine_will_shown_here} <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>`);
+            $('#alternative_item_render').empty();
             $('#main_left').removeClass('alternative-exist');
-            $('#alternative_item_render').html(`<h6>${Alternative_Medicine_will_shown_here} <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>`);
+            $('#alternative_item_render').html(`<h6>Generic Medicine will shown here <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>`);
         }
     }
 
     $(document).keydown(function(e) {
+        console.log(e);
         let item_modal = $('#item_modal').hasClass('active');
         let finalize_order_modal = $('#finalize_order_modal').hasClass('active');
-        if(grocery_experience == 'Medicine' || grocery_experience == 'Grocery' && !finalize_order_modal && !item_modal){
+        if(grocery_experience == 'ON' && !finalize_order_modal && !item_modal){
             // Main Screen UP & Down
             let generic_medicine_part = $('#main_left').hasClass('main_left_arrow');
             if(!generic_medicine_part){
@@ -7167,18 +7112,6 @@ $(function () {
                     $('#add_to_cart').click(); // shift + a 
                 }
             }
-            if ($('#item_quantity_modal_input').is(':focus') && e.key === 'ArrowUp') {
-                let modal_qty_selector = $('#item_quantity_modal_input');
-                let currentValue = modal_qty_selector.val();
-                currentValue = parseInt(currentValue, 10); 
-                modal_qty_selector.val(currentValue + 1);
-            }
-            if ($('#item_quantity_modal_input').is(':focus') && e.key === 'ArrowDown') {
-                let modal_qty_selector = $('#item_quantity_modal_input');
-                let currentValue = modal_qty_selector.val();
-                currentValue = parseInt(currentValue, 10); 
-                modal_qty_selector.val(currentValue - 1);
-            }
         }
 
 
@@ -7282,28 +7215,44 @@ $(function () {
             altKeyDown = true; // Set flag to true
             if (e.keyCode == 80) {
                 e.preventDefault();
-                if(view_purchase_price == 'Yes'){
-                    $('.single_item').each(function (i, obj) {
-                        let pp = (!isNaN(parseFloat($(this).data("last_purchase_price")).toFixed(op_precision))) ? parseFloat($(this).data("last_purchase_price")).toFixed(op_precision) : parseFloat(0).toFixed(op_precision);
-                        let price_list = 'PP: ' + pp;
-                        $(this).find(".item_price").html(price_list);
-                    });
-                }else{
-                    toastr['error']('This user is not able to view purchase prices.', '');
-                }
+                $.ajax({
+                    url: base_url + "Master/checkAccess",
+                    method: "GET",
+                    async: false,
+                    dataType: 'json',
+                    data: { controller: "138", function: "view_purchase_price" },
+                    success: function (response) {
+                        if (response == false) {
+                            toastr['error']('This user is not able to view purchase prices.', '');
+                        }else{
+                            $('.single_item').each(function (i, obj) {
+                                let pp = (!isNaN(parseFloat($(this).data("last_purchase_price")).toFixed(op_precision))) ? parseFloat($(this).data("last_purchase_price")).toFixed(op_precision) : parseFloat(0).toFixed(op_precision);
+                                let price_list = 'PP: ' + pp;
+                                $(this).find(".item_price").html(price_list);
+                            });
+                        }
+                    }
+                });
             } else if (e.keyCode == 87) {
                 e.preventDefault();
-                if(view_purchase_price == 'Yes'){
-                    $('.single_item').each(function (i, obj) {
-                        $('.single_item').each(function (i, obj) {
-                            let wp = (!isNaN(parseFloat($(this).data("whole_sale_price")).toFixed(op_precision))) ? parseFloat($(this).data("whole_sale_price")).toFixed(op_precision) : parseFloat(0).toFixed(op_precision);
-                            let price_list = ' WP: ' + wp;
-                            $(this).find(".item_price").html(price_list);
-                        });
-                    });
-                }else{
-                    toastr['error']('This user is not able to view whole sale prices.', '');
-                }
+                $.ajax({
+                    url: base_url + "Master/checkAccess",
+                    method: "GET",
+                    async: false,
+                    dataType: 'json',
+                    data: { controller: "138", function: "view_purchase_price" },
+                    success: function (response) {
+                        if (response == false) {
+                            toastr['error']('This user is not able to view whole sale prices.', '');
+                        }else{
+                            $('.single_item').each(function (i, obj) {
+                                let wp = (!isNaN(parseFloat($(this).data("whole_sale_price")).toFixed(op_precision))) ? parseFloat($(this).data("whole_sale_price")).toFixed(op_precision) : parseFloat(0).toFixed(op_precision);
+                                let price_list = ' WP: ' + wp;
+                                $(this).find(".item_price").html(price_list);
+                            });
+                        }
+                    }
+                });
             } else if (e.keyCode == 83) {
                 e.preventDefault();
                 $('.single_item').each(function (i, obj) {
@@ -7424,7 +7373,6 @@ $(function () {
 
     // Items
     function search(nameKey, myArray, sort_id, is_main_search){
-        let generic_name_search_option = $('input[name="generic_serch_option_checkbox"]:checked').val();
         if(sort_id){
             if(sort_id==1){
                 myArray.sort(function(a, b) {
@@ -7439,16 +7387,14 @@ $(function () {
         }
         let foundResult = new Array();
         let counter = 0;
-       
-        for (let i= 0; i < myArray.length; i++) {
+        for (let i=0; i < myArray.length; i++) {
             let g_name = 'x';
+            
             if(myArray[i].generic_name && is_main_search!=1){
                 g_name = myArray[i].generic_name;
             }
-           
-            if($('.generic_serch_option_checkbox').is(':checked')){
-                g_name = myArray[i].generic_name;
-                if (g_name && g_name.toLowerCase().includes(nameKey.toLowerCase())) {
+            if(sort_id==''){
+                if (myArray[i].item_name.toLowerCase().includes(nameKey.toLowerCase()) || g_name.toLowerCase().includes(nameKey.toLowerCase()) ||  myArray[i].item_code.toLowerCase().includes(nameKey.toLowerCase()) || myArray[i].category_name.toLowerCase().includes(nameKey.toLowerCase())) {
                     foundResult.push(myArray[i]);
                     counter++;
                     if (nameKey && counter == 12) {
@@ -7456,65 +7402,24 @@ $(function () {
                     }
                 }
             }else{
-                if(sort_id==''){
-                    if(generic_name_search_option == 'on'){
-                        if (myArray[i].item_name.toLowerCase().includes(nameKey.toLowerCase()) || g_name.toLowerCase().includes(nameKey.toLowerCase()) ||  myArray[i].item_code.toLowerCase().includes(nameKey.toLowerCase()) || myArray[i].category_name.toLowerCase().includes(nameKey.toLowerCase())) {
-                            foundResult.push(myArray[i]);
-                            counter++;
-                            if (nameKey && counter == 12) {
-                                break;
-                            }
-                        }
-                    }else{
-                        if (myArray[i].item_name.toLowerCase().includes(nameKey.toLowerCase()) ||  myArray[i].item_code.toLowerCase().includes(nameKey.toLowerCase()) || myArray[i].category_name.toLowerCase().includes(nameKey.toLowerCase())) {
-                            foundResult.push(myArray[i]);
-                            counter++;
-                            if (nameKey && counter == 12) {
-                                break;
-                            }
+                if((sort_id==1 || sort_id==2) && myArray[i].total_sale){
+                    if (myArray[i].item_name.toLowerCase().includes(nameKey.toLowerCase()) || g_name.toLowerCase().includes(nameKey.toLowerCase()) ||  myArray[i].item_code.toLowerCase().includes(nameKey.toLowerCase()) || myArray[i].category_name.toLowerCase().includes(nameKey.toLowerCase())) {
+                        foundResult.push(myArray[i]);
+                        counter++;
+                        if (nameKey && counter == 12) {
+                            break;
                         }
                     }
-                }else{
-                    if((sort_id==1 || sort_id==2) && myArray[i].total_sale){
-                        if(generic_name_search_option == 'on'){
-                            if (myArray[i].item_name.toLowerCase().includes(nameKey.toLowerCase()) || g_name.toLowerCase().includes(nameKey.toLowerCase()) ||  myArray[i].item_code.toLowerCase().includes(nameKey.toLowerCase()) || myArray[i].category_name.toLowerCase().includes(nameKey.toLowerCase())) {
-                                foundResult.push(myArray[i]);
-                                counter++;
-                                if (nameKey && counter == 12) {
-                                    break;
-                                }
-                            }
-                        }else{
-                            if (myArray[i].item_name.toLowerCase().includes(nameKey.toLowerCase()) ||  myArray[i].item_code.toLowerCase().includes(nameKey.toLowerCase()) || myArray[i].category_name.toLowerCase().includes(nameKey.toLowerCase())) {
-                                foundResult.push(myArray[i]);
-                                counter++;
-                                if (nameKey && counter == 12) {
-                                    break;
-                                }
-                            }
-                        }
-                        
-                    }else if(sort_id==3 && !myArray[i].total_sale){
-                        if(generic_name_search_option == 'on'){
-                            if (myArray[i].item_name.toLowerCase().includes(nameKey.toLowerCase()) || g_name.toLowerCase().includes(nameKey.toLowerCase()) ||  myArray[i].item_code.toLowerCase().includes(nameKey.toLowerCase()) || myArray[i].category_name.toLowerCase().includes(nameKey.toLowerCase())) {
-                                foundResult.push(myArray[i]);
-                                counter++;
-                                if (nameKey && counter == 12) {
-                                    break;
-                                }
-                            }
-                        }else{
-                            if (myArray[i].item_name.toLowerCase().includes(nameKey.toLowerCase()) ||  myArray[i].item_code.toLowerCase().includes(nameKey.toLowerCase()) || myArray[i].category_name.toLowerCase().includes(nameKey.toLowerCase())) {
-                                foundResult.push(myArray[i]);
-                                counter++;
-                                if (nameKey && counter == 12) {
-                                    break;
-                                }
-                            }
+                }else if(sort_id==3 && !myArray[i].total_sale){
+                    if (myArray[i].item_name.toLowerCase().includes(nameKey.toLowerCase()) || g_name.toLowerCase().includes(nameKey.toLowerCase()) ||  myArray[i].item_code.toLowerCase().includes(nameKey.toLowerCase()) || myArray[i].category_name.toLowerCase().includes(nameKey.toLowerCase())) {
+                        foundResult.push(myArray[i]);
+                        counter++;
+                        if (nameKey && counter == 12) {
+                            break;
                         }
                     }
                 }
-            } 
+            }
             
         }
         return foundResult.sort( function(a, b) {
@@ -7723,6 +7628,7 @@ $(function () {
         // Card Payment info
         let credit_card_no = $("#credit_card_no").val();
         let holder_name = $("#holder_name").val();
+        let card_type = $("#card_type").val();
         let payment_month = $("#payment_month").val();
         let payment_year = $("#payment_year").val();
         let payment_cvc = $("#payment_cvc").val();
@@ -7732,6 +7638,7 @@ $(function () {
             stripePayment({
                 credit_card_no: credit_card_no,
                 holder_name: holder_name,
+                card_type: card_type,
                 payment_month: payment_month,
                 payment_year: payment_year,
                 payment_cvc: payment_cvc,
@@ -7742,6 +7649,7 @@ $(function () {
             paypalPayment({
                 credit_card_no: credit_card_no,
                 holder_name: holder_name,
+                card_type: card_type,
                 payment_month: payment_month,
                 payment_year: payment_year,
                 payment_cvc: payment_cvc,
@@ -7757,6 +7665,10 @@ $(function () {
 
         if (info.holder_name == "") {
             toastr["error"]("Card Holder Name Required", "");
+            return false;
+        }
+        if (info.card_type == "") {
+            toastr["error"]("Card Type Required", "");
             return false;
         }
         if (info.payment_month == "") {
@@ -7827,6 +7739,10 @@ $(function () {
             toastr["error"]("Card Holder Name Required", "");
             return false;
         }
+        if (info.card_type == "") {
+            toastr["error"]("Card Type Required", "");
+            return false;
+        }
         if (info.payment_month == "") {
             toastr["error"]("Payment Month Required", "");
             return false;
@@ -7867,9 +7783,11 @@ $(function () {
     
     // Grocery Experience
     $(document).on('change', '#grocery_experience_el', function(){
-        let grocery_value = $(this).val();
-        if(grocery_value == ''){
-            grocery_value = 'Regular';
+        let grocery_value = $(this).is(':checked');
+        if(grocery_value){
+            grocery_value = 'ON';
+        }else{
+            grocery_value = 'OFF';
         }
         $.ajax({
             type: "POST",
@@ -8004,38 +7922,10 @@ $(function () {
         }
     }
 
+
     $(window).on("load", function () {
       $(".main-preloader").fadeOut(500);
     });
-
-    $(document).on('click', '.btn_video_tutorial', function(){
-        $("#video_tutorial_modal").addClass("active");
-        $(".pos__modal__overlay").fadeIn(200);
-    })
-
-
-    $(document).on('change', '.generic_serch_option_checkbox', function(){
-        let generic_name = $('input[name="generic_serch_option_checkbox"]:checked').val();
-        if(generic_name == 'on'){
-            generic_name = 'Yes';
-            $('#search').attr('placeholder', pharmacy_search_place_holder_pos);
-        }else{
-            generic_name = 'No';
-            $('#search').attr('placeholder', other_search_place_holder_pos);
-        }
-        $.ajax({
-            type: "POST",
-            url: base_url+"Sale/searchByGenericName",
-            data: {
-                generic_name_search_option : generic_name,
-            },
-            success: function (response) {
-                if(response.status == 'success'){
-                    toastr["success"](response.message, "");
-                }
-            }
-        });
-    });
-
+    
 });
 

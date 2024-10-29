@@ -1,6 +1,5 @@
 <?php
 $grocery_experience = $this->session->userdata('grocery_experience');
-$generic_name_search_option = $this->session->userdata('generic_name_search_option');
 $is_collapse = $this->session->userdata('is_collapse');
 $getCompanyInfo = getCompanyInfo();
 $payment_info = getCompanyPaymentMethod();
@@ -15,7 +14,6 @@ $menu_to_show = "";
 $tmp_last_purchase_price = 0;
 foreach($items as $single_menus){
         $brand_name = $single_menus->brand_name ? " - " .  $single_menus->brand_name : '';
-        $supplier_name = $single_menus->supplier_name ? " - " .  $single_menus->supplier_name : '';
         if($single_menus->last_purchase_price){
             $tmp_last_purchase_price = $single_menus->last_purchase_price;
         }else{
@@ -52,7 +50,6 @@ foreach($items as $single_menus){
         // Item Json Create
         $data = array(
             'cat_id' => $single_menus->category_id,
-            'conversion_rate' => $single_menus->conversion_rate,
             'item_id' => $single_menus->id,
             'generic_name' => $single_menus->generic_name,
             'brand_id' => $single_menus->brand_id,
@@ -69,7 +66,6 @@ foreach($items as $single_menus){
             'warranty' => $single_menus->warranty,
             'guarantee' => $single_menus->guarantee,
             'brand_name' => str_replace("'", "", $brand_name ?? ''),
-            'supplier_name' => str_replace("'", "", $supplier_name ?? ''),
             'description' => $single_menus->description,
             'is_promo' => $is_promo,
             'promo_item_name' => $modal_item_name_row,
@@ -79,7 +75,8 @@ foreach($items as $single_menus){
             'promo_get_qty' => $get_qty,
             'promo_description' => $string_text,
             'promo_item_id' => $get_food_menu_id,
-            'parent_id' => $single_menus->parent_id
+            'parent_id' => $single_menus->parent_id,
+            'total_sale' => $single_menus->total_sale
         );
         array_push($itemArr, $data);
         $i++;
@@ -217,7 +214,7 @@ $company_short_name =  $getCompanyInfo->short_name;
         </div></div>
     </div>
 
-    <!-- Hidden Input For JS -->
+    <!-- Hidden Input For JS Language-->
     <input type="hidden" id="base_url" value="<?php echo base_url(); ?>">
     <input type="hidden" id="last_sale_id" value="<?php echo escape_output(getLastSaleId()) ?>">
     <input type="hidden" id="role" value="<?php echo escape_output($this->session->userdata('role')); ?>">
@@ -225,8 +222,6 @@ $company_short_name =  $getCompanyInfo->short_name;
     <input type="hidden" id="csrf_value_" value="<?php echo escape_output($this->security->get_csrf_hash()); ?>">
     <input type="hidden" id="currency" value="<?php echo escape_output($this->session->userdata('currency')); ?>">
     <input type="hidden" id="op_precision" value="<?php echo escape_output($this->session->userdata('precision'))?>">
-    <input type="hidden" id="op_decimals_separator" value="<?php echo escape_output($this->session->userdata('decimals_separator'))?>">
-    <input type="hidden" id="op_thousands_separator" value="<?php echo escape_output($this->session->userdata('thousands_separator'))?>">
     <input type="hidden" id="tax_is_gst" value="<?php echo escape_output($this->session->userdata('tax_is_gst')); ?>">
     <input type="hidden" id="csrf_name_" value="<?php echo escape_output($this->security->get_csrf_token_name()); ?>">
     <input type="hidden" id="collect_tax" value="<?php echo escape_output($this->session->userdata('collect_tax')); ?>">
@@ -237,17 +232,16 @@ $company_short_name =  $getCompanyInfo->short_name;
     <input type="hidden" id="gst_state_code" value="<?php echo escape_output($this->session->userdata('gst_state_code')); ?>">
     <input type="hidden" id="direct_cart" value="<?php echo escape_output($this->session->userdata('direct_cart')); ?>">
     <input type="hidden" id="default_customer" value="<?php echo escape_output($this->session->userdata('default_customer'));?>">
+    <input type="hidden" id="paid_amt" value="<?php echo company();?>">
     <input type="hidden" id="sms_enable_status" value="<?php echo escape_output($getCompanyInfo->sms_enable_status);?>">
     <input type="hidden" id="smtp_enable_status" value="<?php echo escape_output($getCompanyInfo->smtp_enable_status);?>">
     <input type="hidden" id="send_invoice_whatsapp" value="<?php echo escape_output($getCompanyInfo->whatsapp_invoice_enable_status);?>">
     <input type="hidden" id="default_payment_hidden" value="<?php echo escape_output($this->session->userdata('default_payment'));?>">
     <input type="hidden" id="pos_total_payable_type" value="<?php echo escape_output($this->session->userdata('pos_total_payable_type')); ?>">
     <input type="hidden" id="onscreen_keyboard_status" value="<?php echo escape_output($this->session->userdata('onscreen_keyboard_status')); ?>">
-    <input type="hidden" id="view_purchase_price" value="<?php echo escape_output($this->session->userdata('view_purchase_price')); ?>">
     <input type="hidden" id="tax_type" value="<?php echo escape_output($this->session->userdata('tax_type')); ?>">
     <input type="hidden" id="stripe_publish_key" value="<?php echo $payment_info->stripe_publishable_key; ?>">
     <input type="hidden" id="grocery_experience" value="<?php echo escape_output($this->session->userdata('grocery_experience')); ?>">
-    <input type="hidden" id="generic_name_search_option" value="<?php echo escape_output($this->session->userdata('generic_name_search_option')); ?>">
 
     
     <input type="hidden" id="order_object">
@@ -260,8 +254,6 @@ $company_short_name =  $getCompanyInfo->short_name;
     <input type="hidden" id="ok" value="<?php echo lang('ok'); ?>">
     <input type="hidden" id="yes" value="<?php echo lang('yes');?>">
     <input type="hidden" id="dummy_data_delete_alert" value="<?php echo lang('dummy_data_delete_alert');?>">
-    <input type="hidden" id="pharmacy_search_place_holder_pos" value="<?php echo lang('pharmacy_search_place_holder_pos');?>">
-    <input type="hidden" id="other_search_place_holder_pos" value="<?php echo lang('other_search_place_holder_pos');?>">
     <input type="hidden" id="The" value="<?php echo lang('The'); ?>">
     <input type="hidden" id="selected_invoice_sale_customer" value="">
     <input type="hidden" id="alert" value="<?php echo lang('alert'); ?>">
@@ -309,20 +301,10 @@ $company_short_name =  $getCompanyInfo->short_name;
     <input type="hidden" id="are_you_delete_all_hold_sale" value="<?php echo lang('are_you_delete_all_hold_sale'); ?>">
     <input type="hidden" id="loyalty_rate" value="<?php echo escape_output($this->session->userdata('loyalty_rate'))?>">
     <input type="hidden" id="loyalty_point_is_not_available" value="<?php echo lang('loyalty_point_is_not_available'); ?>">
-    <input type="hidden" id="Alternative_Medicine_will_shown_here" value="<?php echo lang('Alternative_Medicine_will_shown_here'); ?>">
     <input type="hidden" id="default_cursor_position" value="<?php echo escape_output($this->session->userdata('default_cursor_position')); ?>">
     <input type="hidden" id="your_added_payment_method_will_remove" value="<?php echo lang('your_added_payment_method_will_remove'); ?>">
     <input type="hidden" id="loyalty_point_not_applicable" value="<?php echo lang('loyalty_point_not_applicable_for_walk_in_customer'); ?>">
-    <input type="hidden" id="copy_db_exp" value="<?php echo lang('copy'); ?>">
-    <input type="hidden" id="print_db_exp" value="<?php echo lang('print'); ?>">
-    <input type="hidden" id="excel_db_exp" value="<?php echo lang('excel'); ?>">
-    <input type="hidden" id="csv_db_exp" value="<?php echo lang('csv'); ?>">
-    <input type="hidden" id="pdf_db_exp" value="<?php echo lang('pdf'); ?>">
-    <input type="hidden" id="pdf_db_exp" value="<?php echo lang('pdf'); ?>">
-
-
-
-
+    <input type="hidden" id="session_uer_id" value="<?php echo escape_output($this->session->userdata('user_id')); ?>">
 
     <!-- Hidden Input For JS End -->
 
@@ -395,7 +377,7 @@ $company_short_name =  $getCompanyInfo->short_name;
                         </li>
                         <li>
                             <a tabindex="-1" href="javascript:void(0)" id="register_details" class="header_menu_icon register_details" data-tippy-content="<?php echo lang('register');?>">
-                            <iconify-icon icon="solar:document-add-broken" width="22"></iconify-icon>
+                            <iconify-icon icon="solar:book-broken" width="22"></iconify-icon>
                             </a>
                         </li>
                         <li>
@@ -439,21 +421,16 @@ $company_short_name =  $getCompanyInfo->short_name;
             <div class="header_part_right">
                 <span class="header-outlet"><?php echo escape_output($this->session->userdata('outlet_name')) ?></span>
                 <ul class="btn__menu">
-                    <?php if (APPLICATION_MODE == 'demo') {?>
-                    <li data-tippy-content="Video Tutorial of Medicine and Grocery Experience">
-                        <a href="javascript:void(0)" class="bg__blue btn_video_tutorial">
-                            <iconify-icon icon="solar:videocamera-broken" width="22"></iconify-icon>
-                        </a>
-                    </li>
-                    <?php } ?>
                     <li>
-                        <div class="switchary_wrap" <?php echo APPLICATION_MODE == 'demo' ? 'data-tippy-content="This button is disabled for demo. to check medicine shop experience please check medicine demo!"' : '' ?>>
-                            <select id="grocery_experience_el" class="select2" <?php echo APPLICATION_MODE == 'demo' ? 'disabled' : '' ?>>
-                                <option value=""><?php echo lang('POS_Experience');?></option>
-                                <option value="Regular" <?php echo $grocery_experience == 'Regular' ? 'selected' : ''?>><?php echo lang('Regular');?></option>
-                                <option value="Medicine" <?php echo $grocery_experience == 'Medicine' ? 'selected' : ''?>><?php echo lang('Medicine');?></option>
-                                <option value="Grocery" <?php echo $grocery_experience == 'Grocery' ? 'selected' : ''?>><?php echo lang('Grocery');?></option>
-                            </select>
+                        <div class="switchary_wrap">
+                            <input id="grocery_experience_el" type="checkbox" class="checkbox" <?php echo $grocery_experience == 'ON' ? 'checked' : '' ?>/>
+                            <label for="grocery_experience_el" class="switch" data-tippy-content="<?php echo lang('grocery_guide');?>">
+                                <span class="switch__circle">
+                                <span class="switch__circle-inner"></span>
+                                </span>
+                                <span class="switch__left">Off</span>
+                                <span class="switch__right">On</span>
+                            </label>
                         </div>
                     </li>
                     <li>
@@ -463,6 +440,7 @@ $company_short_name =  $getCompanyInfo->short_name;
                         <a tabindex="-1" href="javascript:void(0)" class="show__brand__list bg__blue off-pos-open-dropdown-menu"><?php echo lang('brand');?></a>
                         <div class="submenu-wrapper">
                             <ul class="sub__menu brand__sub__menu">
+                                
                                 <li>
                                     <a tabindex="-1" href="javascript:void(0)" data-id="" class="category_button button_category_show_all brand_all_category"><?php echo lang('all');?></a>
                                 </li>
@@ -529,8 +507,7 @@ $company_short_name =  $getCompanyInfo->short_name;
 
 
         <!-- Start Main Mart -->
-        <!-- <div id="main_part" class="<?php echo $grocery_experience == 'ON' ? 'grocery_main_part_on' : 'grocery_main_part_off' ?> <?php echo APPLICATION_DEMO_TYPE != 'Pharmacy' ? 'main_part_pharmacy' : ''?>"> -->
-        <div id="main_part" class="<?php echo $grocery_experience == 'Medicine' ? 'grocery_main_part_on' : ($grocery_experience == 'Grocery' ? 'grocery_main_part_on main_part_pharmacy' : ($grocery_experience == 'Regular' ? 'grocery_main_part_off main_part_pharmacy' : ''));?>">
+        <div id="main_part" class="<?php echo $grocery_experience == 'ON' ? 'grocery_main_part_on' : 'grocery_main_part_off' ?>">
             <div class="main_middle">
                 <div class="main_top">
                     <div class="waiter_customer">
@@ -825,14 +802,6 @@ $company_short_name =  $getCompanyInfo->short_name;
                             <i class="fas fa-search"></i>
                             <input class="op_dim_placeholder" type="text" autocomplete="off" name="search" id="search" autofocus placeholder="<?php echo lang('Name_or_Code_or_Category'); ?>" onfocus="this.select();">
                         </div>
-                        <div class="generic_serch_option_area">
-                            <div data-tippy-content="Keep Selected to Search By Genericname">
-                                <label class="container op_color_dim_grey">
-                                    <input class="generic_serch_option_checkbox" type="checkbox" name="generic_serch_option_checkbox" <?php echo $generic_name_search_option == 'Yes' ? 'checked' : ''?>>
-                                    <span class="checkmark"></span>
-                                </label>
-                            </div>
-                        </div>
                         <div>
                             <i class="fas fa-barcode"></i>
                             <input type="text" autocomplete="off" name="search" class="search_barcode_p" id="search_barcode" placeholder="<?php echo lang('barcode'); ?>" onfocus="this.select();">
@@ -840,7 +809,7 @@ $company_short_name =  $getCompanyInfo->short_name;
                     </div>
                 </div>
                 <div class="op_position_relative" id="main_item_holder">
-                    <?php if($grocery_experience == 'Regular') { ?>
+                    <?php if($grocery_experience == 'OFF') { ?>
                     <div class="slimScrollDivCategory">
                         <button class="category_button op_margin_bottom_5 op_box_shadow op_mb_10 element element-2 button_category_show_all button_category_show_all_left category_active_design" data-id=""><?php echo lang('All'); ?></button>
                         <?php
@@ -871,11 +840,10 @@ $company_short_name =  $getCompanyInfo->short_name;
                     </div>
                 </div>
             </div>
-            <?php if($grocery_experience == 'Medicine'){ ?>
+            <?php if($grocery_experience == 'ON'){ ?>
             <div id="main_left">
-                <h6 class="alternatives-header"><?php echo lang('Alternatives');?></h6>
                 <div id="alternative_item_render">
-                    <h6><?php echo lang('Alternative_Medicine_will_shown_here');?> <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>
+                    <h6>Generic Medicine will shown here <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>
                 </div>
             </div>
             <?php } ?>
@@ -883,27 +851,11 @@ $company_short_name =  $getCompanyInfo->short_name;
         <!-- End Main Mart -->
     </div>
     <!-- End Header Wrap -->
-
-    <!-- Start Add Item Modal -->
-    <div id="video_tutorial_modal" class="modal">
-        <div class="modal-content">
-            <h1 class="main_header">
-                <?php echo lang('video_tutorial_of_medicine_grocery_experience'); ?>
-                <a href="javascript:void(0)" class="alertCloseIcon close_item_modal">
-                    <i data-feather="x"></i>
-                </a>
-            </h1>
-            <div class="modal-body">
-                <!-- How to work for medicine -->
-                <iframe width="100%" height="500px" src="https://www.youtube.com/embed/RAFGa26p85Y?si=uxPVJgFso9fZCI8R" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-            </div>
-        </div>
-    </div>
-    <!-- End Add Item Modal -->
-
-
     <!-- Start Add Item Modal -->
     <div id="item_modal" class="modal">
+
+
+    
         <div class="modal-content" id="add_to_cart_item_modal_content">
             <h1 class="modal-header-custom main_header">
                 <span id="edit_item_modal_header">&nbsp;</span>
@@ -1770,20 +1722,6 @@ $company_short_name =  $getCompanyInfo->short_name;
                             <?php endforeach;?>
                             <li class=""> <a  id="change_currency_btn" class="change_currency_btn" href="javascript:void(0)"><?php echo lang('change_currency'); ?></a> </li>
                     </ul>
-                    <!-- <ul id="list">
-                        <li class="trigger active">
-                            <a href="javascript:void(0)">A</a>
-                        </li>
-                        <li class="trigger">
-                            <a href="javascript:void(0)">B</a>
-                        </li>
-                        <li class="trigger">
-                            <a href="javascript:void(0)">C</a>
-                        </li>
-                        <li class="trigger">
-                            <a href="javascript:void(0)">A</a>
-                        </li>
-                    </ul> -->
                     <input type="hidden" id="account_type" name="account_type">
                 </div>
                 <div class="payment_content_wrap finalize-p-inactive">
@@ -1831,11 +1769,11 @@ $company_short_name =  $getCompanyInfo->short_name;
                                 </div>
                                 <div class="input-field cash_div">
                                     <label class="label set_no_access"><?php echo lang('change_amount'); ?></label>
-                                    <input tabindex="-1" type="text" placeholder="<?php echo lang('change_amount'); ?>" onfocus="select();" class="add_customer_modal_input set_no_access" id="finalize_change_amount_input">
+                                    <input type="text" placeholder="<?php echo lang('change_amount'); ?>" onfocus="select();" class="add_customer_modal_input set_no_access" id="finalize_change_amount_input">
                                 </div>
                                 <div class="input-field easy-get">
                                     <label class="label set_no_access amount_txt"><?php echo lang('amount'); ?></label>
-                                    <input tabindex="-1" type="text" placeholder="<?php echo lang('amount'); ?>" class="add_customer_modal_input set_no_access easy-put" id="finalize_amount_input">
+                                    <input type="text" placeholder="<?php echo lang('amount'); ?>" class="add_customer_modal_input set_no_access easy-put" id="finalize_amount_input">
                                 </div>
                                 <div class="btns">
                                     <button class="add-btn start_animation set_no_access" id="add_payment"><b><?php echo lang('add'); ?></b></button>
@@ -1985,7 +1923,7 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </li>
                 <li class="mobile_menu_click_for_hide">
                     <a href="javascript:void(0)" class="register_details">
-                        <iconify-icon icon="solar:document-add-broken" width="18"></iconify-icon>
+                        <iconify-icon icon="solar:book-broken" width="18"></iconify-icon>
                         <?php echo lang('register');?>
                     </a>
                 </li>
@@ -2444,49 +2382,49 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </a>
                 <div class="triangle"></div>
                 <ul class="sub__menu__list">
-                    <li class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Service/addEditCompany">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_company'); ?>
                         </a>
                     </li>
-                    <li class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Service/companies">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_company'); ?>
                         </a>
                     </li>
-                    <li class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Service/addManualPayment">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_manual_payment'); ?>
                         </a>
                     </li>
-                    <li class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Service/paymentHistory">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_manual_payment'); ?>
                         </a>
                     </li>
-                    <li class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Service/addPricingPlan">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_pricing_plan'); ?>
                         </a>
                     </li>
-                    <li class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Service/pricingPlans">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_pricing_plan'); ?>
                         </a>
                     </li>
-                    <li class="menu_assign_class <?= getWhiteLabelStatus() == 1 ?  'd-block' : 'd-none'?>" >
+                    <li data-access="add-244" class="menu_assign_class <?= getWhiteLabelStatus() == 1 ?  'd-block' : 'd-none'?>" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>WhiteLabel/index">
                             <iconify-icon icon="solar:sledgehammer-broken" width="18"></iconify-icon>
                             <?php echo lang('white_label'); ?>
                         </a>
                     </li>
-                    <li class="menu_assign_class <?= getWhiteLabelStatus() == 1 ?  'd-block' : 'd-none'?>" >
+                    <li data-access="add-244" class="menu_assign_class <?= getWhiteLabelStatus() == 1 ?  'd-block' : 'd-none'?>" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Authentication/logingPage">
                             <iconify-icon icon="solar:shield-keyhole-minimalistic-broken" width="18"></iconify-icon>
                             <?php echo lang('login_page'); ?>
@@ -2504,13 +2442,13 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </a>
                 <div class="triangle"></div>
                 <ul class="sub__menu__list">
-                    <li data-access="add-25" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Outlet/addEditOutlet">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_outlet'); ?>
                         </a>
                     </li>
-                    <li data-access="list-25" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Outlet/outlets">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_outlet'); ?>
@@ -2526,61 +2464,61 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </a>
                 <div class="triangle"></div>
                 <ul class="sub__menu__list">
-                    <li data-access="pos-138" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Sale/POS">
                             <iconify-icon icon="solar:cart-large-broken" width="15"></iconify-icon>
                             <?php echo lang('pos_screen'); ?>
                         </a>
                     </li>
-                    <li data-access="list-138" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Sale/sales">
                              <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_sale'); ?>
                         </a>
                     </li>
-                    <li data-access="add-147" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Customer/addEditCustomer">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_customer'); ?>
                         </a>
                     </li>
-                    <li data-access="list-147" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Customer/customers">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_customer'); ?>
                         </a>
                     </li>
-                    <li data-access="add-154" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Group/addEditGroup">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_customer_group'); ?>
                         </a>
                     </li>
-                    <li data-access="list-154" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Group/groups">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_customer_group'); ?>
                         </a>
                     </li>
-                    <li data-access="add-133" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Promotion/addEditPromotion">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_promotion'); ?>
                         </a>
                     </li>
-                    <li data-access="list-133" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Promotion/promotions">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_promotion'); ?>
                         </a>
                     </li>
-                    <li data-access="add-159" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Delivery_partner/addEditPartner">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_delivery_partner'); ?>
                         </a>
                     </li>
-                    <li data-access="list-159" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Delivery_partner/listPartner">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_delivery_partner'); ?>
@@ -2596,80 +2534,78 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </a>
                 <div class="triangle"></div>
                 <ul class="sub__menu__list">
-                    <li data-access="add-49" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Item/addEditItem">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_item'); ?>
                         </a>
                     </li>
-                    <li data-access="list-49" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Item/items">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_item'); ?>
                         </a>
                     </li>
-                    <li data-access="list-49" class="menu_assign_class" >
-                        <a href="<?php echo base_url()?>Item/bulkItemUpdate">
-                            <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
-                            <?php echo lang('bulk_item_update'); ?>
-                        </a>
-                    </li>
-                    <li data-access="add-60" class="menu_assign_class" >
-                        <a href="<?php echo base_url()?>Category/addEditItemCategory">
-                            <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
-                            <?php echo lang('add_item_category'); ?>
-                        </a>
-                    </li>
-                    <li data-access="list-60" class="menu_assign_class" >
-                        <a href="<?php echo base_url()?>Category/itemCategories">
-                            <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
-                            <?php echo lang('list_item_category'); ?>
-                        </a>
-                    </li>
-                    <li data-access="add-304" class="menu_assign_class" >
+
+
+
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Rack/addEditRack">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_rack'); ?>
                         </a>
                     </li>
-                    <li data-access="list-304" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Rack/addEditRack">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_rack'); ?>
                         </a>
                     </li>
-                    
-                    <li data-access="add-65" class="menu_assign_class" >
+
+
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
+                        <a href="<?php echo base_url()?>Category/addEditItemCategory">
+                            <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
+                            <?php echo lang('add_item_category'); ?>
+                        </a>
+                    </li>
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
+                        <a href="<?php echo base_url()?>Category/itemCategories">
+                            <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
+                            <?php echo lang('list_item_category'); ?>
+                        </a>
+                    </li>
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Unit/addEditUnit">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_unit'); ?>
                         </a>
                     </li>
-                    <li data-access="list-65" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Unit/units">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_unit'); ?>
                         </a>
                     </li>
-                    <li data-access="add-70" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Variation/addEditVariation">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_variation'); ?>
                         </a>
                     </li>
-                    <li data-access="list-70" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Variation/variations">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_variation_attribute'); ?>
                         </a>
                     </li>
-                    <li data-access="add-297" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Brand/addEditBrand">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_brand'); ?>
                         </a>
                     </li>
-                    <li data-access="list-297" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Brand/brands">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_brand'); ?>
@@ -2677,13 +2613,14 @@ $company_short_name =  $getCompanyInfo->short_name;
                     </li>
                 </ul>
             </li>
-            <li data-access="view-30" class="have_sub_menu2 menu_assign_class">
+
+            <li class="have_sub_menu2">
                 <a href="<?php echo base_url(); ?>Dashboard/dashboard">
                     <iconify-icon icon="solar:chart-2-broken" width="30"></iconify-icon>
                     <span>&nbsp;<?php echo lang('dashboard'); ?></span>
                 </a>
             </li>
-            <li data-access="view-164" class="have_sub_menu2">
+            <li class="have_sub_menu2">
                 <a href="<?php echo base_url(); ?>Stock/stock">
                     <iconify-icon icon="solar:database-broken" width="30"></iconify-icon>
                     <span>
@@ -2699,25 +2636,25 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </a>
                 <div class="triangle"></div>
                 <ul class="sub__menu__list">
-                    <li data-access="add-109" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Purchase/addEditPurchase">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_purchase'); ?>
                         </a>
                     </li>
-                    <li data-access="list-109" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Purchase/purchases">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_purchase'); ?>
                         </a>
                     </li>
-                    <li data-access="add-117" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Supplier/addEditSupplier">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_supplier'); ?>
                         </a>
                     </li>
-                    <li data-access="list-117" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Supplier/suppliers">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_supplier'); ?>
@@ -2733,13 +2670,13 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </a>
                 <div class="triangle"></div>
                 <ul class="sub__menu__list">
-                    <li data-access="add-198" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Customer_due_receive/addCustomerDueReceive">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_customer_due_receive'); ?>
                         </a>
                     </li>
-                    <li data-access="list-198" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Customer_due_receive/customerDueReceives">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_customer_due_receive'); ?>
@@ -2755,13 +2692,13 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </a>
                 <div class="triangle"></div>
                 <ul class="sub__menu__list">
-                    <li data-access="add-192" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>SupplierPayment/addSupplierPayment">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_supplier_payment'); ?>
                         </a>
                     </li>
-                    <li data-access="list-192" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>SupplierPayment/supplierPayments">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_supplier_payment'); ?>
@@ -2777,43 +2714,43 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </a>
                 <div class="triangle"></div>
                 <ul class="sub__menu__list">
-                    <li data-access="add-218" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>PaymentMethod/addEditPaymentMethod">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_account'); ?>
                         </a>
                     </li>
-                    <li data-access="list-218" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>PaymentMethod/paymentMethods">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_account'); ?>
                         </a>
                     </li>
-                    <li data-access="add-223" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Deposit/addEditDeposit">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_deposit_or_withdraw'); ?>
                         </a>
                     </li>
-                    <li data-access="list-223" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Deposit/deposits">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_deposit_or_withdraw'); ?>
                         </a>
                     </li>
-                    <li data-access="list-228" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Accounting/balanceStatement">
                             <iconify-icon icon="solar:notebook-broken" width="18"></iconify-icon>
                             <?php echo lang('Balance_Statement'); ?>
                         </a>
                     </li>
-                    <li data-access="list-230" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Accounting/trialBalance">
                             <iconify-icon icon="solar:book-2-broken" width="18"></iconify-icon>
                             <?php echo lang('Trial_Balance'); ?>
                         </a>
                     </li>
-                    <li data-access="list-232" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Accounting/balanceSheet">
                             <iconify-icon icon="solar:notebook-bookmark-broken" width="18"></iconify-icon>
                             <?php echo lang('Balance_Sheet'); ?>
@@ -2828,13 +2765,13 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </a>
                 <div class="triangle"></div>
                 <ul class="sub__menu__list">
-                    <li data-access="add-234" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Attendance/addEditAttendance">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_attendance'); ?>
                         </a>
                     </li>
-                    <li data-access="list-234" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Attendance/attendances">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_attendance'); ?>
@@ -2850,104 +2787,98 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </a>
                 <div class="triangle"></div>
                 <ul class="sub__menu__list">
-                    <li data-access="register_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/registerReport">
                             <iconify-icon icon="solar:book-broken" width="18"></iconify-icon>
                             <?php echo lang('register_report'); ?>
                         </a>
                     </li>
-                    <li data-access="zReport-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/zReport">
                             <iconify-icon icon="solar:bookmark-square-minimalistic-broken" width="18"></iconify-icon>
                             <?php echo lang('z_report'); ?>
                         </a>
                     </li>
-                    <li data-access="daily_summary_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/dailySummaryReport">
                             <iconify-icon icon="solar:clipboard-list-broken" width="18"></iconify-icon>
                             <?php echo lang('daily_summary_report'); ?>
                         </a>
                     </li>
-                    <li data-access="sale_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/saleReport">
                             <iconify-icon icon="solar:cart-check-broken" width="18"></iconify-icon>
                             <?php echo lang('sale_report'); ?>
                         </a>
                     </li>
-                    <li data-access="service_sale_report-249"  class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/serviceSaleReport">
                             <iconify-icon icon="solar:hand-stars-broken" width="18"></iconify-icon>
                             <?php echo lang('service_sale_report'); ?>
                         </a>
                     </li>
-                    <li data-access="service_sale_report-249"  class="menu_assign_class">
-                        <a href="<?php echo base_url(); ?>Report/comboServiceReport">
-                            <iconify-icon icon="solar:hand-stars-broken" width="18"></iconify-icon>
-                            <?php echo lang('combo_service_report'); ?>
-                        </a>
-                    </li>
-                    <li data-access="stock_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/stockReport">
                             <iconify-icon icon="solar:atom-broken" width="18"></iconify-icon>
                             <?php echo lang('stock_report'); ?>
                         </a>
                     </li>
-                    <li data-access="employee_sale_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/employeeSaleReport">
                             <iconify-icon icon="solar:users-group-two-rounded-broken" width="18"></iconify-icon>
                             <?php echo lang('employee_sale_report'); ?>
                         </a>
                     </li>
-                    <li data-access="customer_receive_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/customerDueReceiveReport">
                             <iconify-icon icon="solar:users-group-two-rounded-broken" width="18"></iconify-icon>
                             <?php echo lang('customer_due_receive_report'); ?>
                         </a>
                     </li>
-                    <li data-access="attendance_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/attendanceReport">
                             <iconify-icon icon="solar:clock-square-broken" width="18"></iconify-icon>
                             <?php echo lang('attendance_report'); ?>
                         </a>
                     </li>
-                    <li data-access="product_profit_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/productProfitReport">
                             <iconify-icon icon="solar:dollar-broken" width="18"></iconify-icon>
                             <?php echo lang('productProfitReport'); ?>
                         </a>
                     </li>
-                    <li data-access="supplier_ledger-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Company_report/supplierLedgerReport">
                             <iconify-icon icon="solar:users-group-two-rounded-broken" width="18"></iconify-icon>
                             <?php echo lang('supplier_ledger'); ?>
                         </a>
                     </li>
-                    <li data-access="supplier_balance_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Company_report/supplierDueReport">
                             <iconify-icon icon="solar:banknote-broken" width="18"></iconify-icon>
                             <?php echo lang('supplier_balance_report'); ?>
                         </a>
                     </li>
 
-                    <li data-access="customer_ledger-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Company_report/customerLedgerReport">
                             <iconify-icon icon="solar:users-group-two-rounded-broken" width="18"></iconify-icon>
                             <?php echo lang('customer_ledger'); ?>
                         </a>
                     </li>
-                    <li data-access="customer_balance_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Company_report/customerBalanceReport">
                             <iconify-icon icon="solar:banknote-broken" width="18"></iconify-icon>
                             <?php echo lang('customer_balance_report'); ?>
                         </a>
                     </li>
-                    <li data-access="servicing_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/servicingReport">
                             <iconify-icon icon="solar:sunrise-broken" width="18"></iconify-icon>
                             <?php echo lang('servicing_report'); ?>
                         </a>
                     </li>
-                    <li data-access="product_sale_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/productSaleReport">
                             <iconify-icon icon="solar:list-heart-broken" width="18"></iconify-icon>
                             <?php echo lang('productSaleReport'); ?>
@@ -2959,118 +2890,118 @@ $company_short_name =  $getCompanyInfo->short_name;
                     $collect_tax = $this->session->userdata('collect_tax');
                     if($collect_tax=="Yes"){
                     ?>
-                    <li data-access="tax_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/taxReport">
                             <iconify-icon icon="solar:target-broken" width="18"></iconify-icon>
                             <?php echo lang('tax'); ?> <?php echo lang('report'); ?>
                         </a>
                     </li>
                     <?php } ?>
-                    <li data-access="detailed_sale_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/detailedSaleReport">
                             <iconify-icon icon="solar:cart-check-broken" width="18"></iconify-icon>
                             <?php echo lang('detailed_sale_report'); ?>
                         </a>
                     </li>
                    
-                    <li data-access="low_stock_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Stock/getStockAlertList">
                             <iconify-icon icon="solar:database-broken" width="18"></iconify-icon>
                             <?php echo lang('low_stock_report'); ?>
                         </a>
                     </li>
-                    <li data-access="profit_loss_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/profitLossReport">
                             <iconify-icon icon="solar:money-bag-broken" width="18"></iconify-icon>
                             <?php echo lang('profit_loss_report'); ?>
                         </a>
                     </li>
-                    <li data-access="purchase_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/purchaseReportByDate">
                             <iconify-icon icon="solar:archive-broken" width="18"></iconify-icon>
                             <?php echo lang('purchase_report'); ?>
                         </a>
                     </li>
-                    <li data-access="product_purchase_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/productPurchaseReport">
                             <iconify-icon icon="solar:archive-broken" width="18"></iconify-icon>
                             <?php echo lang('productPurchaseReport'); ?>
                         </a>
                     </li>
-                    <li data-access="expense_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/expenseReport">
                             <iconify-icon icon="solar:rewind-forward-broken" width="18"></iconify-icon>
                             <?php echo lang('expense_report'); ?>
                         </a>
                     </li>
-                    <li data-access="income_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/incomeReport">
                             <iconify-icon icon="solar:rewind-back-broken" width="18"></iconify-icon>
                             <?php echo lang('income_report'); ?>
                         </a>
                     </li>
-                    <li data-access="salary_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/salaryReport">
                             <iconify-icon icon="solar:transmission-broken" width="18"></iconify-icon>
                             <?php echo lang('salary_report'); ?>
                         </a>
                     </li>
-                    <li data-access="purchase_return_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/purchaseReturnReport">
                             <iconify-icon icon="solar:multiple-forward-right-broken" width="18"></iconify-icon>
                             <?php echo lang('purchase_return_report'); ?>
                         </a>
                     </li>
-                    <li data-access="sale_return_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/saleReturnReport">
                             <iconify-icon icon="solar:multiple-forward-left-broken" width="18"></iconify-icon>
                             <?php echo lang('sale_return_report'); ?>
                         </a>
                     </li>
-                    <li data-access="damage_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/damageReport">
                             <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="18"></iconify-icon>
                             <?php echo lang('damage_report'); ?>
                         </a>
                     </li>
-                    <li data-access="installment_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/installmentReport">
                             <iconify-icon icon="solar:layers-broken" width="18"></iconify-icon>
                             <?php echo lang('Installment Report'); ?>
                         </a>
                     </li>
-                    <li data-access="installment_due_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/installmentDueReport">
                             <iconify-icon icon="solar:layers-broken" width="18"></iconify-icon>
                             <?php echo lang('installmentDueReport'); ?>
                         </a>
                     </li>
-                    <li data-access="item_tracing_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/itemMoving">
                             <iconify-icon icon="solar:list-heart-broken" width="18"></iconify-icon>
                             <?php echo lang('item_moving_report'); ?>
                         </a>
                     </li>
-                    <li data-access="price_history_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/priceHistory">
                             <iconify-icon icon="solar:chat-round-money-broken" width="18"></iconify-icon>
                             <?php echo lang('price_history'); ?> <?php echo lang('report'); ?>
                         </a>
                     </li>
-                    <li data-access="cash_flow_report-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Company_report/cashFlowReport">
                             <iconify-icon icon="solar:hand-money-broken" width="18"></iconify-icon>
                             <?php echo lang('cash_flow'); ?> <?php echo lang('report'); ?>
                         </a>
                     </li>
 
-                    <li data-access="available_loyalty_point-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/availableLoyaltyPointReport">
                             <iconify-icon icon="solar:diploma-broken" width="18"></iconify-icon>
                             <?php echo lang('available_loyalty_point_report'); ?>
                         </a>
                     </li>
-                    <li data-access="usage_loyalty_point-249" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/usageLoyaltyPointReport">
                             <iconify-icon icon="solar:diploma-verified-broken" width="18"></iconify-icon>
                             <?php echo lang('usage_loyalty_point_report'); ?>
@@ -3086,25 +3017,25 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </a>
                 <div class="triangle"></div>
                 <ul class="sub__menu__list">
-                    <li data-access="add-172" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Expense/addEditExpense">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_expense'); ?>
                         </a>
                     </li>
-                    <li data-access="list-172" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Expense/expenses">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_expense'); ?>
                         </a>
                     </li>
-                    <li data-access="add-177" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>ExpenseItem/addEditExpenseItem">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_expense_item'); ?>
                         </a>
                     </li>
-                    <li data-access="list-177" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>ExpenseItem/expenseItems">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_expense_item'); ?>
@@ -3119,25 +3050,25 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </a>
                 <div class="triangle"></div>
                 <ul class="sub__menu__list">
-                    <li data-access="add-182" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Income/addEditIncome">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_income'); ?>
                         </a>
                     </li>
-                    <li data-access="list-182" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Income/incomes">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_income'); ?>
                         </a>
                     </li>
-                    <li data-access="add-187" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>IncomeItem/addEditIncomeItem">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_income_item'); ?>
                         </a>
                     </li>
-                    <li data-access="list-187" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>IncomeItem/incomeItems">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_income_item'); ?>
@@ -3154,13 +3085,13 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </a>
                 <div class="triangle"></div>
                 <ul class="sub__menu__list">
-                    <li data-access="add-204" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Sale_return/addEditSaleReturn">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_edit_sale_return'); ?>
                         </a>
                     </li>
-                    <li data-access="list-204" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Sale_return/saleReturns">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_sale_return'); ?>
@@ -3175,13 +3106,13 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </a>
                 <div class="triangle"></div>
                 <ul class="sub__menu__list">
-                    <li data-access="add-211" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Purchase_return/addEditPurchaseReturn">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_purchase_ruturn'); ?>
                         </a>
                     </li>
-                    <li data-access="list-211" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Purchase_return/purchaseReturns">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_purchase_ruturn'); ?>
@@ -3202,81 +3133,81 @@ $company_short_name =  $getCompanyInfo->short_name;
                     $user_id = $this->session->userdata('user_id');
                     $company_id = $this->session->userdata('company_id');
                     if(isServiceAccess2($user_id, $company_id, 'sGmsJaFJE') == 'Saas Company'){ ?>
-                    <li data-access="edit-1" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Service/planDetails">
                         <iconify-icon icon="solar:chart-square-broken" width="18">
                             <?php echo lang('plan_details'); ?>
                         </a>
                     </li>
                     <?php } ?>
-                    <li data-access="edit-1" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Setting/index">
                             <iconify-icon icon="solar:settings-broken" width="18"></iconify-icon>
                             <?php echo lang('setting'); ?>
                         </a>
                     </li>
-                    <li data-access="whatsappSetting-327" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Setting/whatsappSetting">
                             <iconify-icon icon="solar:settings-minimalistic-broken" width="18"></iconify-icon>
                             <?php echo lang('whatsapp_setting'); ?>
                         </a>
                     </li>
-                    <li data-access="add-3" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Denomination/addEditDenomination">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_denomination'); ?>
                         </a>
                     </li>
-                    <li data-access="list-3" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Denomination/denominations">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_denominations'); ?>
                         </a>
                     </li>
-                    <li data-access="add-340" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Counter/addEditCounter">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_counter'); ?>
                         </a>
                     </li>
-                    <li data-access="list-340" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Counter/counters">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_counter'); ?>
                         </a>
                     </li>
-                    <li data-access="edit-8" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Tax_setting/tax">
                             <iconify-icon icon="solar:target-broken" width="18"></iconify-icon>
                             <?php echo lang('Tax_Setting'); ?>
                         </a>
                     </li>
-                    <li data-access="edit-10" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Email_setting/emailConfiguration">
                             <iconify-icon icon="solar:letter-unread-broken" width="18"></iconify-icon>
                             <?php echo lang('Email_Setting'); ?>
                         </a>
                     </li>
-                    <li data-access="edit-12" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Short_message_service/smsService">
                             <iconify-icon icon="solar:letter-opened-broken" width="18"></iconify-icon>
                             <?php echo lang('sms_settings'); ?>
                         </a>
                     </li>
-                    <li data-access="edit-14" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Printer/printerSetup">
                             <iconify-icon icon="solar:printer-broken" width="18"></iconify-icon>
                             <?php echo lang('printer_setup'); ?>
                         </a>
                     </li>
                     <?php if(!isServiceAccess('','','sGmsJaFJE')){ ?>
-                    <li data-access="edit-23" class="menu_assign_class <?= getWhiteLabelStatus() == 1 ?  'd-block' : 'd-none'?>" >
+                    <li data-access="add-244" class="menu_assign_class <?= getWhiteLabelStatus() == 1 ?  'd-block' : 'd-none'?>" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>WhiteLabel/index">
                             <iconify-icon icon="solar:sledgehammer-broken" width="18"></iconify-icon>
                             <?php echo lang('white_label'); ?>
                         </a>
                     </li>
-                    <li data-access="edit-23" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Authentication/logingPage">
                             <iconify-icon icon="solar:sledgehammer-broken" width="18"></iconify-icon>
                             <?php echo lang('login_page'); ?>
@@ -3284,44 +3215,44 @@ $company_short_name =  $getCompanyInfo->short_name;
                     </li>
                     <?php } ?>
 
-                    <li data-access="edit-335" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Payment_getway/paymentGetway">
                             <iconify-icon icon="solar:password-broken" width="18"></iconify-icon>
                             <?php echo lang('payment_getway'); ?>
                         </a>
                     </li>
-                    <li data-access="add-311" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>MultipleCurrency/addEditMultipleCurrency">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_multiple_currency'); ?>
                         </a>
                     </li>
-                    <li data-access="list-311" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>MultipleCurrency/multipleCurrencies">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_multiple_currency'); ?>
                         </a>
                     </li>
-                    <li data-access="add_dummy_data-325" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a class="add_dummy_data" href="<?php echo base_url()?>Setting/add_dummy_data">
                             <iconify-icon icon="solar:import-broken" width="18"></iconify-icon>
                             <?php echo lang('add_dummy_data'); ?>
                         </a>
                     </li>
 
-                    <li data-access="deleteDummyData-329" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a class="delete" href="<?php echo base_url()?>Setting/deleteDummyData">
                             <iconify-icon icon="solar:trash-bin-2-broken" width="18"></iconify-icon>
                             <?php echo lang('delete_dummy_data'); ?>
                         </a>
                     </li>
-                    <li data-access="wipeTransactionalData-331" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a class="delete" href="<?php echo base_url()?>Setting/wipeTransactionalData">
                             <iconify-icon icon="solar:transfer-horizontal-broken" width="18"></iconify-icon>
                             <?php echo lang('wipe_transactional_data'); ?>
                         </a>
                     </li>
-                    <li data-access="wipeAllData-333" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a class="delete" href="<?php echo base_url()?>Setting/wipeAllData">
                             <iconify-icon icon="solar:translation-broken" width="18"></iconify-icon>
                             <?php echo lang('wipe_all_data'); ?>
@@ -3338,43 +3269,43 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </a>
                 <div class="triangle"></div>
                 <ul class="sub__menu__list">
-                    <li data-access="add-282" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Role/addEditRole">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_role'); ?>
                         </a>
                     </li>
-                    <li data-access="list-282" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Role/listRole">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_role'); ?>
                         </a>
                     </li>
-                    <li data-access="add-287" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>User/addEditUser">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_employee'); ?>
                         </a>
                     </li>
-                    <li data-access="list-287" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>User/users">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_employee'); ?>
                         </a>
                     </li>
-                    <li data-access="add-287" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>User/changeProfile">
                             <iconify-icon icon="solar:user-check-broken" width="18"></iconify-icon>
                             <?php echo lang('change_profile'); ?>
                         </a>
                     </li>
-                    <li data-access="add-287" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>User/changePassword">
                             <iconify-icon icon="solar:key-broken" width="18"></iconify-icon>
                             <?php echo lang('change_password'); ?>
                         </a>
                     </li>
-                    <li data-access="add-287" class="menu_assign_class">
+                    <li class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>User/securityQuestion">
                             <iconify-icon icon="solar:question-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('SetSecurityQuestion'); ?>
@@ -3390,37 +3321,37 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </a>
                 <div class="triangle"></div>
                 <ul class="sub__menu__list">
-                    <li data-access="add-93" data-access="add-244" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Installment/addEditCustomer">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_installment_customer'); ?>
                         </a>
                     </li>
-                    <li data-access="list-93" data-access="add-244" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Installment/customers">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_installment_customer'); ?>
                         </a>
                     </li>
-                    <li data-access="add-100" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Installment/addEditInstallmentSale">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_installment_sale'); ?>
                         </a>
                     </li>
-                    <li data-access="list-100" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Installment/installmentSales">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_installment_sale'); ?>
                         </a>
                     </li>
-                    <li data-access="installment_collection-100" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Installment/installmentCollections">
                             <iconify-icon icon="solar:copyright-broken" width="18"></iconify-icon>
                             <?php echo lang('installment_collection'); ?>
                         </a>
                     </li>
-                    <li data-access="due_installment-100" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Installment/listDueInstallment">
                             <iconify-icon icon="solar:sale-broken" width="18"></iconify-icon>
                             <?php echo lang('list_due_installment'); ?>
@@ -3436,32 +3367,32 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </a>
                 <div class="triangle"></div>
                 <ul class="sub__menu__list">
-                    <li data-access="add-75" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Servicing/addEditServicing">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_servicing'); ?>
                         </a>
                     </li>
-                    <li data-access="list-75" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Servicing/listServicing">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_servicing'); ?>
                         </a>
                     </li>
 
-                    <li data-access="filter-85" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Warranty/checkWarranty">
                             <iconify-icon icon="solar:card-search-broken" width="18"></iconify-icon>
                             <?php echo lang('warranty_checking'); ?>
                         </a>
                     </li>
-                    <li data-access="add-80" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>WarrantyProducts/addEditWarrantyProduct">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_warranty'); ?>
                         </a>
                     </li>
-                    <li data-access="list-80" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>WarrantyProducts/listWarrantyProduct">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_warranty'); ?>
@@ -3477,9 +3408,9 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </a>
                 <div class="triangle"></div>
                 <ul class="sub__menu__list">
-                    <li data-access="list-87" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Salary/generate">
-                            <iconify-icon icon="solar:transmission-broken" width="18"></iconify-icon>
+                            <iconify-icon icon="solar:transmission-broken" width="30"></iconify-icon>
                             <?php echo lang('list_salary_payroll'); ?>
                         </a>
                     </li>
@@ -3493,43 +3424,43 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </a>
                 <div class="triangle"></div>
                 <ul class="sub__menu__list">
-                    <li data-access="add-32" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Fixed_assets/addEditItem">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_item'); ?>
                         </a>
                     </li>
-                    <li data-access="list-32" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Fixed_assets/listItem">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_item'); ?>
                         </a>
                     </li>
-                    <li data-access="add-37" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Fixed_asset_stock/addEditStock">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_stock_in'); ?>
                         </a>
                     </li>
-                    <li data-access="list-37" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Fixed_asset_stock/listStock">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_stock_in'); ?>
                         </a>
                     </li>
-                    <li data-access="add-42" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Fixed_asset_stock_out/addEditStockOut">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_stock_out'); ?>
                         </a>
                     </li>
-                    <li data-access="list-42" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Fixed_asset_stock_out/listStockOut">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_stock_out'); ?>
                         </a>
                     </li>
-                    <li data-access="view-47" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Fixed_asset_stock/stocks">
                             <iconify-icon icon="solar:database-broken" width="18"></iconify-icon>
                             <?php echo lang('stocks'); ?>
@@ -3545,13 +3476,13 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </a>
                 <div class="triangle"></div>
                 <ul class="sub__menu__list">
-                    <li data-access="add-239" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Quotation/addEditQuotation">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_quotation'); ?>
                         </a>
                     </li>
-                    <li data-access="list-239" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Quotation/quotations">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_quotation'); ?>
@@ -3567,13 +3498,13 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </a>
                 <div class="triangle"></div>
                 <ul class="sub__menu__list">
-                    <li data-access="add-125" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Transfer/addEditTransfer">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_transfer'); ?>
                         </a>
                     </li>
-                    <li data-access="list-125" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Transfer/transfers">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_transfer'); ?>
@@ -3584,18 +3515,18 @@ $company_short_name =  $getCompanyInfo->short_name;
 
             <li class="have_sub_menu">
                 <a href="javascript:void(0)">
-                    <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="30"></iconify-icon>
+                    <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="22"></iconify-icon>
                     <span><?php echo lang('damage'); ?></span>
                 </a>
                 <div class="triangle"></div>
                 <ul class="sub__menu__list">
-                    <li data-access="add-166" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Damage/addEditDamage">
                             <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                             <?php echo lang('add_damage'); ?>
                         </a>
                     </li>
-                    <li data-access="list-166" class="menu_assign_class" >
+                    <li data-access="add-244" class="menu_assign_class" data-menu__cid="irp_6">
                         <a href="<?php echo base_url()?>Damage/damages">
                             <iconify-icon icon="solar:checklist-bold" width="18"></iconify-icon>
                             <?php echo lang('list_damage'); ?>
@@ -3608,26 +3539,26 @@ $company_short_name =  $getCompanyInfo->short_name;
             $user_id = $this->session->userdata('user_id');
             if(isServiceAccess2($user_id, $company_id,'sGmsJaFJE') == 'Saas Super Admin'){ 
             ?>
-            <li data-access="update-247" class="have_sub_menu2">
+            <li class="have_sub_menu2">
                 <a href="<?php echo base_url(); ?>Update/index">
                     <iconify-icon icon="solar:cloud-download-broken" width="30"></iconify-icon>
                     <span><?php echo lang('update_software'); ?></span>
                 </a>
             </li>
-            <li data-access="uninstall-318" class="have_sub_menu2">
+            <li class="have_sub_menu2">
                 <a href="<?php echo base_url(); ?>Update/UninstallLicense">
                     <iconify-icon icon="solar:cloud-cross-broken" width="30"></iconify-icon>
                     <span><?php echo lang('UninstallLicense'); ?></span>
                 </a>
             </li>
             <?php } else if(isServiceAccess2($user_id, $company_id,'sGmsJaFJE') == 'Not SaaS'){ ?>
-            <li data-access="update-247" class="have_sub_menu2">
+            <li class="have_sub_menu2">
                 <a href="<?php echo base_url(); ?>Update/index">
                     <iconify-icon icon="solar:cloud-download-broken" width="30"></iconify-icon>
                     <span><?php echo lang('update_software'); ?></span>
                 </a>
             </li>
-            <li data-access="update-318" class="have_sub_menu2">
+            <li class="have_sub_menu2">
                 <a href="<?php echo base_url(); ?>Update/UninstallLicense">
                     <iconify-icon icon="solar:cloud-cross-broken" width="30"></iconify-icon>
                     <span><?php echo lang('UninstallLicense'); ?></span>
@@ -3636,8 +3567,11 @@ $company_short_name =  $getCompanyInfo->short_name;
             <?php } ?>
         </ul>
     </aside>
+
     <div class="sidebar_sub_menu">
     </div>
+
+
     <!-- TOP Start-->
     <script src="<?php echo base_url(); ?>assets/POS/js/jquery-3.3.1.min.js"></script>
     <script src="<?php echo base_url(); ?>assets/POS/js/jquery-ui.js"></script>
@@ -3676,27 +3610,9 @@ $company_short_name =  $getCompanyInfo->short_name;
     <script src="<?php echo base_url(); ?>frequent_changing/js/pos_script.js"></script>
     <script src="<?php echo base_url(); ?>frequent_changing/js/register_details.js"></script>
     <!-- Custom JS End -->
-
-    <!-- ################ Script Start ################ -->
-    <?php
-    //generating object for access module show/hide
-    $j = 1;
-    $menu_objects = "";
-    $access = $this->session->userdata('function_access');
-    if(isset($access) && $access):
-        foreach($access as $value){
-            if($j==count($access)){
-                $menu_objects .="'".$value."'";
-            }else{
-                $menu_objects .="'".$value."',";
-            }
-            $j++;
-        }
-    endif;
-    ?>
     <script>
+        /*This variable could not be escaped because this is building object*/
         window.items = <?php echo ($javascript_objects);?>;
-        window.menu_objects = [<?php echo ($menu_objects);?>];
     </script>
 </body>
 </html>

@@ -164,9 +164,14 @@
                                     <a href="#" class="sidebar-toggle set_collapse" data-status="<?php echo isset($is_collapse) && $is_collapse == "No" ? '2' : '1'?>"
                                         data-toggle="push-menu" role="button"
                                         <?php echo isset($language) && $language == 'arabic' ? 'd-none' : '' ?>>
-                                        <iconify-icon icon="ri:menu-fold-fill" width="25"></iconify-icon>
+                                        <!-- <iconify-icon icon="ri:menu-fold-fill" width="20" class="sr-only"></iconify-icon> -->
+                                        <span class="sr-only">Toggle navigation</span>
+                                        <div></div>
+                                        <div></div>
+                                        <div></div>
                                     </a>
                                 </div>
+
 
                                 <div class="menu-trigger-box ">
                                     <div class="d-flex">
@@ -180,10 +185,9 @@
                                                     <iconify-icon icon="solar:link-round-line-duotone" width="20"></iconify-icon>
                                                     </button>
                                                     <ul dir="ltr" class="dropdown-menu dropdown-menu-light">
-                                                        
                                                         <li>
                                                             <a class="new-btn" href="<?php echo base_url() ?>Sale/POS">
-                                                                <iconify-icon icon="solar:cart-large-broken" width="15"></iconify-icon>
+                                                            <iconify-icon icon="solar:cart-large-broken" width="15"></iconify-icon>
                                                                 <?php echo lang('pos');?>
                                                             </a>
                                                         </li>
@@ -214,7 +218,6 @@
                                 <div class="shortcut-menus">
                                     <div class="d-flex">
                                     <?php if ($this->session->userdata('outlet_id')) { ?>
-                                        
                                         <a class="new-btn" href="<?php echo base_url() ?>Sale/POS" data-bs-toggle="tooltip" data-bs-placement="right"
                                         data-bs-original-title="<?php echo lang('pos'); ?>">
                                             <iconify-icon icon="solar:cart-large-broken" width="22"></iconify-icon>
@@ -223,25 +226,19 @@
                                         data-bs-original-title="<?php echo lang('check_in_out'); ?>">
                                             <iconify-icon icon="solar:clock-square-broken" width="22"></iconify-icon>
                                         </a>
-                                        <?php if ($this->session->userdata('role') == "1") { ?>
+                                        <?php if (escape_output($this->session->userdata('role')) == "1") { ?>
                                         <a class="new-btn todays_summary_trigger" href="javascrip:void(0)" data-bs-toggle="tooltip" data-bs-placement="right"
                                         data-bs-original-title="<?php echo lang('todays_summary_report'); ?>">
                                             <iconify-icon icon="solar:layers-broken" width="22"></iconify-icon>
                                         </a>
-                                        <a class="new-btn" href="<?php echo $this->session->userdata('register_status') == '2' ? base_url() . 'Register/openRegister' : base_url() . 'Register/registerDetails' ?>" data-bs-toggle="tooltip" data-bs-placement="right"
-                                        data-bs-original-title="<?php echo $this->session->userdata('register_status') == '2' ? lang('register') : lang('register_details') ?>">
-                                            <iconify-icon icon="solar:document-add-broken" width="22"></iconify-icon>
+                                        <a class="new-btn" target="_blank" href="<?php echo base_url()?>Register/registerDetails" data-bs-toggle="tooltip" data-bs-placement="right"
+                                        data-bs-original-title="<?php echo lang('register_details'); ?>">
+                                            <iconify-icon icon="solar:book-broken" width="22"></iconify-icon>
                                         </a>
                                         <?php } ?>
                                         <a class="new-btn quick_menus_trigger" href="javascript:void(0)" data-bs-toggle="tooltip" data-bs-placement="right"
                                         data-bs-original-title="<?php echo lang('quick_menus'); ?>">
                                             <iconify-icon icon="solar:quit-full-screen-circle-broken" width="22"></iconify-icon>
-                                        </a>
-                                    <?php } ?>
-                                    <?php if (APPLICATION_MODE == 'demo') {?>
-                                        <a target="_blank" class="new-btn" href="https://youtu.be/wtrn0uUxfC8?si=RKwcjlHSixegQeX3" data-bs-toggle="tooltip" data-bs-placement="right"
-                                        data-bs-original-title="How to begin with Off POS">
-                                            <iconify-icon icon="solar:videocamera-record-broken" width="22"></iconify-icon>
                                         </a>
                                     <?php } ?>
                                     </div>
@@ -534,13 +531,13 @@
                                             <?php echo lang('list_customer_group'); ?>
                                         </a>
                                     </li>
-                                    <li data-access="add-133" class="menu_assign_class">
+                                    <li data-access="add-133" class="menu_assign_class menu_assign_class_">
                                         <a class="child-menu" href="<?php echo base_url(); ?>Promotion/addEditPromotion">
                                             <iconify-icon icon="solar:add-circle-broken" width="18" class="<?php echo $is_arabic == 'Yes' ? 'ms-2' : 'me-2'?> "></iconify-icon>
                                             <?php echo lang('add_promotion'); ?>
                                         </a>
                                     </li>
-                                    <li data-access="list-133" class="menu_assign_class">
+                                    <li data-access="list-133" class="menu_assign_class menu_assign_class_">
                                         <a class="child-menu" href="<?php echo base_url(); ?>Promotion/promotions">
                                             <iconify-icon icon="solar:checklist-bold" width="18" class="<?php echo $is_arabic == 'Yes' ? 'ms-2' : 'me-2'?> "></iconify-icon>
                                             <?php echo lang('list_promotion'); ?>
@@ -831,7 +828,7 @@
                                             <?php echo lang('daily_summary_report'); ?>
                                         </a>
                                     </li>
-                                    <li data-access="sale_report-249" class="menu_assign_class">
+                                    <li data-access="sale_report-249" class="menu_assign_class menu_assign_class_">
                                         <a class="child-menu " href="<?php echo base_url(); ?>Report/saleReport">
                                             <iconify-icon icon="solar:cart-check-broken" width="18" class="<?php echo $is_arabic == 'Yes' ? 'ms-2' : 'me-2'?> "></iconify-icon>
                                             <?php echo lang('sale_report'); ?>
@@ -858,7 +855,7 @@
                                             <?php echo lang('stock_report'); ?>
                                         </a>
                                     </li>
-                                    <li data-access="employee_sale_report-249" class="menu_assign_class">
+                                    <li data-access="employee_sale_report-249" class="menu_assign_class menu_assign_class_">
                                         <a class="child-menu " href="<?php echo base_url(); ?>Report/employeeSaleReport">
                                             <iconify-icon icon="solar:users-group-two-rounded-broken" width="18" class="<?php echo $is_arabic == 'Yes' ? 'ms-2' : 'me-2'?> "></iconify-icon>
                                             <?php echo lang('employee_sale_report'); ?>
@@ -876,7 +873,7 @@
                                             <?php echo lang('attendance_report'); ?>
                                         </a>
                                     </li>
-                                    <li data-access="product_profit_report-249" class="menu_assign_class">
+                                    <li data-access="product_profit_report-249" class="menu_assign_class menu_assign_class_">
                                         <a class="child-menu " href="<?php echo base_url(); ?>Report/productProfitReport">
                                             <iconify-icon icon="solar:dollar-broken" width="18" class="<?php echo $is_arabic == 'Yes' ? 'ms-2' : 'me-2'?> "></iconify-icon>
                                             <?php echo lang('productProfitReport'); ?>
@@ -922,7 +919,7 @@
                                     $collect_tax = $this->session->userdata('collect_tax');
                                     if($collect_tax=="Yes"){
                                     ?>
-                                    <li data-access="tax_report-249" class="menu_assign_class">
+                                    <li data-access="tax_report-249" class="menu_assign_class menu_assign_class_">
                                         <a class="child-menu " href="<?php echo base_url(); ?>Report/taxReport">
                                             <iconify-icon icon="solar:target-broken" width="18" class="<?php echo $is_arabic == 'Yes' ? 'ms-2' : 'me-2'?> "></iconify-icon>
                                             <?php echo lang('tax'); ?> <?php echo lang('report'); ?>
@@ -941,7 +938,7 @@
                                             <?php echo lang('low_stock_report'); ?>
                                         </a>
                                     </li>
-                                    <li data-access="profit_loss_report-249" class="menu_assign_class">
+                                    <li data-access="profit_loss_report-249" class="menu_assign_class menu_assign_class_">
                                         <a class="child-menu " href="<?php echo base_url(); ?>Report/profitLossReport">
                                             <iconify-icon icon="solar:money-bag-broken" width="18" class="<?php echo $is_arabic == 'Yes' ? 'ms-2' : 'me-2'?> "></iconify-icon>
                                             <?php echo lang('profit_loss_report'); ?>
@@ -989,7 +986,7 @@
                                             <?php echo lang('sale_return_report'); ?>
                                         </a>
                                     </li>
-                                    <li data-access="damage_report-249" class="menu_assign_class">
+                                    <li data-access="damage_report-249" class="menu_assign_class menu_assign_class_">
                                         <a class="child-menu " href="<?php echo base_url(); ?>Report/damageReport">
                                             <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="18" class="<?php echo $is_arabic == 'Yes' ? 'ms-2' : 'me-2'?> "></iconify-icon>
                                             <?php echo lang('damage_report'); ?>
@@ -1154,7 +1151,7 @@
                                 </a>
                                 <div class="triangle"></div>
                                 <ul class="treeview-menu">
-                                    <?php 
+                                <?php 
                                     $user_id = $this->session->userdata('user_id');
                                     $company_id = $this->session->userdata('company_id');
                                     if(isServiceAccess2($user_id, $company_id, 'sGmsJaFJE') == 'Saas Company'){ ?>
@@ -1233,7 +1230,7 @@
                                             <?php echo lang('white_label'); ?>
                                         </a>
                                     </li>
-                                    <li data-access="edit-23" class="menu_assign_class">
+                                    <li class="menu_assign_class">
                                         <a class="child-menu " href="<?php echo base_url(); ?>Authentication/logingPage">
                                             <iconify-icon icon="solar:shield-keyhole-minimalistic-broken" width="18" class="<?php echo $is_arabic == 'Yes' ? 'ms-2' : 'me-2'?> "></iconify-icon>
                                             <?php echo lang('login_page'); ?>
@@ -1613,9 +1610,6 @@
                     </p>
                 </div>
             </footer>
-            <?php if(APPLICATION_MODE == 'demo'){ ?>
-            <a href="<?php echo isServiceAccess2('', '', 'sGmsJaFJE') == 'Not SaaS' ? 'https://dsbeta.work/dsdemo/off_pos.php' : 'https://api.whatsapp.com/send?phone=880181231633'?>" target="_blank" class="btn buy-now"><iconify-icon icon="solar:cart-large-broken" width="18" class="me-2"></iconify-icon> Buy Now</a>
-            <?php } ?>
         </div>
 
         <div class="modal fade" id="todaysSummary" role="dialog">
@@ -1977,7 +1971,7 @@
                     $menu_objects .="'".$value."',";
                 }
                 $j++;
-            }
+            } 
         endif;
         ?>
         <script>
