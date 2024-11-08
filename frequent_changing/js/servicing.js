@@ -81,6 +81,16 @@ $(function () {
             open("print_invoice/" + id, 'Print Invoice', 'width=1600,height=550');
         } else if (print_format == "Half A4 Print") {
             open("print_invoice/" + id, 'Print Invoice', 'width=1600,height=550');
+        } else if (print_format == "Letter Head") {
+            open("print_invoice/" + id, 'Print Invoice', 'width=1600,height=550');
+        }else{
+            Swal.fire({
+                title: warning+" !",
+                text: "Your Printer is not configured yet!",
+                showDenyButton: false,
+                showCancelButton: false,
+                confirmButtonText: "OK",
+            });
         }
     }
 

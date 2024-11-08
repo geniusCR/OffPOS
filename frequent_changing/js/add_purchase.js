@@ -114,6 +114,7 @@ $(function () {
             let item_details_array = item_details.split('|');
             let item_id = item_details_array[0];
             let getType = item_details_array[5];
+            let expiry_date_maintain = item_details_array[6];
             let item_name = $(this).find('option:selected').text();
             $("#hidden_input_item_type").val(getType == '0' ? 'Variation_Product' : getType);
             $("#hidden_input_item_id").val(item_id);
@@ -125,7 +126,7 @@ $(function () {
             $('#serial').val("");
             $('#expiry_date').val("");
             
-            if(getType == 'General_Product' || getType == '0' || getType == 'Installment_Product'){
+            if(getType == 'General_Product' || getType == '0' || getType == 'Installment_Product' || (getType == 'Medicine_Product' && expiry_date_maintain == 'No')){
                 $("#qty_modal").prop("readonly", false);
                 $(".rowCount").each(function() {
                     let id_temp = $(this).attr('data-item-id');
@@ -151,7 +152,7 @@ $(function () {
                     </button>
                 `)
                 $("#qty_modal").prop("readonly", false);
-            }else if(getType == 'Medicine_Product'){
+            }else if(getType == 'Medicine_Product' && expiry_date_maintain == 'Yes'){
                 $("#qty_modal").val("");
                 $('.imeiSerial_add_more').html('');
                 $('.expiry_add_more').html('');
@@ -253,12 +254,14 @@ $(function () {
         $('#qty_modal').val(Number(expiry_each_val_sum));
     }
     function itemCheckBeforeAppend(getType, item_details_array, item_name){
+        let expiry_date_maintain = item_details_array[6];
         $('.item_header').text(item_name);
         $('.modal_item_unit').text(item_details_array[2]);
         $("#unit_price_modal").val(item_details_array[3]);
-        if(getType == 'General_Product' || getType == ''){
+        $('#hidden_input_expiry_date_maintain').val(expiry_date_maintain);
+        if(getType == 'General_Product' || getType == '' || (getType == 'Medicine_Product' && expiry_date_maintain == 'No')){
             $(".imei_p_f").addClass('d-none');
-        }else if(getType == 'Medicine_Product'){
+        }else if(getType == 'Medicine_Product' && expiry_date_maintain == 'Yes'){
             $(".imei_p_f").removeClass('d-none');
             $('.imei_serial_label').text(`Expiry Date`);
             $("#imei_append").html("");
@@ -402,6 +405,7 @@ $(function () {
     $(document).on('click', '#addToCart', function(e) {
         e.preventDefault();
         let item_type = $("#hidden_input_item_type").val();
+        let expiry_date_maintain = $("#hidden_input_expiry_date_maintain").val();
         let product_id = $("#hidden_input_item_id").val();
         let quantity = Number($("#qty_modal").val());
         let item_name = $("#hidden_input_item_name").val();
@@ -415,7 +419,7 @@ $(function () {
         }
         let item_type_val = "";
         let item_quantity_val = "";
-        if (item_type == 'Medicine_Product') {
+        if (item_type == 'Medicine_Product' && expiry_date_maintain == 'Yes') {
             let imei_serial_data = [];
             let item_arr = [];
             $('.expiryProduct').each(function(i, obj)  {
@@ -501,10 +505,10 @@ $(function () {
         }else{
             let unit_price = Number($("#unit_price_modal").val());
             let qty_modal;
-            if(item_type != 'Medicine_Product'){
-                qty_modal = Number($("#qty_modal").val());
-            }else{
+            if((item_type == 'Medicine_Product') && expiry_date_maintain == 'Yes'){
                 qty_modal = $('#imei_append .expiry_child_qty').length;
+            }else{
+                qty_modal = Number($("#qty_modal").val());
             }
             appendCart(unit_price, qty_modal, item_type_val, item_type, product_id, item_name, item_quantity_val);
             $("#imei_append").html("");
@@ -533,13 +537,13 @@ $(function () {
         let validation_cls = '';
         let checkIMEISerialUnique = '';
 
-        if (type == 'General_Product' || type == 0){
+        if (type == 'General_Product' || type == 0 || (type == 'Medicine_Product' && item_details_array[6] == 'No')){
             d_none = 'd-none';
         }else if (type == 'Variation_Product'){
             d_none = 'd-none';
         }else if (type == 'Installment_Product'){
             d_none = 'd-none';
-        }else if (type == 'Medicine_Product'){
+        }else if (type == 'Medicine_Product' && item_details_array[6] == 'Yes'){
             p_type = 'Expiry Date:';
             p_placeholder = '';
             custom_date = 'customDatepicker';
@@ -558,7 +562,7 @@ $(function () {
             checkIMEISerialUnique = 'checkIMEISerialUnique';
         }
 
-        if (type == 'General_Product' || type == 'Variation_Product' || type == 0 || type == 'Installment_Product') {
+        if (type == 'General_Product' || type == 'Variation_Product' || type == 0 || type == 'Installment_Product' || (type == 'Medicine_Product' && item_details_array[6] == 'No')) {
             rowCounter++
             cart_row = `<tr class="rowCount" data-counter="${rowCounter}" data-item-id="${product_id}">
                     <td>
@@ -620,7 +624,7 @@ $(function () {
             $("#cartPreviewModal").modal('hide');
         }
 
-        if (type == 'IMEI_Product' || type == 'Serial_Product' || type == 'Medicine_Product'){
+        if (type == 'IMEI_Product' || type == 'Serial_Product' || (type == 'Medicine_Product' && item_details_array[6] == 'Yes')){
             for(let k = 0; k < qty_modal_count; k++){
                 rowCounter++
                 cart_row = `<tr class="rowCount" data-counter="${rowCounter}" data-item-id="${product_id}">

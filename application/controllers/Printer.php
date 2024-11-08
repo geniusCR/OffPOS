@@ -119,6 +119,7 @@ class Printer extends Cl_Controller {
             $session_data['qr_code_type'] = htmlspecialcharscustom($this->input->post('qr_code_type'));
             $session_data['invoice_print'] = htmlspecialcharscustom($this->input->post('invoice_print'));
             $session_data['fiscal_printer_status'] = htmlspecialcharscustom($this->input->post('fiscal_printer_status'));
+            $session_data['open_cash_drawer_when_printing_invoice'] = htmlspecialcharscustom($this->input->post('open_cash_drawer_when_printing_invoice'));
             $session_data['print_server_url_invoice'] = htmlspecialcharscustom($this->input->post('print_server_url_invoice'));
             $session_data['inv_qr_code_status'] = htmlspecialcharscustom($this->input->post('inv_qr_code_status'));
             $this->session->set_userdata($session_data);

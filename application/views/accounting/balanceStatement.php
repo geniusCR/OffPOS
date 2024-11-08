@@ -105,7 +105,7 @@
                             </th>
                             <th>
                                 <?php if($balance < 0){ 
-                                    echo getAmtCustom(abs($balance));
+                                    echo getAmtCustom(absCustom($balance));
                                 }?>
                             </th>
                         </tr>

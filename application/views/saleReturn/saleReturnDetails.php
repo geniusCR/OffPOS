@@ -158,12 +158,19 @@ $customer_info = getCustomer($sale_return->customer_id);
                     </div>
                 </div>
             </div> 
-            <div class="box-footer"> 
-            <a href="<?php echo base_url() ?>Sale_return/print_invoice/<?php echo $this->custom->encrypt_decrypt($encrypted_id, 'encrypt'); ?>"
-                class="btn bg-blue-btn"><?php echo lang('print'); ?></a>
-                <a href="<?php echo base_url() ?>Sale_return/saleReturns"
-                    class="btn bg-blue-btn"><?php echo lang('back'); ?></a>
+            
+            <div class="box-footer">
+                <a href="<?php echo base_url() ?>Sale_return/print_invoice/<?php echo $this->custom->encrypt_decrypt($encrypted_id, 'encrypt'); ?>"
+                class="btn bg-blue-btn">
+                    <iconify-icon icon="solar:printer-2-broken"></iconify-icon>
+                    <?php echo lang('print'); ?>
+                </a>
+                <a class="btn bg-blue-btn text-decoration-none" href="<?php echo base_url() ?>Sale_return/saleReturns">
+                    <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
+                    <?php echo lang('back'); ?>
+                </a>
             </div>
+
         </div>
     </div>
 </div>

@@ -38,7 +38,7 @@ class Setting extends Cl_Controller {
         $segment_2 = $this->uri->segment(2);
         $controller = "1";
         $function = "";
-        if($segment_2 == "index" || $segment_2 == "validate_invoice_logo"){
+        if($segment_2 == "index" || $segment_2 == "validate_invoice_logo" || $segment_2 == 'moduleManagement'){
             $function = "edit";
         }else if($segment_2 == "add_dummy_data"){
             $controller = "325";
@@ -78,28 +78,51 @@ class Setting extends Cl_Controller {
         $company_id = $this->session->userdata('company_id');
         $user_id = $this->session->userdata('user_id');
         if (htmlspecialcharscustom($this->input->post('submit'))) {
+            $is_loyalty = htmlspecialcharscustom($this->input->post('is_loyalty_enable'));
             $this->form_validation->set_rules('business_name', lang('Business_Name'), 'required|max_length[50]');
-            $this->form_validation->set_rules('short_name', lang('short_name'), 'required|max_length[5]');
-            $this->form_validation->set_rules('inv_no_start_from', lang('inv_no_start_from'), 'required|max_length[6]');
-            $this->form_validation->set_rules('product_code_start_from', lang('product_code_start_from'), 'required|max_length[6]');
-            $this->form_validation->set_rules('website', lang('website'), 'required|max_length[255]');
+            if((isServiceAccess2($user_id, $company_id, 'sGmsJaFJE') == 'Saas Super Admin') || (isServiceAccess2($user_id, $company_id, 'sGmsJaFJE') == 'Not SaaS')){
+                $this->form_validation->set_rules('short_name', lang('short_name'), 'required|max_length[5]');
+            }
+            $this->form_validation->set_rules('address', lang('address'), 'max_length[255]');
+            $this->form_validation->set_rules('website', lang('website'), 'max_length[255]');
+            $this->form_validation->set_rules('phone', lang('phone'), 'required|max_length[30]');
+            $this->form_validation->set_rules('email', lang('email'), 'required|max_length[55]');
+            $this->form_validation->set_rules('date_format', lang('date_format'), 'required|max_length[55]');
+            $this->form_validation->set_rules('zone_name', lang('zone_name'), 'required|max_length[55]');
+            $this->form_validation->set_rules('currency', lang('currency'), 'required|max_length[3]');
+            $this->form_validation->set_rules('currency_position', lang('currency_position'), 'required|max_length[25]');
+            $this->form_validation->set_rules('decimals_separator', lang('decimals_separator'), 'required|max_length[10]');
+            $this->form_validation->set_rules('thousands_separator', lang('thousands_separator'), 'required|max_length[10]');
+            $this->form_validation->set_rules('invoice_prefix', lang('invoice_prefix'), 'required|max_length[11]|regex_match[/^[a-zA-Z0-9_]+$/]');
             $this->form_validation->set_rules('letter_head_gap', lang('letter_head_gap'), 'max_length[50]');
             $this->form_validation->set_rules('letter_footer_gap', lang('letter_footer_gap'), 'max_length[50]');
-            $this->form_validation->set_rules('invoice_prefix', lang('invoice_prefix'), 'required|max_length[11]|regex_match[/^[a-zA-Z0-9_]+$/]');
-            $this->form_validation->set_rules('phone', lang('phone'), 'required');
-            $this->form_validation->set_rules('email', lang('email'), 'required');
-            $this->form_validation->set_rules('currency', lang('currency'), 'required|max_length[3]');
-            $this->form_validation->set_rules('direct_cart', lang('Direct_Cart_Add'), 'required');
-            $this->form_validation->set_rules('default_payment', lang('default_payment_method'), 'required|max_length[10]');
-            $this->form_validation->set_rules('default_customer', lang('default_customer'), 'required|max_length[10]');
-            $this->form_validation->set_rules('default_cursor_position', lang('default_cursor_position'), 'required|max_length[25]');
             $this->form_validation->set_rules('allow_less_sale', lang('Allow_Overselling'), 'required|max_length[10]');
+            $this->form_validation->set_rules('default_customer', lang('default_customer'), 'required|max_length[10]');
+            $this->form_validation->set_rules('default_payment', lang('default_payment_method'), 'required|max_length[10]');
+            $this->form_validation->set_rules('installment_days', lang('installment_notification_days'), 'required|max_length[10]');
+            $this->form_validation->set_rules('is_loyalty_enable', lang('loyalty_point'), 'required|max_length[10]');
+            if($is_loyalty == 'Enable'){
+                $this->form_validation->set_rules('minimum_point_to_redeem', lang('minimum_point_to_redeem'), 'required|max_length[10]');
+                $this->form_validation->set_rules('loyalty_rate', lang('loyalty_rate'), 'required|max_length[10]');
+            }else{
+                $this->form_validation->set_rules('minimum_point_to_redeem', lang('minimum_point_to_redeem'), 'max_length[10]');
+                $this->form_validation->set_rules('loyalty_rate', lang('loyalty_rate'), 'max_length[10]');
+            }
+            $this->form_validation->set_rules('default_cursor_position', lang('default_cursor_position'), 'required|max_length[25]');
+            $this->form_validation->set_rules('product_display', lang('Display_Product'), 'required|max_length[25]');
+            $this->form_validation->set_rules('onscreen_keyboard_status', lang('onscreen_keyboard_status'), 'required|max_length[25]');
+            $this->form_validation->set_rules('inv_no_start_from', lang('inv_no_start_from'), 'required|max_length[6]');
+            $this->form_validation->set_rules('product_code_start_from', lang('product_code_start_from'), 'required|max_length[6]');
+            $this->form_validation->set_rules('grocery_experience', lang('grocery_experience'), 'required|max_length[25]');
+            $this->form_validation->set_rules('direct_cart', lang('Direct_Cart_Add'), 'required');
+
+
             if ($this->form_validation->run() == TRUE) {
                 $outlet_info = array();
                 $outlet_info['business_name'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('business_name')));
                 $outlet_info['short_name'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('short_name')));
-                $outlet_info['website'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('website')));
                 $outlet_info['address'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('address')));
+                $outlet_info['website'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('website')));
                 $outlet_info['phone'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('phone')));
                 $outlet_info['email'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('email')));
                 // Base64 Image Convert Into Image
@@ -128,26 +151,26 @@ class Setting extends Cl_Controller {
                 $outlet_info['invoice_prefix'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('invoice_prefix')));
                 $outlet_info['letter_head_gap'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('letter_head_gap')));
                 $outlet_info['letter_footer_gap'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('letter_footer_gap')));
-                $outlet_info['show_hide'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('show_hide')));
-                $outlet_info['i_sale'] = "Yes";
-                $outlet_info['purchase_price_show_hide'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('purchase_price_show_hide')));
-                $outlet_info['whole_price_show_hide'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('whole_price_show_hide')));
-                $outlet_info['item_modal_status'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('item_modal_status')));
-                $outlet_info['grocery_experience'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('grocery_experience')));
-                //This variable could not be escaped because this is html content
-                $outlet_info['term_conditions'] = $_POST['term_conditions'];
-                $outlet_info['invoice_footer'] = $_POST['invoice_footer'];
                 $outlet_info['allow_less_sale'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('allow_less_sale')));
                 $outlet_info['default_customer'] =htmlspecialcharscustom($this->input->post($this->security->xss_clean('default_customer')));
+                $outlet_info['default_payment'] =htmlspecialcharscustom($this->input->post($this->security->xss_clean('default_payment')));
+                $outlet_info['installment_days'] =htmlspecialcharscustom($this->input->post($this->security->xss_clean('installment_days')));
+                $outlet_info['is_loyalty_enable'] = htmlspecialcharscustom($this->input->post('is_loyalty_enable'));
+                $outlet_info['minimum_point_to_redeem'] = htmlspecialcharscustom($this->input->post('minimum_point_to_redeem'));
+                $outlet_info['loyalty_rate'] = htmlspecialcharscustom($this->input->post('loyalty_rate'));
                 $outlet_info['default_cursor_position'] =htmlspecialcharscustom($this->input->post($this->security->xss_clean('default_cursor_position')));
                 $outlet_info['product_display'] =htmlspecialcharscustom($this->input->post($this->security->xss_clean('product_display')));
                 $outlet_info['onscreen_keyboard_status'] =htmlspecialcharscustom($this->input->post($this->security->xss_clean('onscreen_keyboard_status')));
                 $outlet_info['inv_no_start_from'] =htmlspecialcharscustom($this->input->post($this->security->xss_clean('inv_no_start_from')));
                 $outlet_info['product_code_start_from'] =htmlspecialcharscustom($this->input->post($this->security->xss_clean('product_code_start_from')));
-                $outlet_info['default_payment'] =htmlspecialcharscustom($this->input->post($this->security->xss_clean('default_payment')));
+                $outlet_info['grocery_experience'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('grocery_experience')));
                 $outlet_info['direct_cart'] =htmlspecialcharscustom($this->input->post($this->security->xss_clean('direct_cart')));
                 $outlet_info['api_token'] =htmlspecialcharscustom($this->input->post($this->security->xss_clean('api_token')));
-                
+                $outlet_info['pos_total_payable_type'] =htmlspecialcharscustom($this->input->post($this->security->xss_clean('pos_total_payable_type')));
+                $outlet_info['user_id'] = $user_id;
+                //This variable could not be escaped because this is html content
+                $outlet_info['term_conditions'] = $_POST['term_conditions'];
+                $outlet_info['invoice_footer'] = $_POST['invoice_footer'];
                 // Register Information
                 $register_content['register_expense'] =htmlspecialcharscustom($this->input->post($this->security->xss_clean('register_expense')));
                 $register_content['register_purchase'] =htmlspecialcharscustom($this->input->post($this->security->xss_clean('register_purchase')));
@@ -159,14 +182,7 @@ class Setting extends Cl_Controller {
                 $register_content['register_installment_collection'] =htmlspecialcharscustom($this->input->post($this->security->xss_clean('register_installment_collection')));
                 $register_content['register_customer_due_receive'] =htmlspecialcharscustom($this->input->post($this->security->xss_clean('register_customer_due_receive')));
                 $register_content['register_servicing'] =htmlspecialcharscustom($this->input->post($this->security->xss_clean('register_servicing')));
-
                 $outlet_info['register_content'] = json_encode($register_content);
-                $outlet_info['pos_total_payable_type'] =htmlspecialcharscustom($this->input->post($this->security->xss_clean('pos_total_payable_type')));
-                $outlet_info['installment_days'] =htmlspecialcharscustom($this->input->post($this->security->xss_clean('installment_days')));
-                $outlet_info['is_loyalty_enable'] = htmlspecialcharscustom($this->input->post('is_loyalty_enable'));
-                $outlet_info['minimum_point_to_redeem'] = htmlspecialcharscustom($this->input->post('minimum_point_to_redeem'));
-                $outlet_info['loyalty_rate'] = htmlspecialcharscustom($this->input->post('loyalty_rate'));
-                $outlet_info['user_id'] = $user_id;
 
                 if ($company_id == "") {
                     $outlet_info['added_date'] = date('Y-m-d H:i:s');
@@ -337,7 +353,7 @@ class Setting extends Cl_Controller {
             }
         }else{
             $this->session->set_flashdata('exception_1',  lang('error_dummy_data_added'));
-             redirect('Authentication/userProfile');
+            redirect('Authentication/userProfile');
         }
     }
 
@@ -500,6 +516,39 @@ class Setting extends Cl_Controller {
             } else {
                 echo "Something went wrong";
             }
+        }
+    }
+
+
+    /**
+     * moduleManagement
+     * @access public
+     * @param int
+     * @return void
+     */
+    public function moduleManagement() {
+        if (htmlspecialcharscustom($this->input->post('submit'))) {
+            $menuArr = $_POST['menu_arr'];
+            $array = [];
+            foreach($menuArr as $menu){
+                $array['is_hide'] = $_POST['menu_id'.$menu];
+                $this->Common_model->updateInformation($array, $menu, "tbl_module_managements");
+            }
+            $this->session->set_flashdata('exception', lang('Information_updated_successfully'));
+            $module_hide_show = getAllChildModule();
+            $moduleArr = [];
+            foreach($module_hide_show as $module){
+                array_push($moduleArr, $module->module_name.'-YES');
+            }
+            $session_data = [];
+            $session_data['module_show_hide'] = $moduleArr;
+            $this->session->set_userdata($session_data);
+            redirect('Setting/moduleManagement');
+        } else {
+            $data = array();
+            $data['module'] = $this->Common_model->getModuleManagement();
+            $data['main_content'] = $this->load->view('authentication/moduleManagement', $data, TRUE);
+            $this->load->view('userHome', $data);
         }
     }
 }

@@ -67,11 +67,13 @@ class Transfer_model extends CI_Model {
      * @return object
      */
     public function getFoodDetails($id) {
-        $this->db->select("*");
-        $this->db->from("tbl_transfer_items");
-        $this->db->order_by('id', 'ASC');
-        $this->db->where("transfer_id", $id);
-        $this->db->where("del_status", 'Live');
+        $this->db->select("ti.*, i.expiry_date_maintain");
+        $this->db->from("tbl_transfer_items ti");
+        $this->db->join("tbl_items i", 'i.id = ti.ingredient_id', 'left');
+        $this->db->where("ti.transfer_id", $id);
+        $this->db->where("ti.del_status", 'Live');
+        $this->db->order_by('ti.id', 'ASC');
+        $this->db->group_by('ti.ingredient_id');
         return $this->db->get()->result();
     }
 
@@ -106,6 +108,7 @@ class Transfer_model extends CI_Model {
         $this->db->select('purchase_price,conversion_rate,tbl_items.id as ingredient_id');
         $this->db->from('tbl_items');
         $this->db->where('id', $food_menu_id);
+        $this->db->where('enable_disable_status', 'Enable');
         $this->db->where('del_status', 'Live');
         return $this->db->get()->result();
     }

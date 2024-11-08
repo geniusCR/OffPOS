@@ -13,11 +13,36 @@ $configFolder = $root_path_project."application/config";
 $configFile = $root_path_project."application/config/config.php";
 $dbFile = $root_path_project."application/config/database.php";
 
+                    
 session_start();
  
 $step = isset($_GET['step']) ? $_GET['step'] : '';
 switch ($step) {
-    default: ?>
+    default : ?>
+    <div class="panel-group">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <ul class="list">
+                            <li class="active pk"><i class="icon-ok"></i>Env. Check</li>
+                            <li>Verification</li>
+                            <li>DB Config</li>
+                            <li>Site Config</li>
+                            <li class="last">Complete!</li>
+                        </ul>
+                    </div>
+                    <div class="panel-body">
+                        <h3 class="text-center padding_70 color_red"><b>Attention!</b> Please watch this video carefully before you click on the Next button.</h3>
+                        <div class='alert-error'><iframe width="100%" height="345" src="https://www.youtube.com/embed/ea4wvWGm_a0"></iframe>
+                            </div>
+                        <div class="bottom">
+                            <a href="<?php echo $base_url?>index.php?step=env" class="btn btn-primary button_1 action_button">Next</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+           <?php
+            break;
+        case "env": ?> 
         <div class="panel-group">
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -83,12 +108,18 @@ switch ($step) {
                     } else {
                         echo "<div class='alert alert-success'><i class='icon-ok'></i> gd PHP extension loaded!</div>";
                     } 
+                    if (!extension_loaded('zip')) {
+                        $error = TRUE;
+                        echo "<div class='alert alert-error'><i class='icon-remove'></i> zip PHP extension missing!</div>";
+                    } else {
+                        echo "<div class='alert alert-success'><i class='icon-ok'></i> zip PHP extension loaded!</div>";
+                    } 
                     ?>
                     <div class="bottom">
                         <?php if ($error) { ?>
-                            <a href="#" class="btn btn-primary button_1">Next</a>
+                            <a href="#" class="btn btn-primary action_button  button_1">Next</a>
                         <?php } else { ?>
-                            <a href="<?php echo $base_url?>index.php?step=0" class="btn btn-primary button_1">Next</a>
+                            <a href="<?php echo $base_url?>index.php?step=0" class="btn btn-primary action_button  button_1">Next</a>
                         <?php } ?>
                     </div>
                 </div>
@@ -189,7 +220,7 @@ switch ($step) {
                     ?>" />
                     <input id="username" type="hidden" name="username" value="<?php echo $username;?>" />
                     <div class="bottom ins_5">
-                        <input type="submit" class="btn btn-primary button_1"  value="Next"/>
+                        <input type="submit" class="btn btn-primary action_button  button_1"  value="Next"/>
                     </div>
                 </form>
                 <?php
@@ -215,7 +246,7 @@ switch ($step) {
                         <input id="owner" type="hidden" name="owner" class="input-large form-control" value="doorsoftco"  />
                     </div>
                     <div class="bottom ins_5">
-                        <input type="submit" class="btn btn-primary button_1"  value="Verify"/>
+                        <input type="submit" class="btn btn-primary action_button  button_1"  value="Verify"/>
                     </div>
                 </form>
                 <?php
@@ -240,7 +271,7 @@ switch ($step) {
                 </div>
 
                 <div class="bottom ins_5">
-                    <input type="submit" class="btn btn-primary button_1"  value="Verify"/>
+                    <input type="submit" class="btn btn-primary action_button  button_1"  value="Verify"/>
                 </div>
             </form>
 
@@ -298,7 +329,7 @@ switch ($step) {
                     <input id="purchase_code" type="hidden" name="purchase_code" value="<?php echo $_POST['purchase_code']; ?>" />
                     <input type="hidden" name="username" value="<?php echo $_POST['username']; ?>" />
                     <div class="bottom ins_5">
-                        <input type="submit" class="btn btn-primary button_1"  value="Next"/>
+                        <input type="submit" class="btn btn-primary action_button  button_1"  value="Next"/>
                     </div>
                 </form>
                 <?php
@@ -377,7 +408,7 @@ switch ($step) {
                             <input id="purchase_code" type="hidden" name="purchase_code" value="<?php echo isset($_POST['purchase_code']) && $_POST['purchase_code']?$_POST['purchase_code']:''; ?>" />
                             <input id="username" type="hidden" name="username" value="<?php echo isset($_POST['username'])?$_POST['username']:''; ?>" />
                             <div class="bottom ins_5">
-                                <input type="submit" class="btn btn-primary button_1"  value="Previous"/>
+                                <input type="submit" class="btn btn-primary action_button  button_1"  value="Previous"/>
                             </div>
                         </form>
                         <form action="<?php echo $base_url?>index.php?step=3" method="POST" class="form-horizontal">
@@ -385,7 +416,7 @@ switch ($step) {
                             <input id="username" type="hidden" name="username" value="<?php echo isset($_POST['username'])?$_POST['username']:''; ?>" />
 
                             <div class="bottom ins_5">
-                                <input type="submit" class="btn btn-primary button_1"  value="Next"/>
+                                <input type="submit" class="btn btn-primary action_button  button_1"  value="Next"/>
                             </div>
                         </form>
                         <br clear="all">
@@ -442,9 +473,9 @@ switch ($step) {
                 <input type="hidden" name="purchase_code" value="<?php echo $_POST['purchase_code']; ?>" />
                 <input type="hidden" name="username" value="<?php echo $_POST['username']; ?>" />
                 <div class="bottom">
-                    <a href="<?php echo $base_url?>index.php?step=2" class="btn btn-primary button_1">Previous</a>
+                    <a href="<?php echo $base_url?>index.php?step=2" class="btn btn-primary action_button  button_1">Previous</a>
                     <div class="bottom ins_5">
-                        <input type="submit" class="btn btn-primary button_1"  value="Next"/>
+                        <input type="submit" class="btn btn-primary action_button  button_1"  value="Next"/>
                     </div>
                 </div>
             </form>
@@ -498,7 +529,7 @@ switch ($step) {
                             <input id="installation_url" type="hidden" name="installation_url" value="<?php echo $_POST['installation_url']; ?>" />
                             <div class="bottom">
                                 <div class="bottom ins_5">
-                                    <input type="submit" class="btn btn-primary button_1"  value="Previous"/>
+                                    <input type="submit" class="btn btn-primary action_button  button_1"  value="Previous"/>
                                 </div>
                             </div>
                         </form>
@@ -509,7 +540,7 @@ switch ($step) {
                             <input id="username" type="hidden" name="username" value="<?php echo $_POST['username']; ?>" />
                             <div class="bottom">
                                 <div class="bottom ins_5">
-                                    <input type="submit" class="btn btn-primary button_1"  value="Next"/>
+                                    <input type="submit" class="btn btn-primary action_button  button_1" data-is_unlimited="1"  value="Next"/>
                                 </div>
                             </div>
                         </form>
@@ -586,55 +617,23 @@ switch ($step) {
                     ob_end_clean();
                 }
             }
-            //need to change
-            $curl_handle = curl_init();
-            //need to change
-            curl_setopt($curl_handle, CURLOPT_URL, str_rot13("uggcf://qbbefbsg.pb/qfy/Inyvqngvba/Vafgnyy/"));
-            curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($curl_handle, CURLOPT_POST, 1);
-            curl_setopt($curl_handle, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($curl_handle, CURLOPT_POSTFIELDS, array(
-                'owner' => $owner,
-                'username' => $username,
-                'purchase_code' => $purchase_code,
-                'pc_hostname' => $pc_hostname,
-                'source' => $source,
-                'product_id' => $product_id,
-                'installation_url' => $installation_url,
-                'installation_date_and_time' => $installation_date_and_time
-            ));
-            $buffer = curl_exec($curl_handle);
-            curl_close($curl_handle);
-            $object = json_decode($buffer);
-            if ($object->status == 'success') {
+             
+            if($finished){
+                $core->create_rest_api();
                 //need to change
-                $dbtables = $object->database;
-                $dbdata = array(
-                    'hostname' => $db['default']['hostname'],
-                    'username' => $db['default']['username'],
-                    'password' => $db['default']['password'],
-                    'database' => $db['default']['database'],
-                    'dbtables' => $dbtables
-                );
-                require_once($install_path.'includes/database_class.php');
-                $database = new Database();
-                if ($object->status != 'success') {
-                    echo "<div class='alert alert-warning'><i class='icon-warning'></i> The database tables could not be created, please try again.</div>";
-                } else {
-                    $finished = TRUE;
-                    $core->create_rest_api();
-                    //need to change
-                    $core->create_rest_api_UV();
-                    //need to change
-                    $core->create_rest_api_I($username, $purchase_code, $installation_url);
-                }
-                if ($core->write_index() == false) {
-                    echo "<div class='alert alert-error'><i class='icon-remove'></i> Failed to write index details!</div>";
-                    $finished = FALSE;
-                }
-            } else {
-                echo "<div class='alert alert-error'><i class='icon-remove'></i> Error while validating your purchase code!</div>";
+                $core->create_rest_api_UV();
+                //need to change
+                $core->create_rest_api_I($username, $purchase_code, $installation_url);
+    
+            }else{
+                $finished = FALSE;
             }
+         
+            if ($core->write_index() == false) {
+                echo "<div class='alert alert-error'><i class='icon-remove'></i> Failed to write index details!</div>";
+                $finished = FALSE;
+            }
+
         }
         if ($finished) {
             sleep(15);
@@ -648,7 +647,7 @@ switch ($step) {
             </div>
             <div class="bottom">
                 <div class="bottom ins_12">
-                    <a href="<?php echo (isset($_SERVER["HTTPS"]) ? "https://" : "http://").$_SERVER["SERVER_NAME"].substr($_SERVER["REQUEST_URI"], 0, -24); ?>" class="btn btn-primary button_1">Go to Login Page</a>
+                    <a href="<?php echo (isset($_SERVER["HTTPS"]) ? "https://" : "http://").$_SERVER["SERVER_NAME"].substr($_SERVER["REQUEST_URI"], 0, -24); ?>" class="btn btn-primary action_button  button_1">Go to Login Page</a>
                 </div>
             </div>
             </div>
@@ -656,6 +655,8 @@ switch ($step) {
             </div>
 
             <?php
+        }else{
+            echo "<div class='alert alert-error'><i class='icon-remove'></i> Someting is wrong on importing database, please try again!!</div>";
         }
         break;
     case "6": ?>
@@ -680,7 +681,7 @@ switch ($step) {
             </div>
             <div class="bottom">
                 <div class="bottom ins_12">
-                    <a href="<?php echo (isset($_SERVER["HTTPS"]) ? "https://" : "http://").$_SERVER["SERVER_NAME"].substr($_SERVER["REQUEST_URI"], 0, -24); ?>" class="btn btn-primary button_1">Go to Login Page</a>
+                    <a href="<?php echo (isset($_SERVER["HTTPS"]) ? "https://" : "http://").$_SERVER["SERVER_NAME"].substr($_SERVER["REQUEST_URI"], 0, -24); ?>" class="btn btn-primary action_button  button_1">Go to Login Page</a>
                 </div>
             </div>
             </div>

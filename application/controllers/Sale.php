@@ -52,12 +52,12 @@ class Sale extends Cl_Controller {
             $this->session->set_userdata("clicked_method", $this->uri->segment(2));
             redirect('Outlet/outlets');
         }
-        //start check access function
+        // start check access function
         $segment_2 = $this->uri->segment(2);
         $segment_3 = $this->uri->segment(3);
         $controller = "";
         $function = "";
-        if($segment_2=="POS" || $segment_2 == "getAllCustomers" || $segment_2 == "registerDetailCalculationToShowAjax" || $segment_2 == "registerDetailCalculationToShow" || $segment_2 == "findCustomerCreditLimit" || $segment_2 == "get_all_holds_ajax" || $segment_2 == "get_customer_ajax" || $segment_2 == "get_single_hold_info_by_ajax" || $segment_2 == "stockCheckingForThisOutletById" || $segment_2 == "getExpiryByOutlet" || $segment_2 == "getVariationByItemId" || $segment_2 == "getIMEISerial" || $segment_2 == "closeRegister" || $segment_2 == "getOpeningDetails" || $segment_2 == "couponCodeValidate" || $segment_2 == "checUserDiscountPermission" || $segment_2 ==  'stripePayment' || $segment_2 == 'paypalPayment' || $segment_2 == 'get_new_hold_number_ajax' || $segment_2 == 'add_hold_by_ajax' || $segment_2 == 'checkAccess' || $segment_2 == 'add_customer_by_ajax' || $segment_2 == 'getTotalLoyaltyPoint' || $segment_2 == 'checkUniqueCustomerMobile' || $segment_2 == "singleExpiryDateStockCheck" || $segment_2 == 'groceryExperience' || $segment_2 == 'getComboItemCheck'){
+        if($segment_2=="POS" || $segment_2 == "getAllCustomers" || $segment_2 == "registerDetailCalculationToShowAjax" || $segment_2 == "registerDetailCalculationToShow" || $segment_2 == "findCustomerCreditLimit" || $segment_2 == "get_all_holds_ajax" || $segment_2 == "get_customer_ajax" || $segment_2 == "get_single_hold_info_by_ajax" || $segment_2 == "stockCheckingForThisOutletById" || $segment_2 == "getExpiryByOutlet" || $segment_2 == "getVariationByItemId" || $segment_2 == "getIMEISerial" || $segment_2 == "closeRegister" || $segment_2 == "getOpeningDetails" || $segment_2 == "couponCodeValidate" || $segment_2 == "checUserDiscountPermission" || $segment_2 ==  'stripePayment' || $segment_2 == 'paypalPayment' || $segment_2 == 'get_new_hold_number_ajax' || $segment_2 == 'add_hold_by_ajax' || $segment_2 == 'checkAccess' || $segment_2 == 'add_customer_by_ajax' || $segment_2 == 'getTotalLoyaltyPoint' || $segment_2 == 'checkUniqueCustomerMobile' || $segment_2 == "singleExpiryDateStockCheck" || $segment_2 == 'groceryExperience' || $segment_2 == 'getComboItemCheck' || $segment_2 == 'checkingExisOrNotIMEISerial' || $segment_2 == 'delete_all_information_of_hold_by_ajax' || $segment_2 == 'searchByGenericName' || $segment_2 == 'todaysSummary' || $segment_2 == 'getIMEISerialByOutlet' || $segment_2 == 'getAllHoldComboItems' || $segment_2 == 'iCheck' || $segment_2 == 'setItemStockInIndexDB' || $segment_2 = 'itemInfoSetter'){
             $controller = "138";
             $function = "pos";
         }elseif($segment_2=="add_sale_by_ajax" || $segment_2=="get_all_information_of_a_sale" || $segment_2 == "get_all_information_of_a_sale_ajax" || $segment_2 == "update_order_status_ajax"){
@@ -110,12 +110,32 @@ class Sale extends Cl_Controller {
         $grocery_value = htmlspecialcharscustom($this->input->post($this->security->xss_clean('grocery_value')));
         $update_company = [];
         $message = '';
-        if($grocery_value == 'ON'){
-            $update_company['grocery_experience'] = 'ON';
-            $message = 'Grocery or Medicine experience enabled successfully.';
+        $update_company['grocery_experience'] = $grocery_value;
+        $message = 'POS experience change successfully.';
+        $this->session->set_userdata($update_company);
+        $this->Common_model->updateInformation($update_company, $company_id, "tbl_companies");
+        $response = [
+            'status' => 'success',
+            'message' => $message,
+        ];
+        $this->output->set_content_type('application/json')->set_output(json_encode($response));
+    }
+    /**
+     * searchByGenericName
+     * @access public
+     * @param int
+     * @return void
+     */
+    public function searchByGenericName() {
+        $company_id = $this->session->userdata('company_id');
+        $generic_name_search_option = htmlspecialcharscustom($this->input->post($this->security->xss_clean('generic_name_search_option')));
+        $update_company = [];
+        $message = '';
+        $update_company['generic_name_search_option'] = $generic_name_search_option;
+        if($generic_name_search_option == 'Yes'){
+            $message = 'Generic name search facility has been enabled successfully!';
         }else{
-            $update_company['grocery_experience'] = 'OFF';
-            $message = 'Grocery or Medicine experience disabled successfully.';
+            $message = 'Generic name search facility has been disabled successfully!';
         }
         $this->session->set_userdata($update_company);
         $this->Common_model->updateInformation($update_company, $company_id, "tbl_companies");
@@ -134,15 +154,24 @@ class Sale extends Cl_Controller {
      * @return void
      */
     public function POS($encrypted_id = "") {
+        $user_id = $this->session->userdata('user_id');
         $company_id = $this->session->userdata('company_id');
+        if(isServiceAccess2($user_id, $company_id, 'sGmsJaFJE') == 'Saas Company'){
+            $company_info = getCompanyInfo();
+            $plan_details = $this->Common_model->getDataById($company_info->plan_id, 'tbl_pricing_plans');
+            $sale_count = $this->Common_model->getCountSaleNo($company_info->id);
+            if($plan_details->number_of_maximum_invoices == $sale_count){
+                $this->session->set_flashdata('exception_2', "You can no longer sale, Your limitation is over! Upgrade Now");
+                redirect('Service/planDetails');
+            }
+        }
+
         $data = array();
-        $data['units'] = $this->Common_model->getAllByCompanyId($company_id, 'tbl_units');
         $data['customers'] = $this->Common_model->getAllByCustomerByCompanyIdASC($company_id, 'tbl_customers');
         $data['denominations'] = $this->Common_model->getDenomination($company_id);
-        $data['items'] = $this->Stock_model->getItemForPOS('', '', '','','');
+        // $data['items'] = $this->Stock_model->getItemForPOS('', '', '','','');
         $data['item_categories'] = $this->Sale_model->getItemCategoriesBySorted($company_id, 'tbl_item_categories');
         $data['brands'] = $this->Common_model->getAllByCompanyId($company_id, 'tbl_brands');
-        $data['suppliers'] = $this->Common_model->getAllByCompanyIdForDropdown($company_id, 'tbl_suppliers');
         $data['waiters'] = $this->Common_model->getAllByCompanyIdForDropdown($company_id,'tbl_users');
         $data['multipleCurrencies'] = $this->Common_model->getAllByCompanyId($company_id, "tbl_multiple_currencies");
         $data['groups'] = $this->Common_model->getAllByCompanyIdForDropdown($company_id, 'tbl_customer_groups');
@@ -151,6 +180,105 @@ class Sale extends Cl_Controller {
         $this->load->view('sale/POS/main_screen', $data);
     }
 
+    public function itemInfoSetter(){
+        $items = $this->Stock_model->getItemForPOS('', '', '','','');
+        $itemArr = [];
+        $javascript_objects = "";
+        $i = 1;
+        $tmp_last_purchase_price = 0;
+        foreach($items as $single_menus){
+                $brand_name = $single_menus->brand_name ? " - " .  $single_menus->brand_name : '';
+                $supplier_name = $single_menus->supplier_name ? " - " .  $single_menus->supplier_name : '';
+                if($single_menus->last_purchase_price){
+                    $tmp_last_purchase_price = $single_menus->last_purchase_price;
+                }else{
+                    $tmp_last_purchase_price = $single_menus->purchase_price;
+                }
+                $img_size = "uploads/items/".$single_menus->photo;
+                if(file_exists($img_size) && $single_menus->photo!=""){
+                    $image_path = base_url().'uploads/items/'.$single_menus->photo;
+                }else{
+                    $image_path = base_url().'uploads/site_settings/image_thumb.png';
+                }
+                // Promotion Checker
+                $is_promo = 'No';
+                $today = date("Y-m-d",strtotime('today'));
+                $promo_checker = (Object)checkPromotionWithinDatePOS($today,$single_menus->id);
+                $get_food_menu_id = '';
+                $string_text = '';
+                $get_qty = 0;
+                $qty = 0;
+                $discount = '';
+                $promo_type = '';
+                $modal_item_name_row = '';
+
+
+                if(!moduleIsHideCheck('Promotion-YES')){
+                    if(isset($promo_checker) && $promo_checker && $promo_checker->status){
+                        $get_food_menu_id = $promo_checker->get_food_menu_id;
+                        $string_text = $promo_checker->string_text;
+                        $get_qty = $promo_checker->get_qty;
+                        $qty = $promo_checker->qty;
+                        $discount = $promo_checker->discount;
+                        $promo_type = $promo_checker->type;
+                        $modal_item_name_row = getParentNameTemp($single_menus->parent_id).getFoodMenuNameCodeById($get_food_menu_id);
+                        $is_promo = "Yes";
+                    }
+                } 
+
+                // Item Json Create
+                $data = array(
+                    'cat_id' => $single_menus->category_id,
+                    'conversion_rate' => $single_menus->conversion_rate,
+                    'item_id' => $single_menus->id,
+                    'generic_name' => $single_menus->generic_name,
+                    'brand_id' => $single_menus->brand_id,
+                    'item_code' => str_replace("'", "", $single_menus->code ?? ''),
+                    'category_name' => str_replace("'", "", $single_menus->item_category_name ?? ''),
+                    'item_name' => str_replace("'", "", $single_menus->item_name ?? ''),
+                    'price' => $single_menus->sale_price,
+                    'sale_unit_name' => str_replace("'", "", $single_menus->sale_unit_name ?? ''),
+                    'image' => $image_path,
+                    'tax_information' => $single_menus->tax_information,
+                    'item_type' => $single_menus->type,
+                    'expiry_date_maintain' => $single_menus->expiry_date_maintain,
+                    'whole_sale_price' => $single_menus->whole_sale_price,
+                    'last_purchase_price' => $tmp_last_purchase_price,
+                    'warranty' => $single_menus->warranty,
+                    'guarantee' => $single_menus->guarantee,
+                    'brand_name' => str_replace("'", "", $brand_name ?? ''),
+                    'supplier_name' => str_replace("'", "", $supplier_name ?? ''),
+                    'description' => $single_menus->description,
+                    'is_promo' => $is_promo,
+                    'promo_item_name' => $modal_item_name_row,
+                    'promo_type' => $promo_type,
+                    'promo_discount' => $discount,
+                    'promo_qty' => $qty,
+                    'promo_get_qty' => $get_qty,
+                    'promo_description' => $string_text,
+                    'promo_item_id' => $get_food_menu_id,
+                    'parent_id' => $single_menus->parent_id
+                );
+                array_push($itemArr, $data);
+                $i++;
+        }
+        $javascript_objects = json_encode($itemArr);
+        $response = [
+            'status' => 'success',
+            'data' => $javascript_objects,
+        ];	
+        $this->output->set_content_type('application/json')->set_output(json_encode($response));
+    }
+
+    /**
+     * iCheck
+     * @access public
+     * @param no
+     * @return void
+     */
+    public function iCheck(){
+        echo 1;
+    }
 
     /**
      * add_sale_by_ajax
@@ -159,9 +287,8 @@ class Sale extends Cl_Controller {
      * @return void
      */
     function add_sale_by_ajax(){
-
         $fiscal_printer_status = $this->session->userdata('fiscal_printer_status');
-
+        $open_cash_drawer = $this->session->userdata('open_cash_drawer_when_printing_invoice');
         $acc_type = array();
         $customer_name = htmlspecialcharscustom($this->input->post($this->security->xss_clean('customer_name')));
         $account_type = htmlspecialcharscustom($this->input->post($this->security->xss_clean('account_type')));
@@ -174,7 +301,7 @@ class Sale extends Cl_Controller {
         $account_note = htmlspecialcharscustom($this->input->post($this->security->xss_clean('account_note')));
         $given_amount = htmlspecialcharscustom($this->input->post($this->security->xss_clean('given_amount')));
         $change_amount = htmlspecialcharscustom($this->input->post($this->security->xss_clean('change_amount')));
-
+        $sale_no = htmlspecialcharscustom($this->input->post($this->security->xss_clean('sale_no')));
         if($account_type == 'Cash' && $account_type != ''){
             $p_note = htmlspecialcharscustom($this->input->post($this->security->xss_clean('p_note')));
             if($p_note != ''){
@@ -229,14 +356,13 @@ class Sale extends Cl_Controller {
         $charge_type = htmlspecialcharscustom($this->input->post($this->security->xss_clean('charge_type')));
         $data = array();
         $sub_total_discount_finalize = $this->input->post($this->security->xss_clean('sub_total_discount_finalize'));
-        $data['paid_amount'] = trim_checker($paid_amount);
         $data['customer_id'] = trim_checker($order_details->customer_id);
         $data['employee_id'] = trim_checker($order_details->select_employee_id);
         $data['total_items'] = trim_checker($order_details->total_items_in_cart);
         $data['sub_total'] = trim_checker($order_details->sub_total);
         $data['sale_date'] = date("Y-m-d",strtotime(trim_checker($order_details->sale_date1)));
         $data['vat'] = trim_checker($order_details->total_vat);
-        $data['total_payable'] = trim_checker((int)$order_details->total_payable) + (int)$paid_amount;
+        $data['total_payable'] = trim_checker($order_details->total_payable);
         $data['grand_total'] = trim_checker($order_details->total_payable);
         $data['total_item_discount_amount'] = trim_checker($order_details->total_item_discount_amount);
         $data['sub_total_with_discount'] = trim_checker($order_details->sub_total_with_discount);
@@ -248,6 +374,9 @@ class Sale extends Cl_Controller {
         $data['account_type'] = trim_checker($account_type);
         $data['note'] = trim_checker($note);
         $data['charge_type'] = trim_checker($charge_type);
+        if($sale_no != ''){
+            $data['sale_no'] = $sale_no;
+        }
         if(!empty($acc_type)){
             $data['payment_method_type'] = json_encode($acc_type);
         }
@@ -268,15 +397,13 @@ class Sale extends Cl_Controller {
         $data['order_time'] = date("H:i:s");
         $data['sale_vat_objects'] = json_encode($order_details->sale_vat_objects);
         $data['previous_due'] = $finalize_previous_due;
-        $data['paid_amount'] = trim_checker((int)$order_details->total_payable) + (int)$paid_amount;
+        $data['paid_amount'] = $paid_amount;
         $data['due_amount'] = $due_amount;
         $data['change_amount'] = $change_amount;
         $data['given_amount'] = $given_amount;
         $data['account_note'] = $account_note;
         $data['close_time'] = date('H:i:s');
-
         $this->db->trans_begin();
-
         if($sale_old_id > 0){
             $this->db->where('id', $sale_old_id);
             $this->db->update('tbl_sales', $data);
@@ -288,25 +415,28 @@ class Sale extends Cl_Controller {
             $is_new_item = 'No';
         }else{
             $is_new_item = 'Yes';
-
             $data['random_code'] = trim_checker($order_details->random_code);
             $this->db->insert('tbl_sales', $data);
             $sales_id = $this->db->insert_id();
 
-            // INV No Make
-            $invoice_prefix = $this->session->userdata('invoice_prefix');
-            $inv_no_start_from = $this->session->userdata('inv_no_start_from');
-            $sale_no = str_pad($sales_id, 6, '0', STR_PAD_LEFT);
-            if($inv_no_start_from){
-                $generated_sale_no = ((int)$inv_no_start_from - 1) + (int)$sale_no;
-                $inv_no = $invoice_prefix.$generated_sale_no;
-            }else{
-                $inv_no = $invoice_prefix.$sale_no;
+            if($sale_no == ''){
+                // INV No Make
+                $invoice_prefix = $this->session->userdata('invoice_prefix');
+                $inv_no_start_from = $this->session->userdata('inv_no_start_from');
+                $sale_no = str_pad($sales_id, 6, '0', STR_PAD_LEFT);
+                if($inv_no_start_from){
+                    $generated_sale_no = ((int)$inv_no_start_from - 1) + (int)$sale_no;
+                    $inv_no = $invoice_prefix.$generated_sale_no;
+                }else{
+                    $inv_no = $invoice_prefix.$sale_no;
+                }
+                $sale_no_update_array = array('sale_no' => $inv_no);
+                $this->db->where('id', $sales_id);
+                $this->db->update('tbl_sales', $sale_no_update_array);
             }
-
-            $sale_no_update_array = array('sale_no' => $inv_no);
-            $this->db->where('id', $sales_id);
-            $this->db->update('tbl_sales', $sale_no_update_array);
+            
+            
+            
         }
         if($sales_id > 0 && count($order_details->items) > 0){
             $promo_parnt_id = '';
@@ -352,7 +482,6 @@ class Sale extends Cl_Controller {
                 }else{
                     $promo_parnt_id = '';
                 }
-
                 if($item->combo_item){
                     $combo_arr = [];
                     foreach($item->combo_item as $combo){
@@ -361,6 +490,7 @@ class Sale extends Cl_Controller {
                         $combo_arr['show_in_invoice'] = $combo->show_in_invoice;
                         $combo_arr['combo_item_id'] = $combo->combo_item_id;
                         $combo_arr['combo_item_qty'] = $combo->combo_item_qty;
+                        $combo_arr['combo_item_type'] = $combo->combo_item_type;
                         $combo_arr['combo_item_price'] = $combo->combo_item_price;
                         $combo_arr['combo_item_seller_id'] = isset($combo->combo_item_seller) ? $combo->combo_item_seller : NULL;
                         $combo_arr['outlet_id'] = $this->session->userdata('outlet_id');
@@ -370,15 +500,10 @@ class Sale extends Cl_Controller {
                         $this->db->insert('tbl_combo_item_sales', $combo_arr);
                     }
                 }
-
-
             }
         }
-
-
         // Get Sale Info
         $sale_details = $this->Common_model->getDataById($sales_id, "tbl_sales");
-
         if($fiscal_printer_status == 'ON'){
             //add variable for fiscal data
             $fiscal_data = '#*3#'.($this->session->userdata('user_id')).'#'.($this->session->userdata('full_name')).'#'.$sale_details->sale_no.'#'.$sale_details->id.'##0#';
@@ -388,7 +513,6 @@ class Sale extends Cl_Controller {
                 $fiscal_data .= '#^'.($va->food_menu_id).'#'.(getItemNameById($va->food_menu_id)).' '.($va->qty).'#'.($va->menu_price_without_discount).'#1.000#2#0#';
             }
         }
-
         // Multi Currency Payment AND Multy Payment
         $currency_type = htmlspecialcharscustom($this->input->post('is_multi_currency'));
         $multi_currency = htmlspecialcharscustom($this->input->post('multi_currency'));
@@ -586,8 +710,10 @@ class Sale extends Cl_Controller {
             }else if($qrcode_type == 'Invoice Link'){
                 createDirectory('uploads/qr_code');
                 $qr_codes_path = "uploads/qr_code/".$sale_id.".png";
-                $this->load->library('phpqrcode/qrlib');
-                QRcode::png($url_patient, $qr_codes_path,'', 4, 1);
+                if(file_exists($qr_codes_path)){
+                    $this->load->library('phpqrcode/qrlib');
+                    QRcode::png($url_patient, $qr_codes_path,'', 4, 1);
+                }
             }
         }
         if ($print_format == '56mm') {
@@ -1070,17 +1196,6 @@ class Sale extends Cl_Controller {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
     /**
      * check_version_file
      * @access public
@@ -1211,61 +1326,82 @@ class Sale extends Cl_Controller {
      * @return int
      */
     function add_customer_by_ajax(){
-        $dob = explode("-",$this->input->post($this->security->xss_clean('customer_dob')));
-        $doa = explode("-",$this->input->post($this->security->xss_clean('customer_doa')));
-        $dob2 = explode(" - ",$this->input->post($this->security->xss_clean('customer_dob')));
-        $doa2 = explode(" - ",$this->input->post($this->security->xss_clean('customer_doa')));
-        $full_dob = null;
-        $full_doa = null;
-        if(count($dob)==3){
-            $full_dob = $dob[2].'-'.$dob[1].'-'.$dob[0];
-        }elseif(count($dob2)==3){
-            $full_dob = $dob2[2].'-'.$dob2[1].'-'.$dob2[0];
-        }
-        if(count($doa)==3){
-            $full_doa = $doa[2].'-'.$doa[1].'-'.$doa[0];
-        }if(count($doa2)==3){
-            $full_doa = $doa2[2].'-'.$doa2[1].'-'.$doa2[0];
-        }
         $customer_id = htmlspecialcharscustom($this->input->post($this->security->xss_clean('customer_id')));
-        $data['name'] = trim_checker(getPlanText(htmlspecialcharscustom(escapeQuot($this->input->post($this->security->xss_clean('customer_name'))))));
-        $data['phone'] = trim_checker(htmlspecialcharscustom($this->input->post($this->security->xss_clean('customer_phone'))));
-        $data['nid'] = trim_checker(htmlspecialcharscustom(escapeQuot($this->input->post($this->security->xss_clean('nid')))));
-        $data['email'] = trim_checker($this->input->post($this->security->xss_clean('customer_email')));
-        $data['opening_balance'] = trim_checker($this->input->post($this->security->xss_clean('opening_balance')));
-        $data['opening_balance_type'] = trim_checker($this->input->post($this->security->xss_clean('opening_balance_type')));
-        $data['credit_limit'] = trim_checker($this->input->post($this->security->xss_clean('credit_limit')));
-        $data['group_id'] = trim_checker($this->input->post($this->security->xss_clean('group_id')));
-        if($full_dob){
-            $data['date_of_birth'] = date('Y-m-d',strtotime($full_dob));
+        if($customer_id){
+            $this->form_validation->set_rules('phone', lang('phone'), "required|max_length[50]");
+            $this->form_validation->set_rules('email', lang('email_address'), "valid_email|max_length[50]");
+        }else{
+            $this->form_validation->set_rules('phone', lang('phone'), "required|max_length[50]|is_unique[tbl_customers.phone]");
+            $this->form_validation->set_rules('email', lang('email_address'), "valid_email|is_unique[tbl_customers.email]");
         }
-        if($full_doa){
-            $data['date_of_anniversary'] = date('Y-m-d',strtotime($full_doa));
-        }
-        $data['address'] = getPlanText($this->input->post($this->security->xss_clean('customer_delivery_address')));
-        $data['gst_number'] = $this->input->post($this->security->xss_clean('customer_gst_number'));
-        $data['same_or_diff_state'] = $this->input->post($this->security->xss_clean('same_or_diff_state'));
+        if ($this->form_validation->run() == TRUE) {
+            $dob = explode("-",$this->input->post($this->security->xss_clean('customer_dob')));
+            $doa = explode("-",$this->input->post($this->security->xss_clean('customer_doa')));
+            $dob2 = explode(" - ",$this->input->post($this->security->xss_clean('customer_dob')));
+            $doa2 = explode(" - ",$this->input->post($this->security->xss_clean('customer_doa')));
+            $full_dob = null;
+            $full_doa = null;
+            if(count($dob)==3){
+                $full_dob = $dob[2].'-'.$dob[1].'-'.$dob[0];
+            }elseif(count($dob2)==3){
+                $full_dob = $dob2[2].'-'.$dob2[1].'-'.$dob2[0];
+            }
+            if(count($doa)==3){
+                $full_doa = $doa[2].'-'.$doa[1].'-'.$doa[0];
+            }if(count($doa2)==3){
+                $full_doa = $doa2[2].'-'.$doa2[1].'-'.$doa2[0];
+            }
+            $data['name'] = trim_checker(getPlanText(htmlspecialcharscustom(escapeQuot($this->input->post($this->security->xss_clean('customer_name'))))));
+            $data['phone'] = trim_checker(htmlspecialcharscustom($this->input->post($this->security->xss_clean('customer_phone'))));
+            $data['nid'] = trim_checker(htmlspecialcharscustom(escapeQuot($this->input->post($this->security->xss_clean('nid')))));
+            $data['email'] = trim_checker($this->input->post($this->security->xss_clean('customer_email')));
+            $data['opening_balance'] = trim_checker($this->input->post($this->security->xss_clean('opening_balance')));
+            $data['opening_balance_type'] = trim_checker($this->input->post($this->security->xss_clean('opening_balance_type')));
+            $data['credit_limit'] = trim_checker($this->input->post($this->security->xss_clean('credit_limit')));
+            $data['group_id'] = trim_checker($this->input->post($this->security->xss_clean('group_id')));
+            if($full_dob){
+                $data['date_of_birth'] = date('Y-m-d',strtotime($full_dob));
+            }
+            if($full_doa){
+                $data['date_of_anniversary'] = date('Y-m-d',strtotime($full_doa));
+            }
+            $data['address'] = getPlanText($this->input->post($this->security->xss_clean('customer_delivery_address')));
+            $data['gst_number'] = $this->input->post($this->security->xss_clean('customer_gst_number'));
+            $data['same_or_diff_state'] = $this->input->post($this->security->xss_clean('same_or_diff_state'));
 
-        $discount = $this->input->post($this->security->xss_clean('customer_discount'));
-        if($discount == ''){
-            $data['discount'] = 0;
+            $discount = $this->input->post($this->security->xss_clean('customer_discount'));
+            if($discount == ''){
+                $data['discount'] = 0;
+            }else{
+                $data['discount'] = $this->input->post($this->security->xss_clean('customer_discount'));
+            }
+                        
+            $data['price_type'] = trim_checker($this->input->post($this->security->xss_clean('customer_price_type')));            
+            $data['user_id'] = $this->session->userdata('user_id');
+            $data['user_id'] = $this->session->userdata('user_id');
+            $data['company_id'] = $this->session->userdata('company_id');
+            if($customer_id > 0 && $customer_id!=""){
+                $this->db->where('id', $customer_id);
+                $this->db->update('tbl_customers', $data);
+            }else{
+                $data['added_date'] = date('Y-m-d H:i:s');
+                $this->db->insert('tbl_customers', $data);
+                $customer_id = $this->db->insert_id();
+            }
+            $response = [
+                'status' => 'success',
+                'customer_id' => $customer_id
+            ];
         }else{
-            $data['discount'] = $this->input->post($this->security->xss_clean('customer_discount'));
+            $response = [
+                'status' => 'error',
+                'errors' => [
+                    'phone' => form_error('phone'),
+                    'email' => form_error('email')
+                ]
+            ];
         }
-                    
-        $data['price_type'] = trim_checker($this->input->post($this->security->xss_clean('customer_price_type')));            
-        $data['user_id'] = $this->session->userdata('user_id');
-        $data['user_id'] = $this->session->userdata('user_id');
-        $data['company_id'] = $this->session->userdata('company_id');
-        if($customer_id > 0 && $customer_id!=""){
-            $this->db->where('id', $customer_id);
-            $this->db->update('tbl_customers', $data);
-        }else{
-            $data['added_date'] = date('Y-m-d H:i:s');
-            $this->db->insert('tbl_customers', $data);
-            $customer_id = $this->db->insert_id();
-        }
-        echo $customer_id ;
+        $this->output->set_content_type('application/json')->set_output(json_encode($response));
     }
 
     public function checkUniqueCustomerMobile(){
@@ -1341,6 +1477,21 @@ class Sale extends Cl_Controller {
         $number_of_holds = $this->Sale_model->getNumberOfHoldsByUserAndOutletId($outlet_id,$user_id);
         return $number_of_holds;
     }
+    /**
+     * getAllHoldComboItems
+     * @access public
+     * @param no
+     * @return int
+     */
+    function getAllHoldComboItems(){
+        $hold_item_id = $this->input->post('hold_item_id');
+        $number_of_holds = $this->Sale_model->getAllHoldComboItems($hold_item_id);
+        $response = [
+            'status' => 'success',
+            'data' => $number_of_holds,
+        ];	
+        $this->output->set_content_type('application/json')->set_output(json_encode($response));
+    }
 
 
     /**
@@ -1384,7 +1535,7 @@ class Sale extends Cl_Controller {
         $data['sale_vat_objects'] = json_encode($order_details->sale_vat_objects);
         if($hold_number === 0 || $hold_number=== ""){
             $current_hold_order = $this->get_current_hold();
-            echo "current hold".$current_hold_order."<br/>";
+            // echo "current hold".$current_hold_order."<br/>";
             $hold_number = $current_hold_order+1;
         }
         $data['hold_no'] = $hold_number;
@@ -1409,7 +1560,7 @@ class Sale extends Cl_Controller {
                 }else{
                     $item_data['delivery_status'] = 'Cash Received';
                 }
-                if($item->promo_item_id){
+                if($item->is_promo_item == 'Yes'){
                     $promo_item = array();
                     $promo_item['promo_item_id'] = trim_checker($item->promo_item_id);
                     $promo_item['promo_item_name'] = trim_checker($item->promo_item_name);
@@ -1430,6 +1581,26 @@ class Sale extends Cl_Controller {
                 $item_data['company_id'] = $this->session->userdata('company_id');
                 $item_data['del_status'] = 'Live';
                 $this->db->insert('tbl_holds_details', $item_data);
+                $combo_details_id = $this->db->insert_id();
+
+                if($item->combo_item){
+                    $combo_arr = [];
+                    foreach($item->combo_item as $combo){
+                        $combo_arr['sale_id'] = $holds_id;
+                        $combo_arr['combo_sale_item_id'] = $combo_details_id;
+                        $combo_arr['show_in_invoice'] = $combo->show_in_invoice;
+                        $combo_arr['combo_item_id'] = $combo->combo_item_id;
+                        $combo_arr['combo_item_qty'] = $combo->combo_item_qty;
+                        $combo_arr['combo_item_type'] = $combo->combo_item_type;
+                        $combo_arr['combo_item_price'] = $combo->combo_item_price;
+                        $combo_arr['combo_item_seller_id'] = isset($combo->combo_item_seller) ? $combo->combo_item_seller : NULL;
+                        $combo_arr['outlet_id'] = $this->session->userdata('outlet_id');
+                        $combo_arr['user_id'] = $this->session->userdata('user_id');
+                        $combo_arr['company_id'] = $this->session->userdata('company_id');
+                        $combo_arr['del_status'] = 'Live';
+                        $this->db->insert('tbl_hold_combo_items', $combo_arr);
+                    }
+                }
             }
         }
         echo $holds_id;
@@ -1559,9 +1730,8 @@ class Sale extends Cl_Controller {
      * @return boolean
      */
     public function delete_specific_order_by_sale_id($sale_id){
-        $sale_row =  $this->Common_model->getDataById($sale_id, "tbl_sales");
-        $this->db->delete('tbl_sales', array('id' => $sale_id));
-        $this->db->delete('tbl_sales_details', array('sales_id' => $sale_id));
+        $this->Common_model->deleteStatusChangeWithChild($sale_id, $sale_id, "tbl_sales", "tbl_sales_details", 'id', 'sales_id');
+        $this->Common_model->deleteStatusChangeByFieldName($sale_id, 'sale_id', 'tbl_sale_payments');
         return true;
     }
 
@@ -1991,7 +2161,7 @@ class Sale extends Cl_Controller {
                                 $servicing = 0;
                             }
 
-                            $inline_total = $opening_balance - $total_purchase + $total_sale  + $total_due_receive - $total_due_payment - $total_expense + $refund_amount + $down_payment + $servicing + $installment_collection;
+                            $inline_total = (float)$opening_balance - (float)$total_purchase + (float)$total_sale  + (float)$total_due_receive - (float)$total_due_payment - (float)$total_expense + (float)$refund_amount + (float)$down_payment + (float)$servicing + (float)$installment_collection;
                             $array_p_name[] = $payments[1];
                             $array_p_amount[] = $inline_total;
 
@@ -2407,4 +2577,32 @@ class Sale extends Cl_Controller {
             echo json_encode(['status' => 'error', 'code' => 300, 'message' => $response->getMessage()]);
         }
     }
+
+
+
+    // ################## Index DB Item Stock Setter Start ##################
+    /**
+     * setItemStockInIndexDB
+     * @access public
+     * @param no
+     * @return json
+     */
+    function setItemStockInIndexDB(){
+        // Stock InoDB Setter
+        $item_id = '';
+        $item_code = '';
+        $brand_id = '';
+        $category_id = '';
+        $supplier_id = '';
+        $generic_name = '';
+        $outlet_id = $this->session->userdata('outlet_id');
+        $data = $this->Sale_model->stockInoDBSetter($item_id,$item_code,$brand_id,$category_id,$supplier_id, $generic_name, $outlet_id);
+        $response = [
+            'status' => 'success',
+            'data' => $data,
+        ];	
+        $this->output->set_content_type('application/json')->set_output(json_encode($response));
+    }
+    // ################## Index DB Item Stock Setter End ##################
+
 }

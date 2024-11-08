@@ -45,6 +45,7 @@
 <body>
 	<input type="hidden" id="APPLICATION_SaaS_TYPE" value="<?php echo isServiceAccess('1','1','sGmsJaFJE') ?>">
 	<input type="hidden" id="APPLICATION_MODE" value="<?php echo APPLICATION_MODE ?>">
+	<input type="hidden" id="fccpath" value="<?php echo (defined('FCCPATH') && FCCPATH)?>">
 	<section class="ftco-section">
 		<div class="container">
 			<div class="row justify-content-center">
@@ -130,15 +131,13 @@
 									<?php } ?>
 									<div class="d-flex py-10">
 										<button type="submit" name="submit" value="submit" class="btn login-button btn-2 rounded submit me-1 login_trigger"><?= lang('login');?></button>
-
+										<?php if(isServiceAccess('1','1','sGmsJaFJE')){ ?>
+											<a href="<?php echo base_url();?>Authentication/signup" class="btn login-button btn-2 rounded submit me-1">Sign Up</a>
+										<?php } ?>
 										<?php if (APPLICATION_MODE == 'demo') {?>
 										<a target="_blank" class="btn login-button" href="https://youtu.be/wtrn0uUxfC8?si=RKwcjlHSixegQeX3">
 										How to start
                                         </a>
-										<?php } ?>
-										
-										<?php if(isServiceAccess('1','1','sGmsJaFJE')){ ?>
-											<a href="<?php echo base_url();?>Authentication/signup" class="btn login-button btn-2 rounded submit me-1">Sign Up</a>
 										<?php } ?>
 									</div>
 									<div class="d-flex justify-content-end forgot-pass-wrap">
@@ -152,8 +151,16 @@
 			</div>
 		</div>
 	</section>
+
+
+
+	<?php if(APPLICATION_MODE == 'demo'){ ?>
+		<a href="<?php echo isServiceAccess2('', '', 'sGmsJaFJE') == 'Not SaaS' ? 'https://dsbeta.work/dsdemo/off_pos.php' : 'https://api.whatsapp.com/send?phone=880181231633'?>" target="_blank" class="btn buy-now"><iconify-icon icon="solar:cart-large-broken" width="18" class="me-2"></iconify-icon> Buy Now</a>
+	<?php } ?>
+
+
 	<script src="<?php echo base_url(); ?>assets/bootstrap/bootstrap.bundle.min.js"></script>
-	<script src="<?php echo base_url(); ?>assets/copyright.js"></script>
+	<script src="<?php echo base_url(); ?>assets/origin.js"></script>
 	<script src="<?php echo base_url(); ?>frequent_changing/js/select-2-call.js"></script>
     <script src="<?php echo base_url(); ?>frequent_changing/progressive_app/app_custom.js"></script>
     <script src="<?php echo base_url(); ?>frequent_changing/js/login.js"></script>

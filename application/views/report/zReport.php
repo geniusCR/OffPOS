@@ -35,7 +35,7 @@
                     <div class="col-sm-12 mb-2 col-md-3">
                         <div class="form-group">
                             <input type="text" name="date" readonly class="form-control customDatepicker"
-                            placeholder="<?php echo lang('date'); ?>" value="<?php echo date('Y-m-d', strtotime('today')); ?>">
+                            placeholder="<?php echo lang('date'); ?>" value="<?php echo $selectedDate; ?>">
                         </div>
                     </div>
                     <div class="col-sm-12 mb-2 col-md-3">

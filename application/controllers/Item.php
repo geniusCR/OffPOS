@@ -36,18 +36,19 @@ class Item extends Cl_Controller {
         if (!$this->session->has_userdata('user_id')) {
             redirect('Authentication/index');
         }
-        
         //start check access function
         $segment_2 = $this->uri->segment(2);
         $segment_3 = $this->uri->segment(3);
         $controller = "49";
         $function = "";
-        if(($segment_2=="addEditItem") || ($segment_2 == "getItem" || $segment_2 == "getVariationItem" || $segment_2 == "imeiSerialStockCheck" || $segment_2 == "imeiSerialCheck" || $segment_2 == "stockQtyCheck")){
+        if(($segment_2=="addEditItem") || ($segment_2 == "getItem" || $segment_2 == "getVariationItem" || $segment_2 == "imeiSerialStockCheck" || $segment_2 == "imeiSerialCheck" || $segment_2 == "stockQtyCheck" || $segment_2 == 'bulkItemUpdate' || $segment_2 == 'bulkPriceUpdate' || $segment_2=="changeStatus")){
             $function = "add";
-        }elseif(($segment_2=="addEditItem" && $segment_2) || ($segment_2 == "getItem" || $segment_2 == "getVariationItem" || $segment_2 == "imeiSerialStockCheck" || $segment_2 == "imeiSerialCheck" || $segment_2 == "stockQtyCheck" || $segment_2 == 'bulkItemUpdate')){
+        }elseif(($segment_2=="addEditItem" && $segment_2) || ($segment_2 == "getItem" || $segment_2 == "getVariationItem" || $segment_2 == "imeiSerialStockCheck" || $segment_2 == "imeiSerialCheck" || $segment_2 == "stockQtyCheck" || $segment_2 == 'bulkItemUpdate' || $segment_2 == 'bulkPriceUpdate' || $segment_2=="changeStatus")){
             $function = "edit";
         }elseif($segment_2=="itemDetails"){
             $function = "view";
+        }elseif($segment_2=="changeStatus"){
+            $function = "enable_disable_status";
         }elseif($segment_2=="deleteItem"){
             $function = "delete";
         }elseif($segment_2=="items" || $segment_2 == "getAjaxData"){
@@ -66,6 +67,7 @@ class Item extends Cl_Controller {
             $this->session->set_flashdata('exception_1',lang('no_access'));
             redirect('Authentication/userProfile');
         }
+
         if(!checkAccess($controller,$function)){
             $this->session->set_flashdata('exception_1',lang('no_access'));
             redirect('Authentication/userProfile');
@@ -86,6 +88,7 @@ class Item extends Cl_Controller {
             $add_more = $this->input->post($this->security->xss_clean('add_more'));
             // Get Default Input value for condition checking
             $type = htmlspecialcharscustom($this->input->post('type'));
+            $expiry_date_maintain = htmlspecialcharscustom($this->input->post('expiry_date_maintain'));
             // Global validation
             $this->form_validation->set_rules('type', lang('type'), 'required|max_length[30]');
             $this->form_validation->set_rules('name', lang('name'), 'required|max_length[100]');
@@ -150,188 +153,183 @@ class Item extends Cl_Controller {
                 }
             }
             if ($this->form_validation->run() == TRUE) {
+                // pre($_POST);
                 $product_info = array();
-                $product_info['name'] = htmlspecialcharscustom($this->input->post('name'));
-                $product_info['alternative_name'] = htmlspecialcharscustom($this->input->post('alternative_name'));
-                $product_info['generic_name'] = escapeQuot(htmlspecialcharscustom($this->input->post('generic_name')));
-                $product_info['type'] = escapeQuot(htmlspecialcharscustom($this->input->post('type')));
-                $product_info['category_id'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('category_id')));
-                $product_info['rack_id'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('rack_id')));
-                $product_info['code'] = htmlspecialcharscustom($this->input->post('code'));
-                $product_info['brand_id'] = htmlspecialcharscustom($this->input->post('brand_id'));
-                $product_info['alert_quantity'] = htmlspecialcharscustom($this->input->post('alert_quantity'));
-                if($type == 'IMEI_Product' || $type == 'Serial_Product' || $type == 'Installment_Product'){
-                    $product_info['unit_type'] = 1;
-                }else{
-                    $product_info['unit_type'] = htmlspecialcharscustom($this->input->post('unit_type'));
-                }
-                if($unit_type == 1){
-                    $product_info['purchase_unit_id'] = htmlspecialcharscustom($this->input->post('unit_id'));
-                    $product_info['sale_unit_id'] = htmlspecialcharscustom($this->input->post('unit_id'));
-                    $product_info['conversion_rate'] = 1;
-                    $conversion_rate = 1;
-                }elseif($unit_type == 2){
-                    $product_info['purchase_unit_id'] = htmlspecialcharscustom($this->input->post('purchase_unit_id'));
-                    $product_info['sale_unit_id'] = htmlspecialcharscustom($this->input->post('sale_unit_id'));
-                    $product_info['conversion_rate'] = htmlspecialcharscustom($this->input->post('conversion_rate'));
-                    $conversion_rate = htmlspecialcharscustom($this->input->post('conversion_rate'));
-                }
-                $product_info['loyalty_point'] = htmlspecialcharscustom($this->input->post('loyalty_point'));
-                $product_info['supplier_id'] = htmlspecialcharscustom($this->input->post('supplier_id'));
-                $product_info['purchase_price'] = htmlspecialcharscustom($this->input->post('purchase_price'));
-                $product_info['whole_sale_price'] = htmlspecialcharscustom($this->input->post('whole_sale_price'));
-                $product_info['warranty'] = htmlspecialcharscustom($this->input->post('warranty'));
-                $product_info['warranty_date'] = htmlspecialcharscustom($this->input->post('warranty_date'));
-                $product_info['guarantee'] = htmlspecialcharscustom($this->input->post('guarantee'));
-                $product_info['guarantee_date'] = htmlspecialcharscustom($this->input->post('guarantee_date'));
-                $product_info['description'] = escapeQuot(htmlspecialcharscustom($this->input->post('description')));
-                if($type != 'Installment_Product'){
-                    $product_info['tax_information'] = $tax_information;
-                    $product_info['tax_string'] = $tax_string;
-                }
-                $product_info['sale_price'] = htmlspecialcharscustom($this->input->post('sale_price'));
-                $product_info['photo'] = htmlspecialcharscustom($this->input->post('image_url'));
-                $product_info['p_type'] = htmlspecialcharscustom($this->input->post('type'));
-                $product_info['user_id'] = $this->session->userdata('user_id');
-                $product_info['company_id'] = $this->session->userdata('company_id');
-                if ($id == "") {
-                    $product_info['last_three_purchase_avg'] = htmlspecialcharscustom($this->input->post('purchase_price'));
-                    $product_info['last_purchase_price'] = htmlspecialcharscustom($this->input->post('purchase_price'));
-                    $product_info['added_date'] = date('Y-m-d H:i:s');
-                    $id = $this->Common_model->insertInformation($product_info, "tbl_items");
-                    if($type != 'Variation_Product'){
-                        if(isset($_POST['outlets']) && $_POST['outlets']){
-                            $this->saveOpeningStock($_POST['outlets'], $_POST['quantity'], $type, $id, $product_info['conversion_rate']);
-                        }
+                    $product_info['name'] = htmlspecialcharscustom($this->input->post('name'));
+                    $product_info['alternative_name'] = htmlspecialcharscustom($this->input->post('alternative_name'));
+                    if($encrypted_id == ''){
+                        $product_info['expiry_date_maintain'] = escapeQuot(htmlspecialcharscustom($this->input->post('expiry_date_maintain')));
                     }
-                    if($type == 'Combo_Product'){
-                        if(isset($_POST['combo_item_qty']) && $_POST['combo_item_qty']){
-                            $this->saveComboProducts($_POST['combo_item_qty'], $id);
-                        }
-                    }
-                    // Product Code Generate
-                    $generated_code = $this->Master_model->generateItemCode();
-                    $product_code_start_from = $this->session->userdata('product_code_start_from');
-                    if($product_code_start_from){
-                        $data['autoCode'] = ((int)$product_code_start_from - 1) + (int)$generated_code;
+                    $product_info['generic_name'] = escapeQuot(htmlspecialcharscustom($this->input->post('generic_name')));
+                    $product_info['type'] = escapeQuot(htmlspecialcharscustom($this->input->post('type')));
+                    $product_info['category_id'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('category_id')));
+                    $product_info['rack_id'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('rack_id')));
+                    $product_info['code'] = htmlspecialcharscustom($this->input->post('code'));
+                    $product_info['brand_id'] = htmlspecialcharscustom($this->input->post('brand_id'));
+                    $product_info['alert_quantity'] = htmlspecialcharscustom($this->input->post('alert_quantity'));
+                    if($type == 'IMEI_Product' || $type == 'Serial_Product' || $type == 'Installment_Product'){
+                        $product_info['unit_type'] = 1;
                     }else{
-                        $data['autoCode'] = $generated_code;
+                        $product_info['unit_type'] = htmlspecialcharscustom($this->input->post('unit_type'));
                     }
-                    $this->session->set_flashdata('exception', lang('insertion_success'));
-                }else {
-                    $this->Common_model->updateInformation($product_info, $id, "tbl_items");
-                    setAveragePrice($id);
-                    // Product Code Generate
-                    $generated_code = $this->Master_model->generateItemCode();
-                    $product_code_start_from = $this->session->userdata('product_code_start_from');
-                    if($product_code_start_from){
-                        $data['autoCode'] = ((int)$product_code_start_from - 1) + (int)$generated_code;
-                    }else{
-                        $data['autoCode'] = $generated_code;
+                    if($unit_type == 1){
+                        $product_info['purchase_unit_id'] = htmlspecialcharscustom($this->input->post('unit_id'));
+                        $product_info['sale_unit_id'] = htmlspecialcharscustom($this->input->post('unit_id'));
+                        $product_info['conversion_rate'] = 1;
+                        $conversion_rate = 1;
+                    }elseif($unit_type == 2){
+                        $product_info['purchase_unit_id'] = htmlspecialcharscustom($this->input->post('purchase_unit_id'));
+                        $product_info['sale_unit_id'] = htmlspecialcharscustom($this->input->post('sale_unit_id'));
+                        $product_info['conversion_rate'] = htmlspecialcharscustom($this->input->post('conversion_rate'));
+                        $conversion_rate = htmlspecialcharscustom($this->input->post('conversion_rate'));
                     }
-                    if($type != 'Variation_Product'){
-                        $this->Common_model->deletingMultipleFormData('item_id', $id, 'tbl_set_opening_stocks');
-                        if(isset($_POST['outlets']) && $_POST['outlets']){
-                            $this->saveOpeningStock($_POST['outlets'], $_POST['quantity'], $type, $id, $product_info['conversion_rate']);
-                        }
+                    $product_info['loyalty_point'] = htmlspecialcharscustom($this->input->post('loyalty_point'));
+                    $product_info['supplier_id'] = htmlspecialcharscustom($this->input->post('supplier_id'));
+                    $product_info['purchase_price'] = htmlspecialcharscustom($this->input->post('purchase_price'));
+                    $product_info['whole_sale_price'] = htmlspecialcharscustom($this->input->post('whole_sale_price'));
+                    $product_info['warranty'] = htmlspecialcharscustom($this->input->post('warranty'));
+                    $product_info['warranty_date'] = htmlspecialcharscustom($this->input->post('warranty_date'));
+                    $product_info['guarantee'] = htmlspecialcharscustom($this->input->post('guarantee'));
+                    $product_info['guarantee_date'] = htmlspecialcharscustom($this->input->post('guarantee_date'));
+                    $product_info['description'] = escapeQuot(htmlspecialcharscustom($this->input->post('description')));
+                    if($type != 'Installment_Product'){
+                        $product_info['tax_information'] = $tax_information;
+                        $product_info['tax_string'] = $tax_string;
                     }
-                    if($type == 'Combo_Product'){
-                        $this->Common_model->deletingMultipleFormData('combo_id', $id, 'tbl_combo_items');
-                        if(isset($_POST['combo_item_qty']) && $_POST['combo_item_qty']){
-                            $this->saveComboProducts($_POST['combo_item_qty'], $id);
-                        }
-                    }
-                    $this->session->set_flashdata('exception', lang('update_success'));
-                }
-                if($type=='Variation_Product'){
-                    //update parent variation details
-                    $variations = $this->input->post($this->security->xss_clean('variations'));
-                    if($variations){
-                        $main_arr = array();
-                        foreach ($variations as $key=>$value){
-                            $index_name = "child_row_attribute".$key;
-                            $child_row_attribute = isset($_POST[$index_name]) && $_POST[$index_name] ?  $_POST[$index_name] : '';
-                            $sub_arr = array();
-                            $sub_arr['variation_name'] = getVariationName($value);
-                            $sub_arr['attribute_id'] = $value;
-                            $sub_arr['child_row_attribute'] = json_encode($child_row_attribute);
-                            $main_arr[] = json_encode($sub_arr);
-                        }
-                        $par_array['variation_details'] = json_encode($main_arr);
-                        $this->Common_model->updateInformation($par_array, $id, "tbl_items");
-                    }
-                    $this->Common_model->deleteCustomRow($id,"parent_id","tbl_items");
-                    //This field should not be escaped, because this is an array field
-                    $default_sale_price_variation = ($this->input->post($this->security->xss_clean('default_sale_price_variation')));
-                    if($default_sale_price_variation){
-                        foreach ($default_sale_price_variation as $key=>$value){
-                            $da_arr = array();
-                            $da_arr['parent_id'] = $id;
-                            $da_arr['sale_price'] = $value;
-                            $da_arr['type'] = '0';
-                            //This field should not be escaped, because this is an array field
-                            $da_arr['category_id'] = htmlspecialcharscustom($this->input->post('category_id'));
-                            $da_arr['rack_id'] = htmlspecialcharscustom($this->input->post('rack_id'));
-                            $da_arr['brand_id'] = htmlspecialcharscustom($this->input->post('brand_id'));
-                            $da_arr['tax_information'] = $tax_information;
-                            $da_arr['tax_string'] = $tax_string;
-                            $da_arr['user_id'] = $this->session->userdata('user_id');
-                            $da_arr['company_id'] = $this->session->userdata('company_id');
-                            //all of variables should not be escaped, because this is an array field
-                            $da_arr['name'] = ($_POST['variation_name'][$key]);
-                            $da_arr['unit_type'] = htmlspecialcharscustom($this->input->post('unit_type'));
-                            $da_arr['purchase_price'] = ($_POST['default_purchase_price_variation'][$key]);
-                            $da_arr['last_three_purchase_avg'] = ($_POST['default_purchase_price_variation'][$key]);
-                            $da_arr['last_purchase_price'] = ($_POST['default_purchase_price_variation'][$key]);
-                            $da_arr['whole_sale_price'] = ($_POST['default_whole_sale_price_variation'][$key]);
-                            $da_arr['warranty'] = htmlspecialcharscustom($this->input->post('warranty'));
-                            $da_arr['warranty_date'] = htmlspecialcharscustom($this->input->post('warranty_date'));
-                            $da_arr['guarantee'] = htmlspecialcharscustom($this->input->post('guarantee'));
-                            $da_arr['guarantee_date'] = htmlspecialcharscustom($this->input->post('guarantee_date'));
-                            // $da_arr['opening_stock'] = ($_POST['opening_stock_variation'][$key]);
-                            $da_arr['code'] = ($_POST['code_variation'][$key]);
-                            $da_arr['alert_quantity'] = ($_POST['alert_quantity_variation'][$key]);
-                            $da_arr['unit_type'] = htmlspecialcharscustom($this->input->post('unit_type'));
-                            if($unit_type == 1){
-                                $da_arr['purchase_unit_id'] = htmlspecialcharscustom($this->input->post('unit_id'));
-                                $da_arr['sale_unit_id'] = htmlspecialcharscustom($this->input->post('unit_id'));
-                                $da_arr['conversion_rate'] = 1;
-                            }elseif($unit_type == 2){
-                                $da_arr['purchase_unit_id'] = htmlspecialcharscustom($this->input->post('purchase_unit_id'));
-                                $da_arr['sale_unit_id'] = htmlspecialcharscustom($this->input->post('sale_unit_id'));
-                                $da_arr['conversion_rate'] = $product_info['conversion_rate'];
+                    $product_info['sale_price'] = htmlspecialcharscustom($this->input->post('sale_price'));
+                    $product_info['photo'] = htmlspecialcharscustom($this->input->post('image_url'));
+                    $product_info['p_type'] = htmlspecialcharscustom($this->input->post('type'));
+                    $product_info['user_id'] = $this->session->userdata('user_id');
+                    $product_info['company_id'] = $this->session->userdata('company_id');
+                    if ($id == "") {
+                        $product_info['last_three_purchase_avg'] = htmlspecialcharscustom($this->input->post('purchase_price'));
+                        $product_info['last_purchase_price'] = htmlspecialcharscustom($this->input->post('purchase_price'));
+                        $product_info['added_date'] = date('Y-m-d H:i:s');
+                        if(APPLICATION_L){
+                            if(APPLICATION_LI){
+                                $this->session->set_flashdata('exception_error', lang('insert_err_i'));
+                                redirect('Item/items');
+                            } else {
+                                $id = $this->Common_model->insertInformation($product_info, "tbl_items");
                             }
-                            $da_arr['supplier_id'] = $product_info['supplier_id'];
-                            //This fields should not be escaped, because this is an array field
-                            $da_arr['photo'] = isset($_POST['variation_product_images'][$key]) && ($_POST['variation_product_images'][$key])?($_POST['variation_product_images'][$key]):"";
-                            // This fields should not be escaped, because this is an array field
-                            if(isset($_POST['old_variation_id'][$key]) && ($_POST['old_variation_id'][$key])){
-                                $da_arr['del_status'] = "Live";
+                        } else {
+                            $id = $this->Common_model->insertInformation($product_info, "tbl_items");
+                        }
+                        if($type != 'Variation_Product'){
+                            if(isset($_POST['outlets']) && $_POST['outlets']){
+                                $this->saveOpeningStock($_POST['outlets'], $_POST['quantity'], $type, $id, $product_info['conversion_rate']);
+                            }
+                        }
+                        if($type == 'Combo_Product'){
+                            if(isset($_POST['combo_item_qty']) && $_POST['combo_item_qty']){
+                                $this->saveComboProducts($_POST['combo_item_qty'], $id);
+                            }
+                        }
+                        // Product Code Generate
+                        $generated_code = $this->Master_model->generateItemCode();
+                        $product_code_start_from = $this->session->userdata('product_code_start_from');
+                        if($product_code_start_from){
+                            $data['autoCode'] = ((int)$product_code_start_from - 1) + (int)$generated_code;
+                        }else{
+                            $data['autoCode'] = $generated_code;
+                        }
+                        $this->session->set_flashdata('exception', lang('insertion_success'));
+                    }else {
+                        $this->Common_model->updateInformation($product_info, $id, "tbl_items");
+                        setAveragePrice($id);
+                        // Product Code Generate
+                        $generated_code = $this->Master_model->generateItemCode();
+                        $product_code_start_from = $this->session->userdata('product_code_start_from');
+                        if($product_code_start_from){
+                            $data['autoCode'] = ((int)$product_code_start_from - 1) + (int)$generated_code;
+                        }else{
+                            $data['autoCode'] = $generated_code;
+                        }
+                        if($type != 'Variation_Product'){
+                            $this->Common_model->deletingMultipleFormData('item_id', $id, 'tbl_set_opening_stocks');
+                            if(isset($_POST['outlets']) && $_POST['outlets']){
+                                $this->saveOpeningStock($_POST['outlets'], $_POST['quantity'], $type, $id, $product_info['conversion_rate']);
+                            }
+                        }
+                        if($type == 'Combo_Product'){
+                            $this->Common_model->deletingMultipleFormData('combo_id', $id, 'tbl_combo_items');
+                            if(isset($_POST['combo_item_qty']) && $_POST['combo_item_qty']){
+                                $this->saveComboProducts($_POST['combo_item_qty'], $id);
+                            }
+                        }
+                        $this->session->set_flashdata('exception', lang('update_success'));
+                    }
+                    if($type == 'Variation_Product'){
+                        //update parent variation details
+                        $variations = $this->input->post($this->security->xss_clean('variations'));
+                        if($variations){
+                            $main_arr = array();
+                            foreach ($variations as $key=>$value){
+                                $index_name = "child_row_attribute".$key;
+                                $child_row_attribute = isset($_POST[$index_name]) && $_POST[$index_name] ?  $_POST[$index_name] : '';
+                                $sub_arr = array();
+                                $sub_arr['variation_name'] = getVariationName($value);
+                                $sub_arr['attribute_id'] = $value;
+                                $sub_arr['child_row_attribute'] = json_encode($child_row_attribute);
+                                $main_arr[] = json_encode($sub_arr);
+                            }
+                            $par_array['variation_details'] = json_encode($main_arr);
+                            $this->Common_model->updateInformation($par_array, $id, "tbl_items");
+                        }
+                        $this->Common_model->deleteCustomRow($id,"parent_id","tbl_items");
+                        //This field should not be escaped, because this is an array field
+                        $default_sale_price_variation = ($this->input->post($this->security->xss_clean('default_sale_price_variation')));
+                        if($default_sale_price_variation){
+                            foreach ($default_sale_price_variation as $key=>$value){
+                                $da_arr = array();
+                                $da_arr['parent_id'] = $id;
+                                $da_arr['sale_price'] = $value;
+                                $da_arr['type'] = '0';
                                 //This field should not be escaped, because this is an array field
-                                $this->Common_model->updateInformation($da_arr, ($_POST['old_variation_id'][$key]), "tbl_items");
-                                $this->Common_model->deletingMultipleFormData('item_id', $_POST['old_variation_id'][$key], 'tbl_set_opening_stocks');
-                                foreach($_POST["outlets$key"] as $row_2 => $outlet){
-                                    $stock_qty_check = (int)$_POST["quantity".$key][$row_2] * (int)$conversion_rate;
-                                    if($stock_qty_check > 0){
-                                        $fmi = array();
-                                        $fmi['item_id'] = $_POST['old_variation_id'][$key];
-                                        $fmi['item_type'] = $type;
-                                        $fmi['stock_quantity'] = $stock_qty_check;
-                                        $fmi['outlet_id'] = $outlet;
-                                        $fmi['user_id'] = $this->session->userdata('user_id');
-                                        $fmi['company_id'] = $this->session->userdata('company_id');
-                                        $this->Common_model->insertInformation($fmi, 'tbl_set_opening_stocks');
-                                    }
+                                $da_arr['category_id'] = htmlspecialcharscustom($this->input->post('category_id'));
+                                $da_arr['rack_id'] = htmlspecialcharscustom($this->input->post('rack_id'));
+                                $da_arr['brand_id'] = htmlspecialcharscustom($this->input->post('brand_id'));
+                                $da_arr['tax_information'] = $tax_information;
+                                $da_arr['tax_string'] = $tax_string;
+                                $da_arr['user_id'] = $this->session->userdata('user_id');
+                                $da_arr['company_id'] = $this->session->userdata('company_id');
+                                //all of variables should not be escaped, because this is an array field
+                                $da_arr['name'] = ($_POST['variation_name'][$key]);
+                                $da_arr['unit_type'] = htmlspecialcharscustom($this->input->post('unit_type'));
+                                $da_arr['purchase_price'] = ($_POST['default_purchase_price_variation'][$key]);
+                                $da_arr['last_three_purchase_avg'] = ($_POST['default_purchase_price_variation'][$key]);
+                                $da_arr['last_purchase_price'] = ($_POST['default_purchase_price_variation'][$key]);
+                                $da_arr['whole_sale_price'] = ($_POST['default_whole_sale_price_variation'][$key]);
+                                $da_arr['warranty'] = htmlspecialcharscustom($this->input->post('warranty'));
+                                $da_arr['warranty_date'] = htmlspecialcharscustom($this->input->post('warranty_date'));
+                                $da_arr['guarantee'] = htmlspecialcharscustom($this->input->post('guarantee'));
+                                $da_arr['guarantee_date'] = htmlspecialcharscustom($this->input->post('guarantee_date'));
+                                $da_arr['code'] = ($_POST['code_variation'][$key]);
+                                $da_arr['alert_quantity'] = ($_POST['alert_quantity_variation'][$key]);
+                                $da_arr['unit_type'] = htmlspecialcharscustom($this->input->post('unit_type'));
+                                if($unit_type == 1){
+                                    $da_arr['purchase_unit_id'] = htmlspecialcharscustom($this->input->post('unit_id'));
+                                    $da_arr['sale_unit_id'] = htmlspecialcharscustom($this->input->post('unit_id'));
+                                    $da_arr['conversion_rate'] = 1;
+                                }elseif($unit_type == 2){
+                                    $da_arr['purchase_unit_id'] = htmlspecialcharscustom($this->input->post('purchase_unit_id'));
+                                    $da_arr['sale_unit_id'] = htmlspecialcharscustom($this->input->post('sale_unit_id'));
+                                    $da_arr['conversion_rate'] = $product_info['conversion_rate'];
                                 }
-                            }else{
-                                $da_arr['added_date'] = date('Y-m-d H:i:s');
-                                $inser_id = $this->Common_model->insertInformation($da_arr, "tbl_items");
-                                if(isset($_POST["outlets"]) && $_POST["outlets"]){
+                                $da_arr['supplier_id'] = $product_info['supplier_id'];
+                                //This fields should not be escaped, because this is an array field
+                                $da_arr['photo'] = isset($_POST['variation_product_images'][$key]) && ($_POST['variation_product_images'][$key])?($_POST['variation_product_images'][$key]):"";
+                                // This fields should not be escaped, because this is an array field
+                                if(isset($_POST['old_variation_id'][$key]) && ($_POST['old_variation_id'][$key])){
+                                    $da_arr['del_status'] = "Live";
+                                    //This field should not be escaped, because this is an array field
+                                    $this->Common_model->updateInformation($da_arr, ($_POST['old_variation_id'][$key]), "tbl_items");
+                                    $this->Common_model->deletingMultipleFormData('item_id', $_POST['old_variation_id'][$key], 'tbl_set_opening_stocks');
                                     foreach($_POST["outlets$key"] as $row_2 => $outlet){
                                         $stock_qty_check = (int)$_POST["quantity".$key][$row_2] * (int)$conversion_rate;
                                         if($stock_qty_check > 0){
                                             $fmi = array();
-                                            $fmi['item_id'] = $inser_id;
+                                            $fmi['item_id'] = $_POST['old_variation_id'][$key];
                                             $fmi['item_type'] = $type;
                                             $fmi['stock_quantity'] = $stock_qty_check;
                                             $fmi['outlet_id'] = $outlet;
@@ -340,16 +338,33 @@ class Item extends Cl_Controller {
                                             $this->Common_model->insertInformation($fmi, 'tbl_set_opening_stocks');
                                         }
                                     }
+                                }else{
+                                    $da_arr['added_date'] = date('Y-m-d H:i:s');
+                                    $inser_id = $this->Common_model->insertInformation($da_arr, "tbl_items");
+                                    if(isset($_POST["opening_stock_variation"]) && $_POST["opening_stock_variation"]){
+                                        foreach($_POST["outlets$key"] as $row_2 => $outlet){
+                                            $stock_qty_check = (int)$_POST["quantity".$key][$row_2] * (int)$conversion_rate;
+                                            if($stock_qty_check > 0){
+                                                $fmi = array();
+                                                $fmi['item_id'] = $inser_id;
+                                                $fmi['item_type'] = $type;
+                                                $fmi['stock_quantity'] = $stock_qty_check;
+                                                $fmi['outlet_id'] = $outlet;
+                                                $fmi['user_id'] = $this->session->userdata('user_id');
+                                                $fmi['company_id'] = $this->session->userdata('company_id');
+                                                $this->Common_model->insertInformation($fmi, 'tbl_set_opening_stocks');
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                if($add_more == 'add_more'){
-                    redirect('Item/addEditItem');
-                }else{
-                    redirect('Item/items');
-                }
+                    if($add_more == 'add_more'){
+                        redirect('Item/addEditItem');
+                    }else{
+                        redirect('Item/items');
+                    }
             } else {
                 if ($id == "") {
                     $data = array();
@@ -365,7 +380,6 @@ class Item extends Cl_Controller {
                     }
                     $data['items'] = $this->Common_model->getAllItemsWithoutCombo($company_id);
                     $data['Variations'] = $this->Common_model->getAllByCompanyId($company_id, "tbl_variations");
-                    $data['brands'] = $this->Common_model->getAllByCompanyId($company_id, "tbl_brands");
                     $data['brands'] = $this->Common_model->getAllByCompanyId($company_id, "tbl_brands");
                     $data['racks'] = $this->Common_model->getAllByCompanyIdForDropdownProduct($company_id, 'tbl_racks');
                     $data['outlets'] = $this->Common_model->getAllOutletByCompany();
@@ -383,7 +397,6 @@ class Item extends Cl_Controller {
                     $data['brands'] = $this->Common_model->getAllByCompanyId($company_id, "tbl_brands");
                     $data['racks'] = $this->Common_model->getAllByCompanyIdForDropdownProduct($company_id, 'tbl_racks');
                     $data['Variations'] = $this->Common_model->getAllByCompanyId($company_id, "tbl_variations");
-                    $data['products'] = $this->Common_model->getAllByCompanyIdForDropdownProduct($company_id, 'tbl_items');
                     $data['outlets'] = $this->Common_model->getAllOutletByCompany();
                     // Product Code Generate
                     $generated_code = $this->Master_model->generateItemCode();
@@ -396,12 +409,11 @@ class Item extends Cl_Controller {
                     $data['item_details'] = $this->Common_model->getItemDetailsWithOpeningStockByItemId($id);
                     $data['item_type_info'] = $this->Common_model->getItemDetailsDataById($id, "item_id", "tbl_set_opening_stocks");
                     $data['stockDetails'] = getOpeningStockDetails($id);
-
-
                     $data['main_content'] = $this->load->view('master/item/editItem', $data, TRUE);
                     $this->load->view('userHome', $data);
                 }
             }
+            
         } else {
             if ($id == "") {
                 $data = array();
@@ -461,30 +473,29 @@ class Item extends Cl_Controller {
      * @return void
      */
     public function bulkItemUpdate(){
-        if (htmlspecialcharscustom($this->input->post('submit'))) {
-            if(isset($_POST['bulk_item']) && $_POST['bulk_item']){
-                foreach($_POST['bulk_item_all'] as $key => $item){
-                    foreach($_POST['bulk_item'] as $selected_item){
-                        if($item == $selected_item){
-                            $data = array();
-                            $data['sale_price'] = $_POST['sale_price'][$key];
-                            $data['whole_sale_price'] = $_POST['whole_sale_price'][$key];
-                            $this->Common_model->updateInformation($data, $selected_item, 'tbl_items');
-                        }
-                    }
-                }
-                $this->session->set_flashdata('exception', lang('update_success'));
-                redirect('Item/bulkItemUpdate');
-            }else{
-                $this->session->set_flashdata('exception_error', lang('No_items_selected'));
-                redirect('Item/bulkItemUpdate');
-            }
-        } else {
-            $data = array();
-            $data['bulk_item_update'] = $this->Common_model->getItemForBulkUpdate();
-            $data['main_content'] = $this->load->view('master/item/bulk_item_update', $data, TRUE);
-            $this->load->view('userHome', $data);
-        }
+        $data = array();
+        $data['bulk_item_update'] = $this->Common_model->getItemForBulkUpdate();
+        $data['main_content'] = $this->load->view('master/item/bulk_item_update', $data, TRUE);
+        $this->load->view('userHome', $data);
+    }
+    /**
+     * bulkPriceUPdate
+     * @access public
+     * @param no
+     * @return void
+     */
+    public function bulkPriceUPdate(){
+        $item_id = htmlspecialcharscustom($this->input->post('item_id'));
+        $id = $this->custom->encrypt_decrypt($item_id, 'decrypt');
+        $data = array();
+        $data['sale_price'] = htmlspecialcharscustom($this->input->post('sale_price'));
+        $data['whole_sale_price'] = htmlspecialcharscustom($this->input->post('whole_sale_price'));
+        $this->Common_model->updateInformation($data, $id, 'tbl_items');
+        $response = [
+            'status' => 'success',
+            'message' => 'Data Successfully updated',
+        ];	
+        $this->output->set_content_type('application/json')->set_output(json_encode($response));
     }
 
 
@@ -688,6 +699,24 @@ class Item extends Cl_Controller {
     }
 
     /**
+     * changeStatus
+     * @access public
+     * @param int
+     * @return void
+     */
+    public function changeStatus() {
+        $get_id = $this->input->post('get_id');
+        $status = $this->input->post('status');
+        $id = $this->custom->encrypt_decrypt($get_id, 'decrypt');
+        $this->Common_model->enableDisableStatusChange($id, $status);
+        $this->Common_model->childItemEnableDisableStatusChange($id, $status);
+        $response = [
+            'status' => 'success',
+        ];	
+        $this->output->set_content_type('application/json')->set_output(json_encode($response));
+    }
+
+    /**
      * bulkDelete
      * @access public
      * @param int
@@ -806,7 +835,6 @@ class Item extends Cl_Controller {
             
             }else{
                 $sub_array[] = $value->name . " " . "(" . $value->code . ")";
-            
             }
             $sub_array[] = escape_output(checkSingleItemType($value->type));
             $sub_array[] = escape_output($value->category_name);
@@ -983,27 +1011,30 @@ class Item extends Cl_Controller {
                                         $arrayerror.= "<br>" . lang('Row_Number') . ' ' . "$i" . ' ' . lang('column_T_required_or_can_not_be_text');
                                     }
                                 }
-                                $val_organize = str_replace(",",":",$vat_name);
-                                $vat_match = strcmp($val_organize . ':', $company_vat);
-                                if($vat_match != 0){
-                                    if ($arrayerror == '') {
-                                        $arrayerror.= lang('Row_Number') . ' ' . "$i" . ' ' . lang('column_W_doesnt_math_with_the_system');
-                                    } else {
-                                        $arrayerror.= "<br>" . lang('Row_Number') . ' ' . "$i" . ' ' . lang('column_W_doesnt_math_with_the_system');
+                                if($vat_name != 'None'){
+                                    $val_organize = str_replace(",",":",$vat_name);
+                                    $vat_match = strcmp($val_organize . ':', $company_vat);
+                                    if($vat_match != 0){
+                                        if ($arrayerror == '') {
+                                            $arrayerror.= lang('Row_Number') . ' ' . "$i" . ' ' . lang('column_W_doesnt_math_with_the_system');
+                                        } else {
+                                            $arrayerror.= "<br>" . lang('Row_Number') . ' ' . "$i" . ' ' . lang('column_W_doesnt_math_with_the_system');
+                                        }
+                                    }
+                                    $tmp_vat_name = explode(',',$vat_name);
+                                    $tmp_vat_percent = explode(',',$vat_percent);
+                                    if ($vat_name || $tmp_vat_percent) {
+                                        if(sizeof($tmp_vat_name) != sizeof($tmp_vat_percent)){
+    
+                                            if ($arrayerror == '') {
+                                                $arrayerror.= lang('Row_Number') . ' ' . "$i" . ' ' . lang('W_and_Y_does_not_match');
+                                            } else {
+                                                $arrayerror.= "<br>" . lang('Row_Number') . ' ' . "$i" . ' ' . lang('W_and_Y_does_not_match');
+                                            }
+                                        } 
                                     }
                                 }
-                                $tmp_vat_name = explode(',',$vat_name);
-                                $tmp_vat_percent = explode(',',$vat_percent);
-                                if ($vat_name || $tmp_vat_percent) {
-                                    if(sizeof($tmp_vat_name) != sizeof($tmp_vat_percent)){
-
-                                        if ($arrayerror == '') {
-                                            $arrayerror.= lang('Row_Number') . ' ' . "$i" . ' ' . lang('W_and_Y_does_not_match');
-                                        } else {
-                                            $arrayerror.= "<br>" . lang('Row_Number') . ' ' . "$i" . ' ' . lang('W_and_Y_does_not_match');
-                                        }
-                                    } 
-                                }
+                                
                             }
                             if ($arrayerror == '') {
                                 if(!is_null($this->input->post('remove_previous'))){
@@ -1095,27 +1126,29 @@ class Item extends Cl_Controller {
                                     if($image){
                                         $item_info['photo'] = $image;
                                     }
-                                    $tmp_vat_name = explode(',',$vat_name);
-                                    $tmp_vat_percent = explode(',',$vat_percent);
-                                    $tax_information = array();
-                                    $tax_string = '';
-                                    foreach($outlet_taxes as $key=>$value){
-                                        foreach($tmp_vat_name as $key1=>$value1){
-                                            if($value->tax == $value1){
-                                                $get_tax = isset($tmp_vat_percent[$key1]) && $tmp_vat_percent[$key1] ? $tmp_vat_percent[$key1] : 0;
-                                                $single_info = array(
-                                                    'tax_field_id' => $value->id,
-                                                    'tax_field_company_id' => $company_id,
-                                                    'tax_field_name' => $value->tax,
-                                                    'tax_field_percentage' => $get_tax
-                                                );
-                                                $tax_string.=($value->tax).":";
-                                                array_push($tax_information,$single_info);
+                                    if($vat_name != 'None'){
+                                        $tmp_vat_name = explode(',',$vat_name);
+                                        $tmp_vat_percent = explode(',',$vat_percent);
+                                        $tax_information = array();
+                                        $tax_string = '';
+                                        foreach($outlet_taxes as $key=>$value){
+                                            foreach($tmp_vat_name as $key1=>$value1){
+                                                if($value->tax == $value1){
+                                                    $get_tax = isset($tmp_vat_percent[$key1]) && $tmp_vat_percent[$key1] ? $tmp_vat_percent[$key1] : 0;
+                                                    $single_info = array(
+                                                        'tax_field_id' => $value->id,
+                                                        'tax_field_company_id' => $company_id,
+                                                        'tax_field_name' => $value->tax,
+                                                        'tax_field_percentage' => $get_tax
+                                                    );
+                                                    $tax_string.=($value->tax).":";
+                                                    array_push($tax_information,$single_info);
+                                                }
                                             }
                                         }
+                                        $item_info['tax_information'] = json_encode($tax_information);
+                                        $item_info['tax_string'] = $tax_string;
                                     }
-                                    $item_info['tax_information'] = json_encode($tax_information);
-                                    $item_info['tax_string'] = $tax_string;
                                     $item_info['user_id'] = $this->session->userdata('user_id');
                                     $item_info['added_date'] = date('Y-m-d H:i:s');
                                     $item_info['company_id'] = $this->session->userdata('company_id');
@@ -1170,38 +1203,54 @@ class Item extends Cl_Controller {
      */
     public function uploadItemPhoto() {
         if (htmlspecialcharscustom($this->input->post('submit'))) {
-            if ($_FILES['large_image']['name'] != "") {
-                if(!empty($_FILES['large_image']['name']) && count(array_filter($_FILES['large_image']['name'])) > 0){
-                    $filesCount = count($_FILES['large_image']['name']);
-                    for($i = 0; $i < $filesCount; $i++){
-                        $_FILES['file']['name']     = $_FILES['large_image']['name'][$i];
-                        $_FILES['file']['type']     = $_FILES['large_image']['type'][$i];
-                        $_FILES['file']['tmp_name'] = $_FILES['large_image']['tmp_name'][$i];
-                        $_FILES['file']['error']    = $_FILES['large_image']['error'][$i];
-                        $_FILES['file']['size']     = $_FILES['large_image']['size'][$i];
-
-                        createDirectory('uploads/items');
-                        $uploadPath = './uploads/items/';
-                        $config['upload_path'] = $uploadPath;
-                        $config['allowed_types'] = 'jpg|jpeg|png';
-                        $this->load->library('upload', $config);
-                        $this->upload->initialize($config);
-
-                        
-                        if($this->upload->do_upload('file')){
-                            $fileData = $this->upload->data();
-                            $uploadData['large_image'] = $fileData['file_name'];
-                        }
+            if (!empty($_FILES['large_image']['name'][0])) {
+                $this->load->library('upload');
+                $dataInfo = array();
+                $files = $_FILES;
+                $cpt = count($files['large_image']['name']);
+                // Set upload options once
+                $config = $this->set_upload_options();
+                $config['detect_mime'] = FALSE;
+                createDirectory('uploads/items');
+                for ($i = 0; $i < $cpt; $i++) {
+                    $_FILES['file']['name'] = $files['large_image']['name'][$i];
+                    // pre($files['large_image']['type'][$i]);
+                    $_FILES['file']['type'] = $files['large_image']['type'][$i];
+                    $_FILES['file']['tmp_name'] = $files['large_image']['tmp_name'][$i];
+                    $_FILES['file']['error'] = $files['large_image']['error'][$i];
+                    $_FILES['file']['size'] = $files['large_image']['size'][$i];
+                    // Initialize upload with options
+                    $this->upload->initialize($config);
+                    if ($this->upload->do_upload('file')) {
+                        $dataInfo[] = $this->upload->data(); // Store uploaded file data
+                    } else {
+                        // Handle errors for each file
+                        $upload_errors = $this->upload->display_errors();
+                        // Optionally store or display the error message
+                        echo "File upload failed for file {$files['large_image']['name'][$i]}: {$upload_errors}";
                     }
                 }
+                $this->session->set_flashdata('exception', lang('insertion_success'));
+                redirect('Item/items');
+            } else {
+                $this->session->set_flashdata('error', 'Please select image to upload.');
+                redirect('Item/uploadItemPhoto');
             }
-            $this->session->set_flashdata('exception', lang('insertion_success'));
-            redirect('Item/items');
-        }else{
+        } else {
             $data = array();
             $data['main_content'] = $this->load->view('master/item/uploadItemPhotos', $data, TRUE);
             $this->load->view('userHome', $data);
         }
+    }
+    
+    private function set_upload_options() {   
+        // Upload configuration options
+        $config = array();
+        $config['upload_path'] = './uploads/items/';
+        $config['allowed_types'] = '*';
+        $config['max_size'] = '0'; // No limit on file size
+        $config['overwrite'] = FALSE; // Do not overwrite existing files
+        return $config;
     }
 
     /**

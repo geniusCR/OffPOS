@@ -43,9 +43,13 @@
             $show_register_report .= '<td class="text-center">'.getAmtCustom($single_register_info->total_due_payment).'</td>';
             $show_register_report .= '<td>'.$html_others.'</td>';
             $show_register_report .= '<td class="text-center">'.getAmtCustom($single_register_info->total_expense).'</td>';
-            $show_register_report .= '<td class="text-center">'.getAmtCustom($single_register_info->total_downpayment).'</td>';
-            $show_register_report .= '<td class="text-center">'.getAmtCustom($single_register_info->total_installmentcollection).'</td>';
-            $show_register_report .= '<td class="text-center">'.getAmtCustom($single_register_info->total_servicing).'</td>';
+            if(!moduleIsHideCheck('Installment Sale-YES')){
+                $show_register_report .= '<td class="text-center">'.getAmtCustom($single_register_info->total_downpayment).'</td>';
+                $show_register_report .= '<td class="text-center">'.getAmtCustom($single_register_info->total_installmentcollection).'</td>';
+            }
+            if(!moduleIsHideCheck('Servicing-YES')){
+                $show_register_report .= '<td class="text-center">'.getAmtCustom($single_register_info->total_servicing).'</td>';
+            }
             $show_register_report .= '<td class="text-center">'.getAmtCustom($single_register_info->closing_balance).'</td>';
             $show_register_report .= '<td>'.dateFormat($single_register_info->closing_balance_date_time).'</td>';
             $show_register_report .= '<td class="text-right">'.(getPayments($single_register_info->opening_balance_date_time,$single_register_info->closing_balance_date_time,$single_register_info->user_id, $single_register_info->outlet_id)).'</td>';
@@ -152,9 +156,13 @@
                             <th class="title w-15 text-center"><?php echo lang('supplier_payment'); ?> (-)</th>
                             <th class="title w-15"><?php echo lang('others_currency'); ?></th>
                             <th class="title w-15 text-center"><?php echo lang('expense'); ?>(-)</th>
-                            <th class="title w-15 text-center"><?php echo lang('down_payment'); ?>(+)</th>
-                            <th class="title w-15 text-center"><?php echo lang('installment_collection'); ?>(+)</th>
-                            <th class="title w-15 text-center"><?php echo lang('servicing'); ?>(+)</th>
+                            <?php if(!moduleIsHideCheck('Installment Sale-YES')){ ?>
+                                <th class="title w-15 text-center"><?php echo lang('down_payment'); ?>(+)</th>
+                                <th class="title w-15 text-center"><?php echo lang('installment_collection'); ?>(+)</th>
+                            <?php } ?>
+                            <?php if(!moduleIsHideCheck('Servicing-YES')){ ?>
+                                <th class="title w-15 text-center"><?php echo lang('servicing'); ?>(+)</th>
+                            <?php } ?>
                             <th class="title w-15 text-center"><?php echo lang('closing_balance'); ?></th>
                             <th class="title w-10"><?php echo lang('closing_date_time'); ?></th>
                             <th class="title w-15 text-right"><?php echo lang('sale_in_payment_method'); ?></th>

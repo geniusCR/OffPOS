@@ -122,7 +122,7 @@ $outlet_id = $this->session->userdata('outlet_id');
                                 foreach ($food_details as $key=>$value):
                                     $key++;
                                     $p_type = '';
-                                    if ($value->item_type == 'Medicine_Product'){
+                                    if ($value->item_type == 'Medicine_Product' && $value->expiry_date_maintain == 'Yes'){
                                         $p_type = 'Expiry Date:';
                                     }else if($value->item_type == 'IMEI_Product'){
                                         $p_type = 'IMEI:';
@@ -163,19 +163,26 @@ $outlet_id = $this->session->userdata('outlet_id');
             </div> 
             <div class="box-footer"> 
                 <a href="<?php echo base_url() ?>Transfer/printInvoice/<?php echo $this->custom->encrypt_decrypt($transfer_details->id, 'encrypt'); ?>"
-                class="btn bg-blue-btn"><?php echo lang('print'); ?></a>
+                class="btn bg-blue-btn">
+                <iconify-icon icon="solar:printer-2-broken"></iconify-icon>
+                <?php echo lang('print'); ?></a>
                 <?php
                     if($transfer_details->status!=1):
                         if($transfer_details->from_outlet_id == $outlet_id):
                 ?>
                 <a href="<?php echo base_url() ?>Transfer/addEditTransfer/<?php echo $this->custom->encrypt_decrypt($transfer_details->id, 'encrypt'); ?>"
-                class="btn bg-blue-btn"><?php echo lang('edit'); ?></a>
+                class="btn bg-blue-btn">
+                <iconify-icon icon="solar:pen-new-round-broken"></iconify-icon>
+                <?php echo lang('edit'); ?></a>
                 <?php
                     endif;
                     endif;
                 ?>
                 <a href="<?php echo base_url() ?>Transfer/transfers"
-                    class="btn bg-blue-btn"><?php echo lang('back'); ?></a>
+                    class="btn bg-blue-btn">
+                    <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
+                    <?php echo lang('back'); ?>
+                </a>
             </div>
         </div>
     </div>

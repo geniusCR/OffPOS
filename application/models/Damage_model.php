@@ -43,11 +43,13 @@ class Damage_model extends CI_Model {
      * @return object
      */
     public function getDamageItems($id) {
-        $this->db->select("*");
-        $this->db->from("tbl_damage_details");
-        $this->db->order_by('id', 'ASC');
-        $this->db->where("damage_id", $id);
-        $this->db->where("del_status", 'Live');
+        $this->db->select("dd.*, i.expiry_date_maintain");
+        $this->db->from("tbl_damage_details dd");
+        $this->db->join("tbl_items i", 'i.id = dd.item_id', 'left');
+        $this->db->where("dd.damage_id", $id);
+        $this->db->where("dd.del_status", 'Live');
+        $this->db->order_by('dd.id', 'ASC');
+        $this->db->group_by('dd.item_id');
         return $this->db->get()->result();
     }
 

@@ -60,6 +60,7 @@ $(function () {
             let item_details_array = item_details.split('|');
             let item_id = item_details_array[0];
             let getType = item_details_array[4];
+            
             let item_name = $(this).find('option:selected').text();
             $("#hidden_input_item_type").val(getType == '0' ? 'Variation_Product' : getType);
             $("#hidden_input_item_id").val(item_id);
@@ -72,7 +73,7 @@ $(function () {
             $('#serial').val("");
             $('#expiry_date').val("");
             
-            if(getType == 'General_Product' || getType == '0' || getType == 'Installment_Product'){
+            if(getType == 'General_Product' || getType == '0' || getType == 'Installment_Product' || (getType == 'Medicine_Product' && item_details_array[6] == 'No')){
                 $("#qty_modal").prop("readonly", false);
                 $(".rowCount").each(function() {
                     let id_temp = $(this).attr('data-item-id');
@@ -99,7 +100,7 @@ $(function () {
                 `)
                 $("#qty_modal").prop("readonly", false);
 
-            }else if(getType == 'Medicine_Product'){
+            }else if(getType == 'Medicine_Product' && item_details_array[6] == 'Yes'){
                 $("#qty_modal").val("");
                 $('.imeiSerial_add_more').html('');
                 $('.expiry_add_more').html('');
@@ -272,10 +273,10 @@ $(function () {
         $('.item_header').text(item_name);
         $('.modal_item_unit').text(item_details_array[2]);
         $("#unit_price_modal").val(item_details_array[3]);
-        if(getType == 'General_Product' || getType == ''){
+        $("#hidden_input_expiry_date_maintain").val(item_details_array[6]);
+        if(getType == 'General_Product' || getType == '' || (getType == 'Medicine_Product' && item_details_array[6] == 'No')){
             $(".imei_p_f").addClass('d-none');
-
-        }else if(getType == 'Medicine_Product'){
+        }else if(getType == 'Medicine_Product' && item_details_array[6] == 'Yes'){
             let item_id = $('#hidden_input_item_id').val();
             let item_type = $('#hidden_input_item_type').val();
             let expiryDates = '';
@@ -450,6 +451,7 @@ $(function () {
         let quantity = Number($("#qty_modal").val());
         let item_name = $("#hidden_input_item_name").val();
         let last_three_purchase_avg = $("#last_three_purchase_avg").val();
+        let expiry_date_maintain = $("#hidden_input_expiry_date_maintain").val();
         let unique_err = false;
         let error = false;
 
@@ -480,7 +482,7 @@ $(function () {
         }
         let  item_type_val = "";
         let item_quantity_val = "";
-        if (item_type == 'Medicine_Product') {
+        if (item_type == 'Medicine_Product' && expiry_date_maintain == 'Yes') {
             let imei_serial_data = [];
             let item_arr = [];
             let existMatch = '';
@@ -540,9 +542,6 @@ $(function () {
             });
              item_type_val = imei_serial_data.reverse();
             item_quantity_val = item_arr.reverse();
-    
-    
-        
         }else if(item_type == 'IMEI_Product' || item_type == 'Serial_Product') {
             let itemsArr = new Array();
             let imei_serial_data = [];
@@ -614,10 +613,10 @@ $(function () {
             return false;
         }else{
             let qty_modal;
-            if(item_type != 'Medicine_Product'){
-                qty_modal = Number($("#qty_modal").val());
-            }else{
+            if((item_type == 'Medicine_Product') && expiry_date_maintain == 'Yes'){
                 qty_modal = $('#imei_append .expiry_child_qty').length;
+            }else{
+                qty_modal = Number($("#qty_modal").val());
             }
             appendCart(qty_modal, item_type, product_id, item_name,  item_type_val, item_quantity_val,  last_three_purchase_avg);
             $("#imei_append").html("");
@@ -639,7 +638,6 @@ $(function () {
         let type = item_type;
         let qty_modal_count = qty_modal;
         let cart_row = '';
-
         let d_none = '';
         let p_type = '';
         let p_placeholder = '';
@@ -651,13 +649,13 @@ $(function () {
         let readonly_expiry = '';
 
 
-        if (type == 'General_Product' || type == 0){
+        if (type == 'General_Product' || type == 0 || (type == 'Medicine_Product' && item_details_array[5] == 'No')){
             d_none = 'd-none';
         }else if (type == 'Variation_Product'){
             d_none = 'd-none';
         }else if (type == 'Installment_Product'){
             d_none = 'd-none';
-        }else if (type == 'Medicine_Product'){
+        }else if (type == 'Medicine_Product' && item_details_array[5] == 'Yes'){
             p_type = 'Expiry Date:';
             p_placeholder = '';
             custom_date = 'customDatepicker';
@@ -678,7 +676,7 @@ $(function () {
             checkIMEISerialUnique = 'checkIMEISerialUnique';
         }
 
-        if (type == 'General_Product' || type == 'Variation_Product' || type == 0 || type == 'Installment_Product') {
+        if (type == 'General_Product' || type == 'Variation_Product' || type == 0 || type == 'Installment_Product' || (type == 'Medicine_Product' && item_details_array[5] == 'No')) {
             rowCounter++
             cart_row = `<tr class="rowCount" row-counter="${rowCounter}" data-item-id="${product_id}">
                     <td>
@@ -724,6 +722,7 @@ $(function () {
                     </td>
                 </tr>`;
                 
+            console.log(cart_row);
             $('#damage_cart tbody').prepend(cart_row);
             $('.customDatepicker').datepicker({
                 format: 'yyyy-mm-dd',
@@ -735,7 +734,7 @@ $(function () {
             $("#cartPreviewModal").modal('hide');
         }
 
-        if (type == 'IMEI_Product' || type == 'Serial_Product' || type == 'Medicine_Product'){
+        if (type == 'IMEI_Product' || type == 'Serial_Product' || (type == 'Medicine_Product' && item_details_array[5] == 'Yes')){
             for(let k = 0; k < qty_modal_count; k++){
                 rowCounter++
                 cart_row = `<tr class="rowCount" row-counter="${rowCounter}" data-item-id="${product_id}">

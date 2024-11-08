@@ -38,27 +38,58 @@
 
     <div class="row">
         <?php
-        foreach ($outlets as $value) {
-            ?>
-            <div class="col-12 col-sm-6 mb-3 col-md-6 col-lg-4 col-xl-3">
-                <div class="outlet-box text-center">
-                    <iconify-icon icon="material-symbols:storefront-outline" width="40"></iconify-icon>
-                    <h3 dir="ltr" class="title"> <?php echo escape_output($value->outlet_name) . " "; ?></h3>
-                    <h4 dir="ltr" class="outlet_phone"> <?php echo lang('outlet_code'); ?>: <?php echo escape_output($value->outlet_code); ?></h4>
-                    <h4 dir="ltr" class="outlet_phone"> <?php echo lang('address'); ?>: <?php echo escape_output($value->address); ?></h4>
-                    <h4 dir="ltr" class="outlet_phone"> <?php echo lang('phone'); ?>: <?php echo escape_output($value->phone); ?> </h4>
-                    <h4 dir="ltr" class="outlet_phone"> <?php echo lang('email'); ?>: <?php echo escape_output($value->email); ?> </h4>
-                    <div class="btn_box">
-                        <a class="bg-blue-btn btn" href="<?php echo base_url(); ?>Outlet/setOutletSession/<?php echo escape_output($this->custom->encrypt_decrypt($value->id, 'encrypt')); ?>"> <strong><?php echo lang('enter'); ?></strong></a>
-                        <a class="bg-blue-btn btn" href="<?php echo base_url() ?>Outlet/addEditOutlet/<?php echo escape_output($this->custom->encrypt_decrypt($value->id, 'encrypt')); ?>">  <strong><?php echo lang('edit'); ?></strong></a>
-                        <a data-status="<?php echo isset($is_collapse) && $is_collapse == "No" ? '2' : '1'?>" class="delete-color outlet_delete outlet_responsive outlet_large bg-red-btn btn <?php echo isset($is_collapse) && $is_collapse == "No" ? 'd-none' : 'd-block'?>" href="<?php echo base_url() ?>Outlet/deleteOutlet/<?php echo escape_output($this->custom->encrypt_decrypt($value->id, 'encrypt')); ?>">  <strong><?php echo lang('delete'); ?></strong></a>
+        if($outlets){
+            foreach ($outlets as $value) {
+                ?>
+                <div class="col-12 col-sm-6 mb-3 col-md-6 col-lg-4 col-xl-3">
+                    <div class="outlet-box text-center">
+                        <div class="outlet_main_icon">
+                            <iconify-icon icon="solar:shop-2-broken" class="outlet_main_icon"></iconify-icon>
+                        </div>
+                        <h3 dir="ltr" class="title"> <?php echo escape_output($value->outlet_name) . " "; ?></h3>
+                        <?php if($value->outlet_code){ ?>
+                        <h4 dir="ltr" class="outlet_phone"> <?php echo lang('outlet_code'); ?>: <?php echo escape_output($value->outlet_code); ?></h4>
+                        <?php } ?>
+                        <?php if($value->address){ ?>
+                        <h4 dir="ltr" class="outlet_phone"> <?php echo lang('address'); ?>: <?php echo escape_output($value->address); ?></h4>
+                        <?php } ?>
+                        <?php if($value->phone){ ?>
+                        <h4 dir="ltr" class="outlet_phone"><?php echo lang('phone'); ?>: <?php echo escape_output($value->phone); ?> </h4>
+                        <?php } ?>
+                        <?php if($value->email){ ?>
+                        <h4 dir="ltr" class="outlet_phone"> <?php echo lang('email'); ?>: <?php echo escape_output($value->email); ?> </h4>
+                        <?php } ?>
+                        <div class="btn_box">
+                            
+                            <a class="bg-blue-btn btn" href="<?php echo base_url() ?>Outlet/addEditOutlet/<?php echo escape_output($this->custom->encrypt_decrypt($value->id, 'encrypt')); ?>">
+                                <iconify-icon icon="solar:pen-new-round-broken" class="me-2"></iconify-icon>
+                                <?php echo lang('edit'); ?>
+                            </a>
+                            <a class="bg-red-btn btn delete-color outlet_delete" href="<?php echo base_url() ?>Outlet/deleteOutlet/<?php echo escape_output($this->custom->encrypt_decrypt($value->id, 'encrypt')); ?>">
+                                <iconify-icon icon="solar:trash-bin-minimalistic-broken" class="me-2"></iconify-icon>   
+                                <?php echo lang('delete'); ?>
+                            </a>
+                            <div data-status="<?php echo isset($is_collapse) && $is_collapse == "No" ? '2' : '1'?>" class="outlet_responsive outlet_large <?php echo isset($is_collapse) && $is_collapse == "No" ? 'd-none' : 'd-block'?>">
+                                <a class="bg-blue-btn btn" href="<?php echo base_url(); ?>Outlet/setOutletSession/<?php echo escape_output($this->custom->encrypt_decrypt($value->id, 'encrypt')); ?>">  
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <iconify-icon icon="solar:forward-2-broken" class="me-2"></iconify-icon>
+                                    <?php echo lang('enter'); ?>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div data-status="<?php echo isset($is_collapse) && $is_collapse == "No" ? '2' : '1'?>" class="outlet_responsive outlet_small op_margin_top_10 <?php echo isset($is_collapse) && $is_collapse == "No" ? 'd-block' : 'd-none'?>">
+                            <a class="bg-blue-btn btn" href="<?php echo base_url(); ?>Outlet/setOutletSession/<?php echo escape_output($this->custom->encrypt_decrypt($value->id, 'encrypt')); ?>">
+                                <d class="flex align-items-center justify-content-center">
+                                <iconify-icon icon="solar:forward-2-broken" class="me-2"></iconify-icon>
+                                <?php echo lang('enter'); ?>
+                                </d>
+                            </a>
+                        </div>
                     </div>
-                    <div data-status="<?php echo isset($is_collapse) && $is_collapse == "No" ? '2' : '1'?>" class="outlet_responsive outlet_small op_margin_top_10 <?php echo isset($is_collapse) && $is_collapse == "No" ? 'd-block' : 'd-none'?>">
-                        <a class="delete-color outlet_delete bg-red-btn btn <?php echo isset($is_collapse) && $is_collapse == "No" ? 'd-block' : ''?>" href="<?php echo base_url() ?>Outlet/deleteOutlet/<?php echo escape_output($this->custom->encrypt_decrypt($value->id, 'encrypt')); ?>">  <strong><?php echo lang('delete'); ?></strong></a>
-                    </div>
-                </div>
-            </div> 
-            <?php
+                </div> 
+                <?php
+            }
         }
         ?>
     </div>

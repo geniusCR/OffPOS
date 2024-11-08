@@ -3,7 +3,27 @@
 *{
   font-family: Outfit, sans-serif;
 }
+.buy-now{
+  color: #fff;
+  background-color: #d9534f;
+  border-color: #d43f3a;
+  box-shadow: 0 1px 20px 1px rgb(234, 84, 85) !important;
+  position: fixed;
+  z-index: 999;
+  inset-block-end: 5%;
+  inset-inline-end: 79px;
+  padding: 11px;
+  font-weight: bold;
+}
+.buy-now:hover{
+  color: white;
+  box-shadow: none;
 
+}
+.buy-now:focus{
+  color: white;
+  box-shadow: none;
+}
 
 body {
   font-family: Outfit, sans-serif;

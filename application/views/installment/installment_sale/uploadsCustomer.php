@@ -100,8 +100,14 @@
             <!-- /.box-body -->
 
             <div class="box-footer">
-                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn check_required_field"><?php echo lang('submit'); ?></button>
-                <a class="btn bg-blue-btn" href="<?php echo base_url() ?>Installment/installmentCollections"><?php echo lang('back'); ?></a>
+                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn check_required_field">
+                    <iconify-icon icon="solar:upload-minimalistic-broken"></iconify-icon>
+                    <?php echo lang('submit'); ?>
+                </button>
+                <a class="btn bg-blue-btn" href="<?php echo base_url() ?>Installment/installmentCollections">
+                    <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
+                    <?php echo lang('back'); ?>
+                </a>
             </div>
             <?php echo form_close(); ?>
         </div>

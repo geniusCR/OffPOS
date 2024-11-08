@@ -51,6 +51,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 $route['default_controller'] = 'authentication/index';
 $route['customer-panel'] = 'Authentication/customer_panel';
+$route['internet-check'] = 'Authentication/internetCheck';
 $route['customer-panel'] = 'authentication/customer_panel';
 $route['customer-panel-data'] = 'Authentication/customer_panel_data';
 $route['customer-panel-data'] = 'authentication/customer_panel_data';

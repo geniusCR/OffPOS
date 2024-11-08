@@ -3,14 +3,6 @@ $(function(){
     let base_url = $('#base_url_').val();
     /** add active class and stay opened when selected */
     let url = window.location;
-    function setActiveCurrentURL(){
-        // Get the current URL
-        let currentUrl = window.location.href;
-        // Find the active_sub_menu when the current location matches the link
-        $('.treeview').has('a[href="' + currentUrl + '"]').addClass('active_sub_menu');
-        $('.treeview2').has('a[href="' + currentUrl + '"]').addClass('active_sub_menu');
-    }
-    setActiveCurrentURL();
     
     $('.set_collapse').on('click', function() {
         let status = Number($('.set_collapse').attr("data-status"));
@@ -25,6 +17,7 @@ $(function(){
             $('.outlet_small').removeClass('d-none');
             $('#menu-search').parent().show();
             status_tmp = "No";
+            $(this).css('transform', 'rotate(0deg)');
         }else{
             $('.set_collapse').attr('data-status',1);
             $('.outlet_responsive').attr('data-status',1);
@@ -34,7 +27,9 @@ $(function(){
             $('.outlet_small').removeClass('d-block');
             $('#menu-search').parent().hide();
             status_tmp = "Yes";
+            $(this).css('transform', 'rotate(180deg)');
         }
+        $(this).css('transition', '0.7s all ease');
         $.ajax({
             url: base_url+'Ajax_View/set_collapse',
             method: "POST",
@@ -45,42 +40,37 @@ $(function(){
             }
         });
     });
-    $('.treeview2').hover(function(){
-        $('.treeview').removeClass("active_sub_menu");
-        $(".sidebar_sub_menu").css("display", "none");
+
+    function setActiveCurrentURL(){
+        // Get the current URL
+        let currentUrl = window.location.href;
+        // Find the active_sub_menu when the current location matches the link
+        $('.treeview').has('a[href="' + currentUrl + '"]').addClass('active_sub_menu');
+        $('.treeview2').has('a[href="' + currentUrl + '"]').addClass('active_sub_menu');
+        $('.treeview').has('a[href="' + currentUrl + '"]').addClass('menu-open');
+        $('.treeview2').has('a[href="' + currentUrl + '"]').addClass('menu-open');
+        $('.treeview').has('a[href="' + currentUrl + '"]').find('a[href="' + currentUrl + '"]').parent().addClass('treeMenuActive');
+        $('.treeview2').has('a[href="' + currentUrl + '"]').find('a[href="' + currentUrl + '"]').parent().addClass('treeMenuActive');
+    }
+    setActiveCurrentURL();
+
+    $(document).ready(function(){
+        $(".menu-open").click(function(e){
+          // Toggle the visibility of the inner UL with animation
+          $(this).children(".treeview-menu").slideToggle();
+        });
     });
-    $(".treeview").hover(function () {
-        //Every time hover active_sub_menu class remove
-        $(".treeview").removeClass("active_sub_menu");
-        $(".treeview-menu-in").remove();
-        $(".sidebar_sub_menu").css("display", "block");
-        $(this).addClass("active_sub_menu");
-        let html = '<ul class="treeview-menu-in">';
-        html += $(this).find(".treeview-menu").html();
-        html += "</ul>";
-        $(".sidebar_sub_menu").html(html);
-    },
-    function () {
-        $(".sidebar_sub_menu").css("display", "block");
-    });
-    let activeSubMenu = $(".active_sub_menu");
+
+    let activeSubMenu = $(".menu-open");
     if (activeSubMenu.length) {
         let scrollPosition = activeSubMenu.position().top - 100;
         $(".sidebar-menu").scrollTop(scrollPosition);
     }
-    $(document).on('mouseleave', '.sidebar_sub_menu', function(){
-        $(".sidebar_sub_menu").css("display", "none");
-    });
-    $(document).on('click', '.arabic-lang .mobile_sideber_hide_show', function(){
-        if(!$('.sidebar-mini').hasClass('sidebar-open')){
-            $('.main-sidebar2').removeClass('active')
-        }else{
-            $('.sidebar-mini').removeClass('sidebar-collapse')
-        }
-    });
 
-    $(document).on('click', '.mobile_sideber_hide_show, .main-content-wrapper', function(){
-         $(".sidebar_sub_menu").hide();
-    });
+
+
+
+
+
 
 });

@@ -251,6 +251,51 @@ class Ajax extends Cl_Controller {
             echo "Something went wrong";
         }
     }
+    /**
+     * bulkImageUpdate
+     * @access public
+     * @param no
+     * @return json
+     */
+    public function bulkImageUpdate()
+    {
+        $data = $_POST['image'];
+        $item_id = $_POST['item_id'];
+        $item_old_photo = $_POST['item_old_photo'];
+        list($type, $data) = explode(';', $data);
+        list(, $data)      = explode(',', $data);
+        $data = base64_decode($data);
+        $imageName = time().'.png';
+        if(createDirectory('uploads/items')){
+            file_put_contents('uploads/items/'.$imageName, $data);
+            $data_return['image_name'] = $imageName;
+            $id = $this->custom->encrypt_decrypt($item_id, 'decrypt');
+            
+            $old_image_path = FCPATH . 'uploads/items/' . $item_old_photo;
+            // Check if the file exists and is a file before attempting to delete it
+            if (file_exists($old_image_path) && is_file($old_image_path)) {
+                // Attempt to delete the file
+                unlink($old_image_path);  
+            }
+            
+            $data = array();
+            $data['photo'] = $imageName;
+            $this->Common_model->updateInformation($data, $id, 'tbl_items');
+            $response = [
+                'status' => 'success',
+                'message' => 'Item  image update successfully',
+                'image_name' => $imageName,
+                'i_id' => $id,
+            ];	
+            $this->output->set_content_type('application/json')->set_output(json_encode($response));
+        } else {
+            $response = [
+                'status' => 'error',
+                'message' => 'Something went wrong',
+            ];	
+            $this->output->set_content_type('application/json')->set_output(json_encode($response));
+        }
+    }
 
 
     /**

@@ -59,6 +59,8 @@ $(function() {
             let unit_price = item_details_array[2];
             let unit_name = item_details_array[3];
             let getType = item_details_array[4];
+            let expiry_date_maintain = item_details_array[5];
+
             let item_name = $(this).find('option:selected').text();
             $("#hidden_input_item_type").val(getType == '0' ? 'Variation_Product' : getType);
             $("#hidden_input_item_id").val(item_id);
@@ -72,7 +74,8 @@ $(function() {
             $('#imei').val("");
             $('#serial').val("");
             $('#expiry_date').val("");
-            if(getType == 'General_Product' || getType == '0' || getType == 'Installment_Product'){
+
+            if(getType == 'General_Product' || getType == '0' || getType == 'Installment_Product' || (getType == 'Medicine_Product' && expiry_date_maintain == 'No')){
                 $("#qty_modal").prop("readonly", false);
                 $(".rowCount").each(function() {
                     let id_temp = $(this).attr('data-item_id');
@@ -97,7 +100,7 @@ $(function() {
                     </button>
                 `)
                 $("#qty_modal").prop("readonly", false);
-            }else if(getType == 'Medicine_Product'){
+            }else if(getType == 'Medicine_Product' && expiry_date_maintain == 'Yes'){
                 $("#qty_modal").val("");
                 $('.imeiSerial_add_more').html('');
                 $('.expiry_add_more').html('');
@@ -118,12 +121,14 @@ $(function() {
 
 
     function itemCheckBeforeAppend(getType, item_details_array, item_name){
+        let expiry_date_maintain = item_details_array[5];
         $('.item_header').text(item_name);
         $("#unit_price_modal").val(item_details_array[2]);
         $('.modal_item_unit').text(item_details_array[3]);
-        if(getType == 'General_Product' || getType == ''){
+        $('#hidden_input_expiry_date_maintain').val(expiry_date_maintain);
+        if(getType == 'General_Product' || getType == '' || (getType == 'Medicine_Product' && expiry_date_maintain == 'No')){
             $(".imei_p_f").addClass('d-none');
-        }else if(getType == 'Medicine_Product'){
+        }else if(getType == 'Medicine_Product' && expiry_date_maintain == 'Yes'){
             let item_id = $('#hidden_input_item_id').val();
             let expiryDates = '';
             $.ajax({
@@ -528,6 +533,7 @@ $(function() {
     $(document).on('click', '#addToCart', function(e) {
         e.preventDefault();
         let item_type = $("#hidden_input_item_type").val();
+        let expiry_date_maintain = $("#hidden_input_expiry_date_maintain").val();
         let item_id = $("#hidden_input_item_id").val();
         let quantity = Number($("#qty_modal").val());
         let item_name = $("#hidden_input_item_name").val();
@@ -542,8 +548,7 @@ $(function() {
         }
         let product_type_val = "";
         let item_quantity_val = "";
-        if (item_type == 'Medicine_Product') {
-
+        if (item_type == 'Medicine_Product' && expiry_date_maintain == 'Yes') {
             let imei_serial_data = [];
             let item_arr = [];
             let existMatch = '';
@@ -683,10 +688,10 @@ $(function() {
                     if(quantity != ''){
                         if(Number(data) >= Number(quantity)){
                             let qty_modal;
-                            if(item_type != 'Medicine_Product'){
-                                qty_modal = Number($("#qty_modal").val());
-                            }else{
+                            if((item_type == 'Medicine_Product') && expiry_date_maintain == 'Yes'){
                                 qty_modal = $('#imei_append .expiry_child_qty').length;
+                            }else{
+                                qty_modal = Number($("#qty_modal").val());
                             }
                             appendCart(item_id,item_type,item_name,qty_modal,item_unit,product_type_val, item_quantity_val);
                             $("#imei_append").html("");
@@ -732,6 +737,8 @@ $(function() {
     }
     
     function appendCart(item_id,item_type,item_name,quantity,item_unit,product_type_val="", item_quantity_val=""){
+        let item_details = $('#item_id').val();
+        let item_details_array = item_details.split('||');
         let cart_row = '';
         let custom_date = '';
         let readonly = '';
@@ -749,16 +756,18 @@ $(function() {
             p_type = 'Serial:';
             checkIMEISerialUnique = 'checkIMEISerialUnique';
             qtyReadonly = 'readonly';
-        }else if (item_type == 'Medicine_Product'){
+        }else if (item_type == 'Medicine_Product' && item_details_array[5] == 'Yes'){
             p_type = 'Expiry Date:';
             custom_date = 'customDatepicker';
             expiryDateExistCheck = 'expiryDateExistCheck';
             readonly_expiry = 'readonly';
-        }else if(item_type == 'General_Product' || item_type == 'Variation_Product' || item_type == 0 || item_type == 'Installment_Product'){
+        }else if(item_type == 'General_Product' || item_type == 'Variation_Product' || item_type == 0 || item_type == 'Installment_Product' || (item_type == 'Medicine_Product' && item_details_array[5] == 'No')){
             readonly = 'readonly';
         }
 
-        if (item_type == 'General_Product' || item_type == 'Variation_Product' || item_type == 0 || item_type == 'Installment_Product') {
+
+
+        if (item_type == 'General_Product' || item_type == 'Variation_Product' || item_type == 0 || item_type == 'Installment_Product' || (item_type == 'Medicine_Product' && item_details_array[5] == 'No')) {
             rowCounter++
             cart_row = `<tr class="rowCount" data-item_id="${item_id}" row-counter="${rowCounter}" data-id="${rowCounter}" id="row_${rowCounter}">
                         <td class="op_padding_left_10">
@@ -799,7 +808,7 @@ $(function() {
             calculateAll();
         }
 
-        if (item_type == 'IMEI_Product' || item_type == 'Serial_Product' || item_type == 'Medicine_Product'){
+        if (item_type == 'IMEI_Product' || item_type == 'Serial_Product' || (item_type == 'Medicine_Product' && item_details_array[5] == 'Yes')){
             for(let k = 0; k < quantity; k++){
                 rowCounter++
                 cart_row = `<tr class="rowCount" data-item_id="${item_id}" row-counter="${rowCounter}" data-id="${rowCounter}" id="row_${rowCounter}">

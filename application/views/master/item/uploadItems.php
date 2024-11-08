@@ -55,11 +55,16 @@
                 </div>
             </div>
             <div class="box-footer">
-                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn"><?php echo lang('submit'); ?></button>
-                <a href="<?php echo base_url() ?>Item/items"
-                    class="btn bg-blue-btn"><?php echo lang('back'); ?>
+                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn">
+                    <iconify-icon icon="solar:upload-minimalistic-broken"></iconify-icon>
+                    <?php echo lang('submit'); ?>
+                </button>
+                <a href="<?php echo base_url() ?>Item/items" class="btn bg-blue-btn">
+                    <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
+                    <?php echo lang('back'); ?>
                 </a>
                 <a class="btn bg-blue-btn" href="<?php echo base_url() ?>Authentication/downloadPDF/Item_Upload.xlsx">
+                    <iconify-icon icon="solar:cloud-download-broken"></iconify-icon>
                     <?php echo lang('download_sample'); ?>
                 </a>
             </div>

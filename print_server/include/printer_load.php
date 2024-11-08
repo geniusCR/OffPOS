@@ -64,7 +64,7 @@ function print_receipt($data) {
     $printer->setEmphasis(false);
     $printer->cut();
     // Open cash drawer
-    if(isset($data->open_cash_drawer_when_printing_invoice) && $data->open_cash_drawer_when_printing_invoice=="Yes"){
+    if(isset($data->open_cash_drawer_when_printing_invoice) && $data->open_cash_drawer_when_printing_invoice=="ON"){
         $printer->pulse();
     }
     $printer->close();

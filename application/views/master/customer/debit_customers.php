@@ -120,7 +120,7 @@ if ($this->session->flashdata('exception')) {
                                 <th></th>
                                 <th></th>
                                 <th></th>
-                                <th><?php echo lang('Total_Debit_Amount');?> <?php echo getAmtCustom(abs($customer_due_total)); ?></th>
+                                <th><?php echo lang('Total_Debit_Amount');?> <?php echo getAmtCustom(absCustom($customer_due_total)); ?></th>
                                 <th></th>
                                 <th></th>
                                 <th></th>

@@ -42,7 +42,7 @@ class Installment_model extends CI_Model {
      */
     public function getAllInstallmentPayments($customer_id='', $installment_id='', $payment_type='', $outlet_id='') {
         $company_id = $this->session->userdata('company_id');
-        $this->db->select("ii.*, i.reference_no, c.name as customer_name,c.phone,it.name as item_name,it.code");
+        $this->db->select("ii.*, i.reference_no, c.name as customer_name, c.phone, it.name as item_name, it.code");
         $this->db->from("tbl_installment_items ii");
         $this->db->join('tbl_installments i', 'i.id = ii.installment_id', 'left');
         $this->db->join('tbl_customers c', 'c.id = i.customer_id', 'left');
@@ -61,8 +61,8 @@ class Installment_model extends CI_Model {
             $this->db->where("ii.outlet_id",$outlet_id);
         }
         $this->db->where("ii.del_status", 'Live');
-        $this->db->where("ii.company_id", $company_id);
         $this->db->order_by('ii.id', 'ASC');
+        $this->db->group_by('ii.id');
         return $this->db->get()->result();
     }
 
@@ -115,7 +115,7 @@ class Installment_model extends CI_Model {
      * @param int
      * @return object
      */
-    public function dueInstallmentWithin($customer_id, $start_date, $due_within, $outlet_id) {
+    public function dueInstallmentWithin($customer_id='', $start_date='', $due_within='', $outlet_id='') {
         $company_id = $this->session->userdata('company_id');
         $this->db->select("tbl_installment_items.*,tbl_installments.customer_id, tbl_installments.down_payment, tbl_customers.name as customer_name, tbl_customers.phone as customer_phone, tbl_installments.item_id, tbl_items.name as item_name, tbl_installments.added_date");
         $this->db->from("tbl_installment_items");
@@ -125,7 +125,9 @@ class Installment_model extends CI_Model {
         if($customer_id != ''){
             $this->db->where("tbl_installments.customer_id", $customer_id);
         }
-        $this->db->where("tbl_installment_items.payment_date >=", $start_date);
+        if($start_date){
+            $this->db->where("tbl_installment_items.payment_date >=", $start_date);
+        }
         if($due_within != ''){
             $this->db->where("tbl_installment_items.payment_date <=", $due_within);
         }
@@ -134,8 +136,8 @@ class Installment_model extends CI_Model {
         }
         $this->db->where("tbl_installment_items.company_id", $company_id);
         $this->db->where("tbl_installment_items.paid_status", 'Unpaid');
-        $this->db->or_where("tbl_installment_items.paid_status", 'Partially Paid');
         $this->db->where("tbl_installment_items.del_status", 'Live');
+        $this->db->or_where("tbl_installment_items.paid_status", 'Partially Paid');
         $resutl =  $this->db->get()->result();
         return $resutl;
     }

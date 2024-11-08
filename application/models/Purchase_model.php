@@ -81,7 +81,7 @@ class Purchase_model extends CI_Model {
      * @return object
      */
     public function getPurchaseItems($id) {
-        $this->db->select("pd.*, i.name as item_name, i.code as item_code,i.conversion_rate,i.unit_type, i.parent_id, b.name as brand_name, pui.unit_name as purchase_unit_name");
+        $this->db->select("pd.*, i.name as item_name, i.code as item_code,i.conversion_rate,i.unit_type, i.parent_id, i.expiry_date_maintain, b.name as brand_name, pui.unit_name as purchase_unit_name");
         $this->db->from("tbl_purchase_details pd");
         $this->db->join('tbl_items i','pd.item_id=i.id','left');
         $this->db->join('tbl_brands b','b.id = i.brand_id','left');
@@ -116,7 +116,7 @@ class Purchase_model extends CI_Model {
      * @return object
      */
     public function getPurchaseReturnItems($id) {
-        $this->db->select("prd.*, i.name as item_name, i.code as item_code,i.conversion_rate,i.unit_type, b.name as brand_name, pui.unit_name as sale_unit_name");
+        $this->db->select("prd.*, i.name as item_name, i.code as item_code,i.conversion_rate,i.unit_type,i.expiry_date_maintain, b.name as brand_name, pui.unit_name as sale_unit_name");
         $this->db->from("tbl_purchase_return_details prd");
         $this->db->join("tbl_items i", "prd.item_id=i.id", 'left');
         $this->db->join("tbl_brands b", "i.brand_id=b.id", 'left');

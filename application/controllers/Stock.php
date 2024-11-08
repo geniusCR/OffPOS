@@ -80,9 +80,7 @@ class Stock extends Cl_Controller {
         $stock = $this->Stock_model->make_datatables($item_id,$item_code,$brand_id,$category_id,$supplier_id, $generic_name);
         // Stock Prepare Code
         $alertQtySum = 0;
-        $purchasePriceTotal = 0;
         $data = array();
-        
         foreach($stock as $key=>$item){
             $sub_array = array();
             $generalStock = 0;
@@ -96,15 +94,15 @@ class Stock extends Cl_Controller {
                     $alertQtySum ++;
                 }
             }
-            if($item->type == 'General_Product' || $item->type == 'Installment_Product'){
+            if($item->type == 'General_Product' || $item->type == 'Installment_Product' || ($item->type == 'Medicine_Product' && $item->expiry_date_maintain == 'No')){
                 $generalStock = ((int)$item->stock_qty - (int)$item->out_qty);
-                $genConvertedPrice = (float)$item->last_three_purchase_avg * (int)$item->conversion_rate;
-                $purchasePriceSum = ($genConvertedPrice) / $generalStock;
+                $genConvertedPrice = (float)$item->last_three_purchase_avg / (int)$item->conversion_rate;
+                $purchasePriceSum = ($genConvertedPrice) * $generalStock;
                 if($item->unit_type == '1'){
                     $saleUnitSum = (int)$generalStock;
                 } else if($item->unit_type == '2'){
-                    $purchaseUnitSum = (int)((int)$generalStock * $item->conversion_rate);
-                    $saleUnitSum = ((int)$generalStock) / $item->conversion_rate;
+                    $purchaseUnitSum = (int)((int)$generalStock / $item->conversion_rate);
+                    $saleUnitSum = ((int)$generalStock) % $item->conversion_rate;
                 }
             }
             $sub_array[] = '<div class="'. $itemStockAlertCls .'">'. $key + 1 .'</div>';
@@ -125,14 +123,14 @@ class Stock extends Cl_Controller {
                     $variations = explode("||", $item->variations);
                     foreach ($variations as $m => $val_custom) {
                         $variation_d = explode("|", $variations[$m]);
-                        $variationStock = ((int)$variation_d[4] - (int)$variation_d[5]); 
+                        $variationStock = ((int)$variation_d[4] - (int)$variation_d[5]); /* $variation_d[4]Stock In - $variation_d[5]Stock Out = Current Stock  */
                         $generalStock += $variationStock;
-                        $variationAlert = (int)($variation_d[2]); 
-                        $variationConvertedPrice = ($variation_d[3] / $item->conversion_rate);
-                        $purchasePriceSum += $variationConvertedPrice * $variationStock;
+                        $variationAlert = (int)($variation_d[2]); /* $variation_d[2] = Alert Quantity */
+                        $variationConvertedPrice = ($variation_d[3] / $item->conversion_rate); /* $variation_d[3] = Last 3 Purchase AVG */
+                        $purchasePriceSum += $variationConvertedPrice * $variationStock; /* Unit Price * Stock = Stock Amount */
                         $vItemStockAlertCls = '';
                         if ($variationStock < $variationAlert) {
-                            $vItemStockAlertCls = 'stock-alert-color';
+                            $vItemStockAlertCls = 'stock-alert-color'; /* Alert Class */
                             $alertQtySum++;
                         }
                         $vQtyWithUnit = '';
@@ -155,7 +153,7 @@ class Stock extends Cl_Controller {
                             $variation .= $vQtyWithUnit . ' (' . getAmtPCustom($variationStock) . ' ' . $item->sale_unit . ')';
                         }
                         $variation .= '</div>
-                                            <div class="' . $vItemStockAlertCls . '">' . getAmtCustom(($variation_d[3]) % $item->conversion_rate) . '</div>
+                                            <div class="' . $vItemStockAlertCls . '">' . getAmtStock(($variation_d[3]) % $item->conversion_rate) . '</div>
                                         </li>';
                     }
                 }
@@ -168,11 +166,9 @@ class Stock extends Cl_Controller {
                                             <div>' . lang('type') . '</div>
                                             <div>' . lang('imei_serial_number') . '</div>
                                         </li>';
-
-
                 $expStock = ((int)$item->stock_qty - (int)$item->out_qty);
-                $expConvertedPrice = (float)$item->last_three_purchase_avg * (int)$item->conversion_rate;
-                $purchasePriceSum = ($expConvertedPrice) / $expStock;
+                $expConvertedPrice = (float)$item->last_three_purchase_avg % (int)$item->conversion_rate;
+                $purchasePriceSum = ($expConvertedPrice) * $expStock;
                 $purchaseUnitSum = (int)$expStock;
                 $saleUnitSum = (int)$expStock;
                 if ($item->allimei) {
@@ -188,8 +184,8 @@ class Stock extends Cl_Controller {
                 }
                 $variation .= '</ul>
                             </div>';
-            } elseif ($item->type == 'Medicine_Product') {
-                $purchasePriceSum = ((float)$item->last_three_purchase_avg % (int)$item->conversion_rate) * ((int)$item->stock_qty - (int)$item->out_qty);
+            } elseif (($item->type == 'Medicine_Product' && $item->expiry_date_maintain == 'Yes')) {
+                $purchasePriceSum = ((float)$item->last_three_purchase_avg / (int)$item->conversion_rate) * ((int)$item->stock_qty - (int)$item->out_qty);
                 $variation .= '<div id="stockInnerTable">
                                     <ul>
                                         <li>
@@ -200,21 +196,21 @@ class Stock extends Cl_Controller {
                     $allexpiry = explode("||", $item->allexpiry);
                     foreach ($allexpiry as $ek => $expiry) {
                         $expiry_d = explode("|", $expiry);
-                        $expSaleQtySum = ((int)$expiry_d[1] % $item->conversion_rate) * $item->conversion_rate;
+                        $expSaleQtySum = ((int)$expiry_d[1] / $item->conversion_rate) * $item->conversion_rate;
                         $expItemStockAlertCls = '';
-                        if((int)$expiry_d[1] > $item->alert_quantity){
+                        if((int)$expiry_d[1] < $item->alert_quantity){
                             $expItemStockAlertCls = 'stock-alert-color';
                         }
                         $generalStock += $expSaleQtySum;
                         $expQtyWithUnit = '';
                         if ($item->unit_type == '1') {
-                            $saleUnitSum += (int)$expiry_d[1];
+                            $saleUnitSum += (int)$expiry_d[1]; /* $expiry_d[1] = Expiry Quantity  */
                             $expQtyWithUnit = escape_output(getAmtPCustom((int)$expiry_d[1])) . ' ' . $item->sale_unit;
                         } elseif ($item->unit_type == '2') {
                             $purchaseUnitSum += ((int)((int)$expiry_d[1] / $item->conversion_rate));
                             $saleUnitSum += ((int)$expiry_d[1] % $item->conversion_rate);
-                            $expPurchaseUnit = getAmtPCustom((int)((int)$expiry_d[1] % $item->conversion_rate)) . ' ' . $item->purchase_unit;
-                            $expSaleUnit = getAmtPCustom(((int)$expiry_d[1] / $item->conversion_rate)) . ' ' . $item->sale_unit;
+                            $expPurchaseUnit = getAmtPCustom((int)((int)$expiry_d[1] / $item->conversion_rate)) . ' ' . $item->purchase_unit;
+                            $expSaleUnit = getAmtPCustom(((int)$expiry_d[1] % $item->conversion_rate)) . ' ' . $item->sale_unit;
                             $expQtyWithUnit =  $expPurchaseUnit . ' ' . $expSaleUnit;
                         }
                         $variation .= '<li>
@@ -238,11 +234,10 @@ class Stock extends Cl_Controller {
             }
             $unitType .= '</div>';
             $sub_array[] = $unitType;
-            $sub_array[] = '<div class="'. $itemStockAlertCls .'">'. getAmtCustom((int)$item->last_three_purchase_avg % (int)($item->conversion_rate)) .'</div>';
+            $sub_array[] = '<div class="'. $itemStockAlertCls .'">'. getAmtStock((int)$item->last_three_purchase_avg / (int)($item->conversion_rate)) .'</div>';
             $totalHtml = '';
             $totalHtml .= '<div class="' . $itemStockAlertCls . '">';
-            $totalPurchasePrice =   $purchasePriceTotal += $purchasePriceSum;
-            $totalHtml .= getAmtCustom($totalPurchasePrice);
+            $totalHtml .= getAmtStock($purchasePriceSum);
             $totalHtml .= '</div>';
             $sub_array[] = $totalHtml;
             $data[] = $sub_array;
@@ -293,7 +288,6 @@ class Stock extends Cl_Controller {
         $stock = $this->Stock_model->make_datatablesLowStock($item_id,$item_code,$brand_id,$category_id,$supplier_id, $generic_name);
         // Stock Prepare Code
         $alertQtySum = 0;
-        $purchasePriceTotal = 0;
         $data = array();
         foreach($stock as $key=>$item){
             $sub_array = array();
@@ -301,31 +295,23 @@ class Stock extends Cl_Controller {
             $purchasePriceSum = 0;
             $purchaseUnitSum = 0;
             $saleUnitSum = 0;
-            $itemStockAlertCls = '';
-            if($item->type != 'Variation_Product'){
-                if(((int)$item->stock_qty - (int)$item->out_qty) < $item->alert_quantity){
-                    $itemStockAlertCls = 'stock-alert-color';
-                    $alertQtySum ++;
-                }
-            }
-            if($item->type == 'General_Product' || $item->type == 'Installment_Product'){
+            if($item->type == 'General_Product' || $item->type == 'Installment_Product' || ($item->type == 'Medicine_Product' && $item->expiry_date_maintain == 'No')){
                 $generalStock = ((int)$item->stock_qty - (int)$item->out_qty);
-                $genConvertedPrice = (float)$item->last_three_purchase_avg * (int)$item->conversion_rate;
-                $purchasePriceSum = ($genConvertedPrice) / $generalStock;
+                $genConvertedPrice = (float)$item->last_three_purchase_avg / (int)$item->conversion_rate;
+                $purchasePriceSum = ($genConvertedPrice) * $generalStock;
                 if($item->unit_type == '1'){
                     $saleUnitSum = (int)$generalStock;
                 } else if($item->unit_type == '2'){
-                    $purchaseUnitSum = (int)((int)$generalStock * $item->conversion_rate);
-                    $saleUnitSum = ((int)$generalStock) / $item->conversion_rate;
+                    $purchaseUnitSum = (int)((int)$generalStock / $item->conversion_rate);
+                    $saleUnitSum = ((int)$generalStock) % $item->conversion_rate;
                 }
             }
-            $sub_array[] = '<div class="'. $itemStockAlertCls .'">'. $key + 1 .'</div>';
-            $sub_array[] = '<div class="'. $itemStockAlertCls .'">'. escape_output($item->name) . '(' . escapeQuot($item->code) . ') </div>';
-            $sub_array[] = '<div class="'. $itemStockAlertCls .'">'. escape_output($item->category_name) .'</div>';
+            $sub_array[] = '<div>'. $key + 1 .'</div>';
+            $sub_array[] = '<div>'. escape_output($item->name) . '(' . escapeQuot($item->code) . ') </div>';
+            $sub_array[] = '<div>'. escape_output($item->category_name) .'</div>';
             $variation = '';
-            $variation .= '<div class="' . $itemStockAlertCls . '">';
+            $variation .= '<div>';
             if ($item->type == 'Variation_Product') {
-                if ($item->variations) {
                     $variation .= '<div id="stockInnerTable">
                                     <ul>
                                         <li>
@@ -333,47 +319,47 @@ class Stock extends Cl_Controller {
                                             <div>' . lang('quantity') . '</div>
                                             <div>' . lang('LPP') . '/' . lang('PP') . '<i data-tippy-content="' . lang('LPP_PP') . '" class="fa-regular fa-circle-question tippyBtnCall font-16 theme-color"></i></div>
                                         </li>';
+                                        if ($item->variations) {
+                                            $variations = explode("||", $item->variations);
+                                            foreach ($variations as $m => $val_custom) {
+                                                $variation_d = explode("|", $variations[$m]);
+                                                $variationStock = ((int)$variation_d[4] - (int)$variation_d[5]); /* $variation_d[4]Stock In - $variation_d[5]Stock Out = Current Stock  */
+                                                $variationAlert = (int)($variation_d[2]); /* $variation_d[2] = Alert Quantity */
+                                                $variationConvertedPrice = ($variation_d[3] / $item->conversion_rate); /* $variation_d[3] = Last 3 Purchase AVG */
+                                                $purchasePriceSum += $variationConvertedPrice * $variationStock; /* Unit Price * Stock = Stock Amount */
+                                                $vItemStockAlertCls = '';
+                                                if ((float)$variationStock < (float)$variationAlert) {
+                                                    $generalStock += $variationStock;
+                                                    $vItemStockAlertCls = ''; /* Alert Class */
+                                                    $vQtyWithUnit = '';
+                                                    if ($item->unit_type == '1') {
+                                                        $saleUnitSum += $variationStock;
+                                                        $vQtyWithUnit = escape_output(getAmtPCustom($variationStock)) . ' ' . $item->sale_unit;
+                                                    } elseif ($item->unit_type == '2') {
+                                                        $purchaseUnitSum += ((int)$variationStock / $item->conversion_rate);
+                                                        $saleUnitSum += (((int)$variationStock) % $item->conversion_rate);
+                                                        $vPurchaseUnit = getAmtPCustom((int)($variationStock / $item->conversion_rate)) . ' ' . $item->purchase_unit;
+                                                        $vSaleUnit = getAmtPCustom(((int)$variationStock) % $item->conversion_rate) . ' ' . $item->sale_unit;
+                                                        $vQtyWithUnit =  $vPurchaseUnit . ' ' . $vSaleUnit;
+                                                    }
+                                                    $variation .= '<li>
+                                                                        <div class="'. $vItemStockAlertCls .'">' . $variation_d[0] . '(' . $variation_d[1] . ')</div>
+                                                                        <div>';
+                                                    if ($item->unit_type == '1') {
+                                                        $variation .= $vQtyWithUnit;
+                                                    } else if ($item->unit_type == '2') {
+                                                        $variation .= $vQtyWithUnit . ' (' . getAmtPCustom($variationStock) . ' ' . $item->sale_unit . ')';
+                                                    }
+                                                    $variation .= '</div>
+                                                                        <div class="'. $vItemStockAlertCls .'">' . getAmtStock(($variation_d[3]) / $item->conversion_rate) . '</div>
+                                                    </li>';
+                                                }
 
-                    $variations = explode("||", $item->variations);
-                    foreach ($variations as $m => $val_custom) {
-                        $variation_d = explode("|", $variations[$m]);
-                        $variationStock = ((int)$variation_d[4] - (int)$variation_d[5]); 
-                        $generalStock += $variationStock;
-                        $variationAlert = (int)($variation_d[2]); 
-                        $variationConvertedPrice = ($variation_d[3] / $item->conversion_rate);
-                        $purchasePriceSum += $variationConvertedPrice * $variationStock;
-                        $vItemStockAlertCls = '';
-                        if ($variationStock < $variationAlert) {
-                            $vItemStockAlertCls = 'stock-alert-color';
-                            $alertQtySum++;
-                        }
-                        $vQtyWithUnit = '';
-                        if ($item->unit_type == '1') {
-                            $saleUnitSum += $variationStock;
-                            $vQtyWithUnit = escape_output(getAmtPCustom($variationStock)) . ' ' . $item->sale_unit;
-                        } elseif ($item->unit_type == '2') {
-                            $purchaseUnitSum += ((int)$variationStock % $item->conversion_rate);
-                            $saleUnitSum += (((int)$variationStock) / $item->conversion_rate);
-                            $vPurchaseUnit = getAmtPCustom((int)($variationStock % $item->conversion_rate)) . ' ' . $item->purchase_unit;
-                            $vSaleUnit = getAmtPCustom(((int)$variationStock) / $item->conversion_rate) . ' ' . $item->sale_unit;
-                            $vQtyWithUnit =  $vPurchaseUnit . ' ' . $vSaleUnit;
-                        }
-                        $variation .= '<li>
-                                            <div class="' . $vItemStockAlertCls . '">' . $variation_d[0] . '(' . $variation_d[1] . ')</div>
-                                            <div class="' . $vItemStockAlertCls . '">';
-                        if ($item->unit_type == '1') {
-                            $variation .= $vQtyWithUnit;
-                        } else if ($item->unit_type == '2') {
-                            $variation .= $vQtyWithUnit . ' (' . getAmtPCustom($variationStock) . ' ' . $item->sale_unit . ')';
-                        }
-                        $variation .= '</div>
-                                            <div class="' . $vItemStockAlertCls . '">' . getAmtCustom(($variation_d[3]) % $item->conversion_rate) . '</div>
-                                        </li>';
-                    }
-                }
-                $variation .= '</ul>
-                            </div>';
-            } elseif ($item->type == 'IMEI_Product' || $item->type == 'Serial_Product') {
+                                            }
+                                        }
+                                        $variation .= '</ul>
+                </div>';
+            }elseif ($item->type == 'IMEI_Product' || $item->type == 'Serial_Product') {
                 $variation .= '<div id="stockInnerTable">
                                     <ul>
                                         <li>
@@ -381,15 +367,13 @@ class Stock extends Cl_Controller {
                                             <div>' . lang('imei_serial_number') . '</div>
                                         </li>';
 
-
                 $expStock = ((int)$item->stock_qty - (int)$item->out_qty);
-                $expConvertedPrice = (float)$item->last_three_purchase_avg * (int)$item->conversion_rate;
-                $purchasePriceSum = ($expConvertedPrice) / $expStock;
+                $expConvertedPrice = (float)$item->last_three_purchase_avg / (int)$item->conversion_rate;
+                $purchasePriceSum = ($expConvertedPrice) * $expStock;
                 $purchaseUnitSum = (int)$expStock;
                 $saleUnitSum = (int)$expStock;
                 if ($item->allimei) {
                     $imaiSerial = explode("||", $item->allimei);
-                    $imei_serial_type = '';
                     foreach ($imaiSerial as $k => $v) {
                         $imei_serial_type = $item->type == 'IMEI_Product' ? 'IMEI Number:' : 'Serial Number:';
                         $variation .= '<li>
@@ -400,8 +384,9 @@ class Stock extends Cl_Controller {
                 }
                 $variation .= '</ul>
                             </div>';
-            } elseif ($item->type == 'Medicine_Product') {
-                $purchasePriceSum = ((float)$item->last_three_purchase_avg % (int)$item->conversion_rate) * ((int)$item->stock_qty - (int)$item->out_qty);
+            } elseif (($item->type == 'Medicine_Product' && $item->expiry_date_maintain == 'Yes')) {
+                $expItemStockAlertCls = '';
+                $purchasePriceSum = ((float)$item->last_three_purchase_avg / (int)$item->conversion_rate) * ((int)$item->stock_qty - (int)$item->out_qty);
                 $variation .= '<div id="stockInnerTable">
                                     <ul>
                                         <li>
@@ -412,27 +397,26 @@ class Stock extends Cl_Controller {
                     $allexpiry = explode("||", $item->allexpiry);
                     foreach ($allexpiry as $ek => $expiry) {
                         $expiry_d = explode("|", $expiry);
-                        $expSaleQtySum = ((int)$expiry_d[1] % $item->conversion_rate) * $item->conversion_rate;
-                        $expItemStockAlertCls = '';
-                        if((int)$expiry_d[1] > $item->alert_quantity){
-                            $expItemStockAlertCls = 'stock-alert-color';
+                        $expSaleQtySum = ((int)$expiry_d[1] / $item->conversion_rate) * $item->conversion_rate;
+                        if($expiry_d[1] < $item->alert_quantity){
+                            $generalStock += $expSaleQtySum;
+                            $expQtyWithUnit = '';
+                            if ($item->unit_type == '1') {
+                                $saleUnitSum += (int)$expiry_d[1]; /* $expiry_d[1] = Expiry Quantity  */
+                                $expQtyWithUnit = escape_output(getAmtPCustom((int)$expiry_d[1])) . ' ' . $item->sale_unit;
+                            } elseif ($item->unit_type == '2') {
+                                $purchaseUnitSum += ((int)$expiry_d[1] / $item->conversion_rate);
+                                $saleUnitSum += ((int)$expiry_d[1] % $item->conversion_rate);
+                                $expPurchaseUnit = getAmtPCustom((int)$expiry_d[1] / $item->conversion_rate) . ' ' . $item->purchase_unit;
+                                $expSaleUnit = getAmtPCustom(((int)$expiry_d[1] % $item->conversion_rate)) . ' ' . $item->sale_unit;
+                                $expQtyWithUnit =  $expPurchaseUnit . ' ' . $expSaleUnit;
+                            }
+                            $variation .= '<li>
+                                                <div class="'.$expItemStockAlertCls.'">' . dateFormat($expiry_d[0]) . '</div>
+                                                <div class="'.$expItemStockAlertCls.'">' . $expQtyWithUnit . '</div>
+                                            </li>';
                         }
-                        $generalStock += $expSaleQtySum;
-                        $expQtyWithUnit = '';
-                        if ($item->unit_type == '1') {
-                            $saleUnitSum += (int)$expiry_d[1];
-                            $expQtyWithUnit = escape_output(getAmtPCustom((int)$expiry_d[1])) . ' ' . $item->sale_unit;
-                        } elseif ($item->unit_type == '2') {
-                            $purchaseUnitSum += ((int)((int)$expiry_d[1] / $item->conversion_rate));
-                            $saleUnitSum += ((int)$expiry_d[1] % $item->conversion_rate);
-                            $expPurchaseUnit = getAmtPCustom((int)((int)$expiry_d[1] % $item->conversion_rate)) . ' ' . $item->purchase_unit;
-                            $expSaleUnit = getAmtPCustom(((int)$expiry_d[1] / $item->conversion_rate)) . ' ' . $item->sale_unit;
-                            $expQtyWithUnit =  $expPurchaseUnit . ' ' . $expSaleUnit;
-                        }
-                        $variation .= '<li>
-                                            <div class="'.$expItemStockAlertCls.'">' . dateFormat($expiry_d[0]) . '</div>
-                                            <div class="'.$expItemStockAlertCls.'">' . $expQtyWithUnit . '</div>
-                                        </li>';
+
                     }
                 }
                 $variation .= '</ul>
@@ -441,7 +425,7 @@ class Stock extends Cl_Controller {
             $variation .= '</div>';
             $sub_array[] = $variation;
             $unitType = '';
-            $unitType .= '<div class="' . $itemStockAlertCls . '">';
+            $unitType .= '<div>';
             if ($item->unit_type == '1') {
                 $unitType .= getAmtPCustom($saleUnitSum) . ' ' . $item->sale_unit;
             } elseif ($item->unit_type == '2') {
@@ -450,11 +434,18 @@ class Stock extends Cl_Controller {
             }
             $unitType .= '</div>';
             $sub_array[] = $unitType;
-            $sub_array[] = '<div class="'. $itemStockAlertCls .'">'. getAmtCustom((int)$item->last_three_purchase_avg % (int)($item->conversion_rate)) .'</div>';
+            if($saleUnitSum || $purchaseUnitSum){
+                $sub_array[] = '<div>'. getAmtStock((int)$item->last_three_purchase_avg / (int)($item->conversion_rate)) .'</div>';
+            } else {
+                $sub_array[] = '<div>'. getAmtStock(0) .'</div>';
+            }
             $totalHtml = '';
-            $totalHtml .= '<div class="' . $itemStockAlertCls . '">';
-            $totalPurchasePrice =   $purchasePriceTotal += $purchasePriceSum;
-            $totalHtml .= getAmtCustom($totalPurchasePrice);
+            $totalHtml .= '<div>';
+            if($saleUnitSum || $purchaseUnitSum){
+                $totalHtml .= getAmtStock($purchasePriceSum);
+            } else {
+                $totalHtml .= getAmtStock(0);
+            }
             $totalHtml .= '</div>';
             $sub_array[] = $totalHtml;
             $data[] = $sub_array;
@@ -466,7 +457,7 @@ class Stock extends Cl_Controller {
             "data" => $data, 
             "alertSum" => $alertQtySum,
         );
-        echo json_encode($output); 
+        echo json_encode($output);  
     }
 
 
@@ -504,7 +495,7 @@ class Stock extends Cl_Controller {
             foreach ($stock as $key => $value){
                 $totalStock = $value->total_purchase  - $value->total_damage - $value->total_sale; 
                 if ($totalStock <= $value->alert_quantity){ 
-                    $table_row .= '<tr class="rowCount"  data-id="' . $i . '" id="row_' . $i . '">' . '<td class="pl_10"><p id="sl_' . $i . '">' . $i . '</p></td>' . '<td><span class="op_padding_bottom_5">' . $value->name. '</span></td>' . '<input type="hidden" id="item_id_' . $i . '" name="item_id[]" value="' . $value->id . '"/>' . '<td><input type="text" id="unit_price_' . $i . '" name="unit_price[]" onfocus="this.select();" class="form-control integerchk aligning" placeholder="'.lang('unit_price').'" value="' . $value->purchase_price . '" onkeyup="return calculateAll();"/><span class="label_aligning">' . $this->session->userdata('currency') . '</span></td>' . '<td><input type="text" data-countID="' . $i . '" id="quantity_amount_' . $i . '" name="quantity_amount[]" onfocus="this.select();" class="form-control integerchk aligning countID" placeholder="'.lang('Qty_Amount').'" value="' . abs($totalStock) . '"  onkeyup="return calculateAll();" ><span class="label_aligning">' . $value->unit_name . '</span></td>' . '<td><input type="text" id="total_' . $i . '" name="total[]" class="form-control integerchk aligning" placeholder="'.lang('total').'" value="' . $value->purchase_price * abs($totalStock) . '" readonly/><span class="label_aligning">' . $this->session->userdata('currency') . '</span></td>' . '<td><a class="btn btn-danger btn-xs" onclick="return deleter(' . $i . ',' . $value->id . ');" ><i class="fa fa-trash text-white"></i> </a></td>' . '</tr>';
+                    $table_row .= '<tr class="rowCount"  data-id="' . $i . '" id="row_' . $i . '">' . '<td class="pl_10"><p id="sl_' . $i . '">' . $i . '</p></td>' . '<td><span class="op_padding_bottom_5">' . $value->name. '</span></td>' . '<input type="hidden" id="item_id_' . $i . '" name="item_id[]" value="' . $value->id . '"/>' . '<td><input type="text" id="unit_price_' . $i . '" name="unit_price[]" onfocus="this.select();" class="form-control integerchk aligning" placeholder="'.lang('unit_price').'" value="' . $value->purchase_price . '" onkeyup="return calculateAll();"/><span class="label_aligning">' . $this->session->userdata('currency') . '</span></td>' . '<td><input type="text" data-countID="' . $i . '" id="quantity_amount_' . $i . '" name="quantity_amount[]" onfocus="this.select();" class="form-control integerchk aligning countID" placeholder="'.lang('Qty_Amount').'" value="' . absCustom($totalStock) . '"  onkeyup="return calculateAll();" ><span class="label_aligning">' . $value->unit_name . '</span></td>' . '<td><input type="text" id="total_' . $i . '" name="total[]" class="form-control integerchk aligning" placeholder="'.lang('total').'" value="' . $value->purchase_price * absCustom($totalStock) . '" readonly/><span class="label_aligning">' . $this->session->userdata('currency') . '</span></td>' . '<td><a class="btn btn-danger btn-xs" onclick="return deleter(' . $i . ',' . $value->id . ');" ><i class="fa fa-trash text-white"></i> </a></td>' . '</tr>';
                     $i++;
                 }
             }
@@ -525,5 +516,4 @@ class Stock extends Cl_Controller {
         }
         echo json_encode($results);
     }
-
 }

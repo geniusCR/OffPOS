@@ -108,7 +108,7 @@ $ln_text = isset($lng) && $lng && $lng=="bangla"?"bangla":'';
                     foreach ($purchase_items as $pi) {
                         $i++;
                         $p_type = '';
-                        if ($pi->item_type == 'Medicine_Product'){
+                        if ($pi->item_type == 'Medicine_Product' && $pi->expiry_date_maintain == 'Yes'){
                             $p_type = 'Expiry Date:';
                         }else if($pi->item_type == 'IMEI_Product'){
                             $p_type = 'IMEI:';

@@ -107,9 +107,9 @@
                                         ?>
                                         <td class="text-right"><?php echo getAmtCustom($value->opening_balance) . '(Debit)';?></td>
                                     <?php } else if ($value->opening_balance < 0){ 
-                                        $total_credit += abs($value->opening_balance); 
+                                        $total_credit += absCustom($value->opening_balance); 
                                         ?>
-                                        <td class="text-right"><?php echo getAmtCustom(abs($value->opening_balance)) . '(Credit)';?></td>
+                                        <td class="text-right"><?php echo getAmtCustom(absCustom($value->opening_balance)) . '(Credit)';?></td>
                                     <?php }else{ ?>
                                         <td class="text-right"><?php echo getAmtCustom($value->opening_balance);?></td>
                                     <?php } ?>

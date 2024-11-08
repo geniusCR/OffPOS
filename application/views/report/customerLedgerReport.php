@@ -114,8 +114,8 @@
                                         $balance += $sum_of_op_before_date;
                                         $sum_of_debit += $sum_of_op_before_date;
                                     }else{
-                                        $balance -= abs($sum_of_op_before_date);
-                                        $sum_of_credit += abs($sum_of_op_before_date);
+                                        $balance -= absCustom($sum_of_op_before_date);
+                                        $sum_of_credit += absCustom($sum_of_op_before_date);
                                     } 
                                 }else{
                                     if($customer->debit != 0){
@@ -156,10 +156,10 @@
 
                                 <?php if(isset($sum_of_op_before_date) && $key == 0){ ?>
                                     <td class="text-center"><?php echo $sum_of_op_before_date > 0 ? getAmtCustom($sum_of_op_before_date) : getAmtCustom(0) ?></td>
-                                    <td class="text-center"><?php echo $sum_of_op_before_date < 0 ? getAmtCustom(abs($sum_of_op_before_date)) : getAmtCustom(0); ?></td>
+                                    <td class="text-center"><?php echo $sum_of_op_before_date < 0 ? getAmtCustom(absCustom($sum_of_op_before_date)) : getAmtCustom(0); ?></td>
                                 <?php }else{ ?>
-                                    <td class="text-center"><?php echo getAmtCustom(abs($customer->debit)) ?></td>
-                                    <td class="text-center"><?php echo getAmtCustom(abs($customer->credit)) ?></td>
+                                    <td class="text-center"><?php echo getAmtCustom(absCustom($customer->debit)) ?></td>
+                                    <td class="text-center"><?php echo getAmtCustom(absCustom($customer->credit)) ?></td>
                                 <?php } ?>
                                 <td><?php echo escape_output($customer->outlet_name); ?></td>
                             </tr>
@@ -203,7 +203,7 @@
 
                                 <?php if(isset($sum_of_op_before_date) && $key == 0){ ?>
                                     <td class="text-center"><?php echo $sum_of_op_before_date > 0 ? getAmtCustom($sum_of_op_before_date) : getAmtCustom(0) ?></td>
-                                    <td class="text-center"><?php echo $sum_of_op_before_date < 0 ? getAmtCustom(abs($sum_of_op_before_date)) : getAmtCustom(0); ?></td>
+                                    <td class="text-center"><?php echo $sum_of_op_before_date < 0 ? getAmtCustom(absCustom($sum_of_op_before_date)) : getAmtCustom(0); ?></td>
                                 <?php }else{ ?>
                                     <td></td>
                                     <td class="text-center"><?php echo getAmtCustom($customer->credit) ?></td>
@@ -246,7 +246,7 @@
                                 <?php } ?>
                                 <?php if(isset($sum_of_op_before_date) && $key == 0){ ?>
                                     <td class="text-center"><?php echo $sum_of_op_before_date > 0 ? getAmtCustom($sum_of_op_before_date) : getAmtCustom(0) ?></td>
-                                    <td class="text-center"><?php echo $sum_of_op_before_date < 0 ? getAmtCustom(abs($sum_of_op_before_date)) : getAmtCustom(0); ?></td>
+                                    <td class="text-center"><?php echo $sum_of_op_before_date < 0 ? getAmtCustom(absCustom($sum_of_op_before_date)) : getAmtCustom(0); ?></td>
                                 <?php }else{ ?>
                                     <td class="text-center"><?php echo getAmtCustom($customer->debit) ?></td>
                                     <td class="text-center"><?php echo getAmtCustom($customer->credit) ?></td>
@@ -268,7 +268,7 @@
                                 <?php } ?>
                                 <th><?php echo lang('closing_balance');?></th>
                                 <th></th>
-                                <th class="text-center"><?php echo getAmtCustom(abs($sum_of_credit)); ?></th>
+                                <th class="text-center"><?php echo getAmtCustom(absCustom($sum_of_credit)); ?></th>
                                 <th></th>
                             </tr>
                             <?php } ?>
@@ -283,7 +283,7 @@
                                     <th></th>
                                 <?php } ?>
                                 <th><?php echo lang('closing_balance');?></th>
-                                <th class="text-center"><?php echo getAmtCustom(abs($sum_of_debit)); ?></th>
+                                <th class="text-center"><?php echo getAmtCustom(absCustom($sum_of_debit)); ?></th>
                                 <th></th>
                                 <th></th>
                             </tr>
@@ -305,9 +305,9 @@
                                 ?>
                                 <?php if($closing_result < 0){?>
                                     <th></th>
-                                    <th class="text-center"><?php echo getAmtCustom(abs($closing_result)) ?></th>
+                                    <th class="text-center"><?php echo getAmtCustom(absCustom($closing_result)) ?></th>
                                 <?php } else if($closing_result > 0){ ?>
-                                    <th class="text-center"><?php echo getAmtCustom(abs($closing_result)) ?></th>
+                                    <th class="text-center"><?php echo getAmtCustom(absCustom($closing_result)) ?></th>
                                     <th></th>
                                 <?php } ?>
                                 <th></th>

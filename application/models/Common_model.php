@@ -230,6 +230,25 @@ class Common_model extends CI_Model {
             return false;
         }
     }
+    
+    /**
+     * getModuleManagement
+     * @access public
+     * @param no
+     * @return object
+     */
+    public function getModuleManagement() {
+        $this->db->select('*');
+        $this->db->from('tbl_module_managements');
+        $this->db->where('parent_id', NULL);
+        $this->db->where('del_status', 'Live');
+        $result = $this->db->get();   
+        if($result != false){  
+            return $result->result();
+        }else{
+            return false;
+        }
+    }
 
 
     /**
@@ -385,7 +404,7 @@ class Common_model extends CI_Model {
         LEFT JOIN 
             (SELECT customer_id, COALESCE(SUM(amount), 0) AS amount_sum FROM tbl_customer_due_receives WHERE del_status = 'Live' GROUP BY customer_id) AS due_receive_sum ON c.id = due_receive_sum.customer_id
         LEFT JOIN 
-            (SELECT customer_id, COALESCE(SUM(total_return_amount), 0) AS total_return_amount_sum FROM tbl_sale_return WHERE del_status = 'Live' GROUP BY customer_id) AS return_sum ON c.id = return_sum.customer_id
+            (SELECT customer_id, COALESCE(SUM(due), 0) AS total_return_amount_sum FROM tbl_sale_return WHERE del_status = 'Live' GROUP BY customer_id) AS return_sum ON c.id = return_sum.customer_id
         LEFT JOIN 
             tbl_users u ON u.id = c.user_id
         WHERE
@@ -422,7 +441,7 @@ class Common_model extends CI_Model {
         LEFT JOIN 
             (SELECT customer_id, COALESCE(SUM(amount), 0) AS amount_sum FROM tbl_customer_due_receives WHERE del_status = 'Live' GROUP BY customer_id) AS due_receive_sum ON c.id = due_receive_sum.customer_id
         LEFT JOIN 
-            (SELECT customer_id, COALESCE(SUM(total_return_amount), 0) AS total_return_amount_sum FROM tbl_sale_return WHERE del_status = 'Live' GROUP BY customer_id) AS return_sum ON c.id = return_sum.customer_id
+            (SELECT customer_id, COALESCE(SUM(due), 0) AS total_return_amount_sum FROM tbl_sale_return WHERE del_status = 'Live' GROUP BY customer_id) AS return_sum ON c.id = return_sum.customer_id
         LEFT JOIN 
             tbl_users u ON u.id = c.user_id
         WHERE
@@ -464,7 +483,7 @@ class Common_model extends CI_Model {
         LEFT JOIN 
             (SELECT customer_id, COALESCE(SUM(amount), 0) AS amount_sum FROM tbl_customer_due_receives WHERE del_status = 'Live' GROUP BY customer_id) AS due_receive_sum ON c.id = due_receive_sum.customer_id
         LEFT JOIN 
-            (SELECT customer_id, COALESCE(SUM(total_return_amount), 0) AS total_return_amount_sum FROM tbl_sale_return WHERE del_status = 'Live' GROUP BY customer_id) AS return_sum ON c.id = return_sum.customer_id
+            (SELECT customer_id, COALESCE(SUM(due), 0) AS total_return_amount_sum FROM tbl_sale_return WHERE del_status = 'Live' GROUP BY customer_id) AS return_sum ON c.id = return_sum.customer_id
         LEFT JOIN 
             tbl_users u ON u.id = c.user_id
         WHERE
@@ -634,6 +653,7 @@ class Common_model extends CI_Model {
         $this->db->from('tbl_counters');
         $this->db->where("outlet_id", $outlet_id);
         $this->db->where("company_id", $company_id);
+        $this->db->where("del_status", 'Live');
         $this->db->order_by("id", 'DESC');
         $result = $this->db->get(); 
         if($result != false){  
@@ -847,31 +867,83 @@ class Common_model extends CI_Model {
      * Added By Azhar
      */
     
-    public function getAll($company_id, $table_name) {		
-         $result = $this->db->query("SELECT i.*,
-            (select SUM(amount) from tbl_sale_payments  where payment_id=i.id AND tbl_sale_payments.del_status='Live') total_sale, 
-
-            (select SUM(amount) from tbl_purchase_payments  where payment_id=i.id AND tbl_purchase_payments.del_status='Live') total_purchase,            
-            
-            (select SUM(down_payment) from tbl_installments  where payment_method_id=i.id AND tbl_installments.del_status='Live') total_down_payment,
-
-            (select SUM(paid_amount) from tbl_installment_items  where payment_method_id=i.id AND tbl_installment_items.del_status='Live') total_installment_collection,       
+    public function getAll($company_id, $table_name) {
+        $result = $this->db->query("SELECT i.*,
+                (SELECT SUM(sp.amount) 
+                    FROM tbl_sale_payments sp 
+                    INNER JOIN tbl_sales s ON s.id = sp.sale_id 
+                    WHERE sp.payment_id = i.id 
+                    AND sp.del_status = 'Live' 
+                    AND s.delivery_status = 'Cash Received') AS total_sale, 
+    
+                (SELECT SUM(amount) 
+                    FROM tbl_purchase_payments 
+                    WHERE payment_id = i.id 
+                    AND tbl_purchase_payments.del_status = 'Live') AS total_purchase,            
                 
-            (select SUM(amount) from tbl_customer_due_receives  where payment_method_id=i.id AND tbl_customer_due_receives.del_status='Live') total_customer_due_receive,
+                (SELECT SUM(down_payment) 
+                    FROM tbl_installments 
+                    WHERE payment_method_id = i.id 
+                    AND tbl_installments.del_status = 'Live') AS total_down_payment,
+    
+                (SELECT SUM(paid_amount) 
+                    FROM tbl_installment_items 
+                    WHERE payment_method_id = i.id 
+                    AND tbl_installment_items.del_status = 'Live') AS total_installment_collection,       
+                    
+                (SELECT SUM(amount) 
+                    FROM tbl_customer_due_receives 
+                    WHERE payment_method_id = i.id 
+                    AND tbl_customer_due_receives.del_status = 'Live') AS total_customer_due_receive,
+    
+                (SELECT SUM(amount) 
+                    FROM tbl_supplier_payments 
+                    WHERE payment_method_id = i.id 
+                    AND tbl_supplier_payments.del_status = 'Live') AS total_supplier_due_payment,
+    
+                (SELECT SUM(total_return_amount) 
+                    FROM tbl_sale_return 
+                    WHERE payment_method_id = i.id 
+                    AND tbl_sale_return.del_status = 'Live') AS total_sale_return,
+    
+                (SELECT SUM(total_return_amount) 
+                    FROM tbl_purchase_return 
+                    WHERE payment_method_id = i.id 
+                    AND tbl_purchase_return.del_status = 'Live') AS total_purchase_return_amount,
+    
+                (SELECT SUM(amount) 
+                    FROM tbl_expenses 
+                    WHERE payment_method_id = i.id 
+                    AND tbl_expenses.del_status = 'Live') AS total_expense,
 
-            (select SUM(amount) from tbl_supplier_payments  where payment_method_id=i.id AND tbl_supplier_payments.del_status='Live') total_supplier_due_payment,
-
-            (select SUM(total_return_amount) from tbl_sale_return  where payment_method_id=i.id AND tbl_sale_return.del_status='Live') total_sale_return,
-
-            (select SUM(total_return_amount) from tbl_purchase_return where payment_method_id=i.id AND tbl_purchase_return.del_status='Live') total_purchase_return_amount,
-
-            (select SUM(amount) from tbl_expenses  where payment_method_id=i.id AND tbl_expenses.del_status='Live') total_expense,
-
-            (select SUM(total_amount) from tbl_salaries  where payment_id=i.id AND tbl_salaries.del_status='Live') total_salary_amount,
-            
-            (select SUM(amount) from tbl_deposits  where payment_method_id=i.id AND tbl_deposits.type='Deposit' AND tbl_deposits.del_status='Live') total_deposit,
-            (select SUM(amount) from tbl_deposits  where payment_method_id=i.id AND tbl_deposits.type='Withdraw' AND tbl_deposits.del_status='Live') total_withdraw
-            FROM tbl_payment_methods i WHERE i.del_status='Live' AND i.company_id='$company_id' ORDER BY i.id DESC")->result();
+                (SELECT SUM(amount) 
+                    FROM tbl_incomes 
+                    WHERE payment_method_id = i.id 
+                    AND tbl_incomes.del_status = 'Live') AS total_income,
+    
+                (SELECT SUM(total_amount) 
+                    FROM tbl_salaries 
+                    WHERE payment_id = i.id 
+                    AND tbl_salaries.del_status = 'Live') AS total_salary_amount,
+                
+                (SELECT SUM(amount) 
+                    FROM tbl_deposits 
+                    WHERE payment_method_id = i.id 
+                    AND tbl_deposits.type = 'Deposit' 
+                    AND tbl_deposits.del_status = 'Live') AS total_deposit,
+                    
+                (SELECT SUM(amount) 
+                    FROM tbl_deposits 
+                    WHERE payment_method_id = i.id 
+                    AND tbl_deposits.type = 'Withdraw' 
+                    AND tbl_deposits.del_status = 'Live') AS total_withdraw
+    
+            FROM tbl_payment_methods i 
+            WHERE i.del_status = 'Live' 
+            AND i.company_id = '$company_id' 
+            ORDER BY i.id DESC
+        ")->result();
+    
         return $result;
     }
     
@@ -916,6 +988,7 @@ class Common_model extends CI_Model {
         $this->db->where("i.type", 'Installment_Product');
         $this->db->or_where("i.type", 'IMEI_Product');
         $this->db->or_where("i.type", 'Serial_Product');
+        $this->db->where("i.enable_disable_status", 'Enable');
         $this->db->where("i.del_status", 'Live');
         $result = $this->db->get();
         if($result != false){
@@ -1060,6 +1133,7 @@ class Common_model extends CI_Model {
 		$this->db->from($table_name);
 		$this->db->where('p_type !=', 'Variation_Product');
 		$this->db->where('type !=', 'Service_Product');
+		$this->db->where('enable_disable_status', 'Enable');
 		$this->db->where('del_status', 'Live');
 		$this->db->where('company_id', $company_id);
 		$this->db->order_by('id', 'ASC');
@@ -1146,6 +1220,39 @@ class Common_model extends CI_Model {
      * @return object
      * Added By Azhar
      */
+    public function warrantyAllStockByStatus($R_F_C, $S_T_V, $R_T_V, $outlet_id) {
+        $company_id = $this->session->userdata('company_id');
+		$this->db->select('*');
+		$this->db->from("tbl_warranties");
+        if($R_F_C){
+            $this->db->where('current_status', 'R_F_C');
+        }
+        if($S_T_V){
+            $this->db->or_where('current_status', 'S_T_V');
+        }
+        if($R_T_V){
+            $this->db->or_where('current_status', 'R_T_V');
+        }
+        if($outlet_id){
+            $this->db->where('outlet_id', $outlet_id);
+        }
+		$this->db->where('company_id', $company_id);
+		$this->db->where('del_status', 'Live');
+		$this->db->order_by('id', 'DESC');
+		$result = $this->db->get(); 
+        if($result != false){
+            return $result->result();
+        }else{
+            return false;
+        }
+    }
+    /**
+     * warrantyAllStock
+     * @access public
+     * @param string
+     * @return object
+     * Added By Azhar
+     */
     public function warrantyAllStock($table_name) {
         $outlet_id = $this->session->userdata('outlet_id');
         $company_id = $this->session->userdata('company_id');
@@ -1203,6 +1310,7 @@ class Common_model extends CI_Model {
 		$this->db->from('tbl_items');
 		$this->db->where('type !=', 'Variaton_Product');
 		$this->db->where('company_id', $company_id);
+		$this->db->where('enable_disable_status', 'Enable');
 		$this->db->where('del_status', 'Live');
 		$this->db->order_by('name', 'ASC');
 	    return $this->db->get()->result(); 
@@ -1320,6 +1428,20 @@ class Common_model extends CI_Model {
     }
 
     /**
+     * enableDisableStatusChange
+     * @access public
+     * @param int
+     * @param string
+     * @return object
+     * Added By Azhar
+     */
+    public function enableDisableStatusChange($id, $status) {
+        $this->db->set('enable_disable_status', $status);
+        $this->db->where('id', $id);
+        $this->db->update('tbl_items');
+    }
+
+    /**
      * deleteStatusChangeByFieldName
      * @access public
      * @param int
@@ -1347,6 +1469,19 @@ class Common_model extends CI_Model {
         $this->db->set('del_status', "Deleted");
         $this->db->where('parent_id', $id);
         $this->db->update($table_name);
+    }
+    /**
+     * childItemEnableDisableStatusChange
+     * @access public
+     * @param int
+     * @param string
+     * @return object
+     * Added By Azhar
+     */
+    public function childItemEnableDisableStatusChange($id, $status) {
+        $this->db->set('enable_disable_status', $status);
+        $this->db->where('parent_id', $id);
+        $this->db->update('tbl_items');
     }
 
     /**
@@ -1557,13 +1692,17 @@ class Common_model extends CI_Model {
      * Added By Azhar
      */
     public function getAllOutlets($id) {
-        $company_id = $this->session->userdata('company_id');
-        $this->db->select("*");
-        $this->db->from('tbl_outlets');
-        $this->db->where_in("id", $id);
-        $this->db->where("company_id", $company_id);
-        $this->db->where("del_status", "Live");
-        return $this->db->get()->result();
+        if($id){
+            $company_id = $this->session->userdata('company_id');
+            $this->db->select("*");
+            $this->db->from('tbl_outlets');
+            $this->db->where_in("id", $id);
+            $this->db->where("company_id", $company_id);
+            $this->db->where("del_status", "Live");
+            return $this->db->get()->result();
+        }else{
+            return false;
+        }
     }
 
     /**
@@ -1726,6 +1865,20 @@ class Common_model extends CI_Model {
           ORDER BY sort_id")->result();
         return $result;
     }
+    /**
+     * getPaymentMethodBySortedId
+     * @access public
+     * @param int
+     * @return object
+     * Added By Azhar
+     */
+    public function getPaymentMethodBySortedId($company_id) {
+        $result = $this->db->query("SELECT * 
+          FROM tbl_payment_methods 
+          WHERE company_id=$company_id AND del_status = 'Live'  
+          ORDER BY sort_id")->result();
+        return $result;
+    }
     
     /**
      * updateInformation
@@ -1820,6 +1973,7 @@ class Common_model extends CI_Model {
         $this->db->select('*');
         $this->db->from("tbl_users");
         $this->db->where("id!=", "1");
+        $this->db->where("salary >", 0);
         $this->db->where("company_id", $company_id);
         $this->db->where("del_status", 'Live');
         return $this->db->get()->result();
@@ -1939,9 +2093,33 @@ class Common_model extends CI_Model {
      * @return object
      */
     public function getAllByCompanyIdForDropdownProduct($company_id, $table_name) {
+        $company_id = $this->session->userdata('company_id');
         $this->db->select('*');
         $this->db->from($table_name);
         $this->db->where('del_status', 'Live');
+        $this->db->where('company_id', $company_id);
+        $this->db->order_by('name', 'ASC');
+        $result = $this->db->get();
+        if($result != false){
+            return $result->result();
+        }else{
+            return false;
+        }
+    }
+    /**
+     * getAllItemByComapnyIdForDropdown
+     * @access public
+     * @param int
+     * @param string
+     * @return object
+     */
+    public function getAllItemByComapnyIdForDropdown($company_id, $table_name) {
+        $company_id = $this->session->userdata('company_id');
+        $this->db->select('*');
+        $this->db->from($table_name);
+        $this->db->where('enable_disable_status', 'Enable');
+        $this->db->where('del_status', 'Live');
+        $this->db->where('company_id', $company_id);
         $this->db->order_by('name', 'ASC');
         $result = $this->db->get();
         if($result != false){
@@ -2100,7 +2278,7 @@ class Common_model extends CI_Model {
                 FROM tbl_items i
                 LEFT JOIN tbl_items ii ON i.parent_id = ii.id
                 LEFT JOIN tbl_brands b ON b.id = i.brand_id
-                WHERE i.type != 'Variation_Product' AND i.company_id = ? AND i.del_status = 'Live'
+                WHERE i.type != 'Variation_Product' AND i.enable_disable_status = 'Enable' AND i.company_id = ? AND i.del_status = 'Live'
                 ORDER BY COALESCE(parent_name, i.name) ASC";
         $result = $this->db->query($sql, array($company_id))->result();
         return $result;
@@ -2116,13 +2294,13 @@ class Common_model extends CI_Model {
      */
     public function getItemWithVariationForDrowdown() {
         $company_id = $this->session->userdata('company_id');
-        $sql = "SELECT ii.name AS parent_name, i.id, i.name, i.code, i.type, i.purchase_price,i.sale_price,i.last_three_purchase_avg, i.last_purchase_price, i.conversion_rate, pu.unit_name as purchase_unit, su.unit_name as sale_unit, b.name AS brand_name, i.parent_id
+        $sql = "SELECT ii.name AS parent_name, i.id, i.name, i.code, i.type, i.expiry_date_maintain, i.purchase_price,i.sale_price,i.last_three_purchase_avg, i.last_purchase_price, i.conversion_rate, pu.unit_name as purchase_unit, su.unit_name as sale_unit, b.name AS brand_name, i.parent_id
                 FROM tbl_items i
                 LEFT JOIN tbl_items ii ON i.parent_id = ii.id
                 LEFT JOIN tbl_brands b ON b.id = i.brand_id
                 LEFT JOIN tbl_units as pu ON i.purchase_unit_id = pu.id
                 LEFT JOIN tbl_units as su ON i.sale_unit_id = su.id
-                WHERE i.type != 'Variation_Product' AND  i.type != 'Service_Product' AND i.company_id = ? AND i.del_status = 'Live'
+                WHERE i.type != 'Variation_Product' AND  i.type != 'Service_Product' AND i.company_id = ? AND i.enable_disable_status = 'Enable' AND i.del_status = 'Live'
                 ORDER BY COALESCE(parent_name, i.name) ASC";
         $result = $this->db->query($sql, array($company_id))->result();
         return $result;
@@ -2402,6 +2580,38 @@ class Common_model extends CI_Model {
         $this->db->where('i.del_status', 'Live');
         $result = $this->db->get()->result();
         if($result){
+            // Loop through each index and push the promo data
+            foreach ($result as $single_menus) {
+                $is_promo = 'No';
+                $today = date("Y-m-d",strtotime('today'));
+                $promo_checker = (Object)checkPromotionWithinDatePOS($today,$single_menus->id);
+                $get_food_menu_id = '';
+                $string_text = '';
+                $get_qty = 0;
+                $qty = 0;
+                $discount = '';
+                $promo_type = '';
+                $modal_item_name_row = '';
+                if(isset($promo_checker) && $promo_checker && $promo_checker->status){
+                    $get_food_menu_id = $promo_checker->get_food_menu_id;
+                    $string_text = $promo_checker->string_text;
+                    $get_qty = $promo_checker->get_qty;
+                    $qty = $promo_checker->qty;
+                    $discount = $promo_checker->discount;
+                    $promo_type = $promo_checker->type;
+                    $modal_item_name_row = getParentNameTemp($single_menus->parent_id).getFoodMenuNameCodeById($get_food_menu_id);
+                    $is_promo = "Yes";
+                }
+                $single_menus->is_promo = $is_promo;
+                $single_menus->promo_item_name = $modal_item_name_row;
+                $single_menus->promo_type = $promo_type;
+                $single_menus->promo_discount = $discount;
+                $single_menus->promo_qty = $qty;
+                $single_menus->promo_get_qty = $get_qty;
+                $single_menus->promo_description = $string_text;
+                $single_menus->promo_item_id = $get_food_menu_id;
+                $single_menus->parent_id = $single_menus->parent_id; // Use the existing parent_id
+            }
             return $result;
         }else{
             return false;
@@ -2416,7 +2626,7 @@ class Common_model extends CI_Model {
      * @return object
      */
     function getComboItemCheck($item_id){
-        $this->db->select('i.name as item_name, ci.unit_price as unit_price, ci.quantity as quantity, ci.show_invoice, ci.item_id as child_combo_item_id, ci.combo_id as combo_parent_id');
+        $this->db->select('i.name as item_name, i.type, ci.unit_price as unit_price, ci.quantity as quantity, ci.show_invoice, ci.item_id as child_combo_item_id, ci.combo_id as combo_parent_id');
         $this->db->from('tbl_combo_items ci');
         $this->db->join('tbl_items i', 'i.id = ci.item_id', 'left');
         $this->db->where('ci.combo_id', $item_id);
@@ -2773,7 +2983,7 @@ class Common_model extends CI_Model {
     }
 
     /**
-     * delStatusLiveForCompanyActive
+     * delStatusDeleteForCompanyDelete
      * @access public
      * @param int
      * @return object
@@ -2810,6 +3020,7 @@ class Common_model extends CI_Model {
     public function getCountSaleNo($company_id) {
         $this->db->where('company_id', $company_id);
         $this->db->from('tbl_sales');
+        $this->db->where('del_status', 'Live');
         $count = $this->db->count_all_results();
         return $count;
     }
@@ -2823,6 +3034,7 @@ class Common_model extends CI_Model {
     public function getCountUser($company_id) {
         $this->db->where('company_id', $company_id);
         $this->db->from('tbl_users');
+        $this->db->where('del_status', 'Live');
         $count = $this->db->count_all_results();
         return $count;
     }
@@ -2836,6 +3048,7 @@ class Common_model extends CI_Model {
     public function getCountOutlet($company_id) {
         $this->db->where('company_id', $company_id);
         $this->db->from('tbl_outlets');
+        $this->db->where('del_status', 'Live');
         $count = $this->db->count_all_results();
         return $count;
     }
@@ -2848,7 +3061,7 @@ class Common_model extends CI_Model {
      */
     public function getItemForBulkUpdate() {
         $company_id = $this->session->userdata('company_id');
-        $this->db->select('id, name, code, type, sale_price, whole_sale_price');
+        $this->db->select('id, enable_disable_status, photo, name, code, type, sale_price, whole_sale_price');
         $this->db->from('tbl_items');
         $this->db->where("type !=", 'Variation_Product');
         $this->db->where("type !=", '0');
@@ -2857,6 +3070,45 @@ class Common_model extends CI_Model {
         $this->db->where("del_status", 'Live');
         return $this->db->get()->result();
     }
+
+    /**
+     * delStatusLiveByCompanyId
+     * @access public
+     * @return void
+     * @param int
+     * @param int
+     */
+    public function delStatusLiveByCompanyId($company_id, $table_name){
+        $this->db->select('*');
+        $this->db->from($table_name);
+        $this->db->where("company_id", $company_id);
+        $this->db->where("del_status", 'Live');
+        return $this->db->get()->result();
+    }
+
+
+
+
+    /**
+     * saleReturnItems
+     * @access public
+     * @param int
+     * @return object
+     */
+    public function saleReturnItems($id) {
+        $this->db->select("srd.*, i.name as item_name, i.code as item_code,i.conversion_rate,i.unit_type, i.parent_id, i.expiry_date_maintain, b.name as brand_name, sui.unit_name as sale_unit_name");
+        $this->db->from("tbl_sale_return_details srd");
+        $this->db->join('tbl_items i','srd.item_id=i.id','left');
+        $this->db->join('tbl_brands b','b.id = i.brand_id','left');
+        $this->db->join('tbl_units sui','sui.id = i.sale_unit_id','left');
+        $this->db->where("srd.sale_return_id", $id);
+        $this->db->where("srd.del_status", 'Live');
+        $this->db->order_by('srd.id', 'ASC');
+        $result = $this->db->get()->result();
+        return $result;
+    }
+
+
 }
 
 ?>

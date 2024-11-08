@@ -130,12 +130,21 @@
                                 <td class="w-20"><?php echo isset($saleReportByDate['profit_total_discount']) ? getAmtCustom($saleReportByDate['profit_total_discount']) : getAmtCustom(0) ?>
                                 </td>
                             </tr>
+                            <?php if(!moduleIsHideCheck('Installment Sale-YES')){ ?>
                             <tr>
                                 <td class="w-10">6</td>
                                 <td class="w-70"><?php echo lang('profit_installment_sale_column'); ?></td>
                                 <td class="w-20"><?php echo isset($saleReportByDate['profit_total_installment_sale']) ? getAmtCustom($saleReportByDate['profit_total_installment_sale']) : getAmtCustom(0) ?>
                                 </td>
                             </tr>
+                            <?php } else{ ?>
+                            <tr>
+                                <td class="w-10">6</td>
+                                <td class="w-70">N/A</td>
+                                <td class="w-20">N/A
+                                </td>
+                            </tr>
+                            <?php } ?>
                             <tr>
                                 <td class="w-10">7</td>
                                 <td class="w-70"><?php echo lang('profit_income_column'); ?></td>

@@ -103,9 +103,9 @@ class Escpos
         $this->printer->setEmphasis(false);
         $this->printer->cut();
         // Open cash drawer
-            if(isset($data->open_cash_drawer_when_printing_invoice) && $data->open_cash_drawer_when_printing_invoice=="Yes"){
-                $this->printer->pulse();
-            }
+        if(isset($data->open_cash_drawer_when_printing_invoice) && $data->open_cash_drawer_when_printing_invoice=="ON"){
+            $this->printer->pulse();
+        }
         $this->printer->close();
 
     }

@@ -70,6 +70,10 @@ class Authentication extends Cl_Controller {
         }
     }
 
+    public function internetCheck() {
+        echo 1;
+    }
+
 
     /**
      * planCheck
@@ -572,9 +576,14 @@ class Authentication extends Cl_Controller {
             $password = md5($this->input->post($this->security->xss_clean('password')));
             $user_information = $this->Authentication_model->getUserInformation($email_address, $password);
             if ($user_information) {
-                $login_session = array();
-                $login_session['view_purchase_price'] =  '';
+                $view_purchase_price =  '';
                 $company_info = $this->Authentication_model->getCompanyInformation($user_information->company_id);
+
+                $module_hide_show = getAllChildModule();
+                $moduleArr = [];
+                foreach($module_hide_show as $module){
+                    array_push($moduleArr, $module->module_name.'-YES');
+                }
                 if($user_information->id == '1' && $user_information->role == "1"){
                     $getAccess = $this->Common_model->getAllAccess();
                 }else{
@@ -605,64 +614,65 @@ class Authentication extends Cl_Controller {
                         foreach ($getAccess as $value) {
                             array_push($menu_access_container, $value->function_name."-".$value->parent_id);
                             if($value->function_name == 'view_purchase_price' && $value->parent_id == '138'){
-                                $login_session['view_purchase_price'] =  'Yes';
+                                $view_purchase_price =  'Yes';
                             }
                         }
                     }
                 }else{
                     if (isset($getAccess)) {
+                        $getAccesRow = '';
                         foreach ($getAccess as $value) {
                             $getAccesRow = $this->Common_model->getAllByCustomRowId($value->access_child_id,"id",'tbl_access');
-                            array_push($menu_access_container, $getAccesRow->function_name."-".$getAccesRow->parent_id);
-                            if(isset($value->function_name) && $value->function_name == 'view_purchase_price' && $value->parent_id == '138'){
-                                $login_session['view_purchase_price'] =  'Yes';
+                            if($getAccesRow){
+                                array_push($menu_access_container, $getAccesRow->function_name."-".$getAccesRow->parent_id);
+                                if($getAccesRow->function_name == 'view_purchase_price' && $getAccesRow->parent_id == '138'){
+                                    $view_purchase_price =  'Yes';
+                                }
                             }
                         }
                     }
                 }
-                //Menu access information
-                $primary_session_data['function_access'] = $menu_access_container;
-                $this->session->set_userdata($primary_session_data);
 
                 //User Information
                 $register_status = $this->Common_model->getRegisterStatus($user_information->id);
-                $login_session['register_status'] = $register_status;
-                if($register_status == '1'){
+                // Initialize default printer settings
+                $login_session = [
+                    'print_format' => '',
+                    'characters_per_line' => '',
+                    'printer_ip_address' => '',
+                    'printer_port' => '',
+                    'qr_code_type' => '',
+                    'invoice_print' => '',
+                    'fiscal_printer_status' => '',
+                    'open_cash_drawer_when_printing_invoice' => '',
+                    'print_server_url_invoice' => '',
+                    'inv_qr_code_status' => '',
+                    'register_status' => $register_status,
+                    'view_purchase_price' => $view_purchase_price,
+                    'function_access' => $menu_access_container,
+                ];
+                
+                // Check register status
+                if ($register_status == '1') {
                     $counter_id = $this->Common_model->getCounterIdFromRegister($user_information->id);
-                    if($counter_id){
+                    if ($counter_id) {
                         $printer_id = $this->Common_model->getPrinterIdByCounterId($counter_id);
                         $printer_info = $this->Common_model->getPrinterInfoById($printer_id);
-                        $login_session['print_format'] = $printer_info->print_format;
-                        $login_session['characters_per_line'] = $printer_info->characters_per_line;
-                        $login_session['printer_ip_address'] = $printer_info->printer_ip_address;
-                        $login_session['printer_port'] = $printer_info->printer_port;
-                        $login_session['qr_code_type'] = $printer_info->qr_code_type;
-                        $login_session['invoice_print'] = $printer_info->invoice_print;
-                        $login_session['fiscal_printer_status'] = $printer_info->fiscal_printer_status;
-                        $login_session['print_server_url_invoice'] = $printer_info->print_server_url_invoice;
-                        $login_session['inv_qr_code_status'] = $printer_info->inv_qr_code_status;
-                    } else{
-                        $login_session['print_format'] = '';
-                        $login_session['characters_per_line'] = '';
-                        $login_session['printer_ip_address'] = '';
-                        $login_session['printer_port'] = '';
-                        $login_session['qr_code_type'] = '';
-                        $login_session['invoice_print'] = '';
-                        $login_session['fiscal_printer_status'] = '';
-                        $login_session['print_server_url_invoice'] = '';
-                        $login_session['inv_qr_code_status'] = '';
+                        if ($printer_info) {
+                            $login_session['print_format'] = $printer_info->print_format;
+                            $login_session['characters_per_line'] = $printer_info->characters_per_line;
+                            $login_session['printer_ip_address'] = $printer_info->printer_ip_address;
+                            $login_session['printer_port'] = $printer_info->printer_port;
+                            $login_session['qr_code_type'] = $printer_info->qr_code_type;
+                            $login_session['invoice_print'] = $printer_info->invoice_print;
+                            $login_session['fiscal_printer_status'] = $printer_info->fiscal_printer_status;
+                            $login_session['open_cash_drawer_when_printing_invoice'] = $printer_info->open_cash_drawer_when_printing_invoice;
+                            $login_session['print_server_url_invoice'] = $printer_info->print_server_url_invoice;
+                            $login_session['inv_qr_code_status'] = $printer_info->inv_qr_code_status;
+                        }
                     }
-                } else {
-                    $login_session['print_format'] = '';
-                    $login_session['characters_per_line'] = '';
-                    $login_session['printer_ip_address'] = '';
-                    $login_session['printer_port'] = '';
-                    $login_session['qr_code_type'] = '';
-                    $login_session['invoice_print'] = '';
-                    $login_session['fiscal_printer_status'] = '';
-                    $login_session['print_server_url_invoice'] = '';
-                    $login_session['inv_qr_code_status'] = '';
                 }
+
                 $login_session['grocery_experience'] = $company_info->grocery_experience;
                 $login_session['generic_name_search_option'] = $company_info->generic_name_search_option;
                 $login_session['register_content'] = $company_info->register_content;
@@ -724,11 +734,13 @@ class Authentication extends Cl_Controller {
                 $login_session['whatsapp_invoice_enable_status'] =$company_info->whatsapp_invoice_enable_status;
                 $login_session['company_is_saas'] = $company_info->is_saas;
                 $login_session['is_collapse'] = 'No';
+                $login_session['module_show_hide'] = $moduleArr;
                 // Login Time Update
                 $login_update = array();
                 $login_update['last_login'] = date('Y-m-d H:i:s');
                 $this->Common_model->updateInformation($login_update, $user_information->id, "tbl_users");
                 //Menu access information
+
                 $this->session->set_userdata($login_session);
                 if($user_information->outlet_id){
                     $outlet = explode(",", $user_information->outlet_id);
@@ -1090,6 +1102,7 @@ class Authentication extends Cl_Controller {
         $this->session->unset_userdata('qr_code_type');
         $this->session->unset_userdata('invoice_print');
         $this->session->unset_userdata('fiscal_printer_status');
+        $this->session->unset_userdata('open_cash_drawer_when_printing_invoice');
         $this->session->unset_userdata('print_server_url_invoice');
         $this->session->unset_userdata('inv_qr_code_status');
         $this->session->unset_userdata('user_is_saas');
@@ -1529,6 +1542,7 @@ class Authentication extends Cl_Controller {
                 $data['printer_ip_address'] = $printer->printer_ip_address;
                 $data['printer_port'] = $printer->printer_port;
                 $data['path'] = $printer->path;
+                $data['open_cash_drawer_when_printing_invoice'] = $printer->open_cash_drawer_when_printing_invoice;
                 $data['characters_per_line'] = $printer->characters_per_line;
                 $data['profile_'] = $printer->profile_;
                 $data['date'] = date($company->date_format, strtotime($sale->sale_date));

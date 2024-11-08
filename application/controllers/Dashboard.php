@@ -166,7 +166,7 @@ class Dashboard extends Cl_Controller {
                 $start_end_generated = date("Y-m-d",strtotime($date_split[1]));
                 $profit_details = (object)$this->Report_model->profitLossReport($start_date_generated, $start_end_generated,$outlet_id,"1");
                 $inline_array = array();
-                $inline_array['y_value'] = ($profit_details->profit_total_sale ?? 0);
+                $inline_array['y_value'] = ($profit_details->profit_total_sale - $profit_details->profit_total_discount ?? 0);
                 $inline_array['y_label'] =$date_split[2];
                 $inline_array['x_label'] =$date_split[3];
                 $inline_array['x_label_tmp'] = lang('revenue');
@@ -222,7 +222,7 @@ class Dashboard extends Cl_Controller {
                 $start_end_generated = date("Y-m-d",strtotime($date_split[1]));
                 $profit_details = (object)$this->Report_model->profitLossReport($start_date_generated, $start_end_generated, $outlet_id,"1");
                 $inline_array = array();
-                $inline_array['y_value'] = ($profit_details->profit_total_sale) / ($transaction_details_main->total_transaction);
+                $inline_array['y_value'] = ($profit_details->profit_total_sale - $profit_details->profit_total_discount) / ($transaction_details_main->total_transaction);
                 $inline_array['y_label'] =$date_split[2];
                 $inline_array['x_label'] =$date_split[3];
                 $inline_array['x_label_tmp'] = lang('average_receipt');
@@ -236,7 +236,7 @@ class Dashboard extends Cl_Controller {
         $return_value_set_total_4 = 0;
         $profit_details = (object)$this->Report_model->profitLossReport($start_date, $end_date,$outlet_id,"1");
         $customer_details = (object)$this->Report_model->getTotalCustomer($start_date, $end_date,$outlet_id);
-        $return_value_set_total_1+=($profit_details->profit_total_sale ?? 0);
+        $return_value_set_total_1+=($profit_details->profit_total_sale - $profit_details->profit_total_discount ?? 0);
         $return_value_set_total_2+=$profit_details->profit_net ?? 0;
         $return_value_set_total_3+=$transaction_details_main->total_transaction;
         $return_value_set_total_4+=$customer_details->total_customers;
@@ -261,15 +261,13 @@ class Dashboard extends Cl_Controller {
             $outlet_id = $this->session->userdata('outlet_id');
         }
         $transaction_details_main = (object)$this->Report_model->getTotalTransaction($start_date, $end_date,$outlet_id);
-       
         $return_value_set_total_1 = 0;
         $return_value_set_total_2 = 0;
         $return_value_set_total_3 = 0;
         $return_value_set_total_4 = 0;
         $profit_details = (object)$this->Report_model->profitLossReport($start_date, $end_date,$outlet_id,"1");
-
         $customer_details = (object)$this->Report_model->getTotalCustomer($start_date, $end_date,$outlet_id);
-        $return_value_set_total_1 += ($profit_details->profit_total_sale ?? 0);
+        $return_value_set_total_1 += ($profit_details->profit_total_sale - $profit_details->profit_total_discount ?? 0);
         $return_value_set_total_2 += $profit_details->profit_net ?? 0;
         $return_value_set_total_3 += $transaction_details_main->total_transaction;
         $return_value_set_total_4 += $customer_details->total_customers;

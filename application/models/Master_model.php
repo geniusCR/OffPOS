@@ -167,7 +167,7 @@ class Master_model extends CI_Model {
      * @return void
      */
     public function make_query($company_id,$category_id='',$supplier_id=''){
-        $this->db->select("i.id,i.name,i.code,i.type,i.purchase_price,i.sale_price,i.del_status,i.added_date,u.full_name, c.name as category_name");
+        $this->db->select("i.id,i.name,i.code,i.type,i.purchase_price,i.sale_price,i.enable_disable_status,i.del_status,i.added_date,u.full_name, c.name as category_name");
         $this->db->from('tbl_items i');
         $this->db->join('tbl_users u', 'u.id = i.user_id', 'left');
         $this->db->join('tbl_item_categories c', 'c.id = i.category_id', 'left');
@@ -225,6 +225,7 @@ class Master_model extends CI_Model {
         if($supplier_id!=''){
             $this->db->where("supplier_id", $supplier_id);
         }
+        $this->db->where("enable_disable_status", "Enable");
         $this->db->where("del_status", "Live");
         return $this->db->count_all_results();
     }

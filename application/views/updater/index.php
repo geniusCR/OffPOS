@@ -29,93 +29,82 @@
     }
     ?>
 
-
     <section class="content-header">
-        <div class="row">
-            <div class="col-sm-12">
-                <h2 class="top-left-header"><?php echo lang('Uninstall_License'); ?> </h2>
+        <div class="row justify-content-between">
+            <div class="col-6 p-0">
+                <h3 class="top-left-header mt-2"><?php echo lang('Uninstall_License'); ?></h3>
             </div>
-            <div>
-
-            </div>
+            <?php $this->view('updater/breadcrumb', ['firstSection'=> lang('Uninstall_License'), 'secondSection'=> lang('Uninstall_License')])?>
         </div>
     </section>
-
 
     <div class="box-wrapper">
         <!-- general form elements -->
         <div class="table-box">
             <!-- form start -->
             <?php echo form_open(base_url() . 'Update/uninstallLicense', $arrayName = array('id' => 'update_verification')) ?>
-            <input type="hidden" value="<?=escape_output($status)?>" id="status_value">
-            <div>
-                <div class="row">
-                    <div class="col-sm-12 mb-2 col-md-4">
-                    
-                        <div class="form-group">
-
-                        <div class="d-flex justify-content-between align-items-center">
-                                <label>
-                                    <?php echo lang('envato_username'); ?>
-                                </label>
-                                <div class="ms-3 op_right op_font_18 op_cursor_pointer mb-4-px">
-                                    <i data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo lang('uninstall_notice'); ?>" class="fa-regular fa-circle-question tippyBtnCall font-16 theme-color"></i>
+                <input type="hidden" value="<?=escape_output($status)?>" id="status_value">
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-sm-12 mb-2 col-md-4">
+                            <div class="form-group">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label>
+                                        <?php echo lang('envato_username'); ?>
+                                    </label>
+                                    <div class="ms-3 op_right op_font_18 op_cursor_pointer mb-4-px">
+                                        <i data-bs-toggle="tooltip" data-bs-placement="top" title="<?php echo lang('uninstall_notice'); ?>" class="fa-regular fa-circle-question tippyBtnCall font-16 theme-color"></i>
+                                    </div>
                                 </div>
+                                <input tabindex="1" type="text" name="username" class="form-control"
+                                    placeholder="<?php echo lang('envato_username'); ?>"
+                                    value="<?php echo set_value('username'); ?>">
                             </div>
-                            <input tabindex="1" type="text" name="username" class="form-control"
-                                   placeholder="<?php echo lang('envato_username'); ?>"
-                                   value="<?php echo set_value('username'); ?>">
+                            <?php if (form_error('username')) { ?>
+                                <div class="callout callout-danger my-2">
+                                    <?php echo form_error('username'); ?>
+                                </div>
+                            <?php } ?>
                         </div>
-                        <?php if (form_error('username')) { ?>
-                            <div class="callout callout-danger my-2">
-                                <?php echo form_error('username'); ?>
+                        <div class="col-sm-12 mb-2 col-md-4">
+                            <div class="form-group">
+                                <label><?php echo lang('purchase_code'); ?> <span class="required_star">*</span></label>
+                                <input tabindex="2" type="text" name="purchase_code" class="form-control"
+                                    placeholder="<?php echo lang('purchase_code'); ?>"
+                                    value="<?php echo set_value('purchase_code'); ?>">
                             </div>
-                        <?php } ?>
-                    </div>
-                    <div class="col-sm-12 mb-2 col-md-4">
-
-                        <div class="form-group">
-                            <label><?php echo lang('purchase_code'); ?> <span class="required_star">*</span></label>
-                            <input tabindex="2" type="text" name="purchase_code" class="form-control"
-                                   placeholder="<?php echo lang('purchase_code'); ?>"
-                                   value="<?php echo set_value('purchase_code'); ?>">
+                            <?php if (form_error('purchase_code')) { ?>
+                                <div class="callout callout-danger my-2">
+                                    <?php echo form_error('purchase_code'); ?>
+                                </div>
+                            <?php } ?>
                         </div>
-                        <?php if (form_error('purchase_code')) { ?>
-                            <div class="callout callout-danger my-2">
-                                <?php echo form_error('purchase_code'); ?>
-                            </div>
-                        <?php } ?>
                     </div>
                 </div>
 
-            </div>
+                <div class="box-footer">
+                    <button type="submit" name="submit" value="submit" class="btn bg-blue-btn"><?php echo lang('submit'); ?></button>
+                    <a class="btn bg-blue-btn" href="<?php echo base_url() ?>Authentication/userProfile">
+                        <?php echo lang('back'); ?>
+                    </a>
+                    </div>
+                    <input id="owner" type="hidden" name="owner" class="input-large" value="doorsoftco"  />
+                    <input id="base_url_install" type="hidden" name="base_url_install" class="input-large" value="<?php echo base_url()?>"  />
+                    <input id="action_type" type="hidden" name="action_type" class="input-large" value="uninstall"  />
+                </div>
 
-            <div class="row mt-2">
-                <div class="col-sm-12 col-md-2 mb-2">
-                    <button type="submit" name="submit" value="submit"
-                            class="btn bg-blue-btn w-100"><?php echo lang('submit'); ?></button>
+                <div class="control-group letf_margin display_none div_hide_status">
+                    <label class="control-label" for="current_installation_url">Current Installation URL</label>
+                    <div class="controls">
+                        <input id="current_installation_url" type="text" name="current_installation_url"  class="input-large form-control txt_w_3"  data-error="Current Installation URL is required" value="<?=set_value('current_installation_url')?>" placeholder="Current Installation URL">
+                    </div>
                 </div>
-                <div class="col-sm-12 col-md-2 mb-2">
-                    <a class="btn bg-blue-btn w-100" href="<?php echo base_url() ?>Authentication/userProfile">
-                        <?php echo lang('back'); ?></a>
+                <div class="control-group display_none letf_margin txt_w_1">
+                    <label class="control-label" for="transfer_installation_url">New Installation URL</label>
+                    <div class="controls">
+                        <input  id="transfer_installation_url" type="text" name="transfer_installation_url"  class="input-large form-control txt_w_3"  data-error="Transfer Installation URL is required" value="<?=set_value('transfer_installation_url')?>" placeholder="New Installation URL">
+                    </div>
                 </div>
-                <input id="owner" type="hidden" name="owner" class="input-large" value="doorsoftco"  />
-                <input id="base_url_install" type="hidden" name="base_url_install" class="input-large" value="<?php echo base_url()?>"  />
-                <input id="action_type" type="hidden" name="action_type" class="input-large" value="uninstall"  />
-            </div>
-
-            <div class="control-group letf_margin display_none div_hide_status">
-                <label class="control-label" for="current_installation_url">Current Installation URL</label>
-                <div class="controls">
-                    <input id="current_installation_url" type="text" name="current_installation_url"  class="input-large form-control txt_w_3"  data-error="Current Installation URL is required" value="<?=set_value('current_installation_url')?>" placeholder="Current Installation URL">
-                </div>
-            </div>
-            <div class="control-group display_none letf_margin txt_w_1">
-                <label class="control-label" for="transfer_installation_url">New Installation URL</label>
-                <div class="controls">
-                    <input  id="transfer_installation_url" type="text" name="transfer_installation_url"  class="input-large form-control txt_w_3"  data-error="Transfer Installation URL is required" value="<?=set_value('transfer_installation_url')?>" placeholder="New Installation URL">
-                </div>
-            </div>
             <?php echo form_close(); ?>
         </div>
     </div>

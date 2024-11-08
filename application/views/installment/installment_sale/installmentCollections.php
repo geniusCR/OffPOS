@@ -52,7 +52,10 @@
                 </div>
                 <div class="row">
                     <div class="col-12">
-                        <button type="submit" name="submit" value="submit" class="btn bg-blue-btn"><?php echo lang('Submit');?></button>
+                        <button type="submit" name="submit" value="submit" class="btn bg-blue-btn">
+                            <iconify-icon icon="solar:upload-minimalistic-broken" class="me-1"></iconify-icon>
+                            <?php echo lang('Submit');?>
+                        </button>
                         <a href="javascript:void(0)" class="btn bg-blue-btn show_invoice" target="_blank"><?php echo lang('print_invoice');?></a>
                     </div>
                 </div>
@@ -104,8 +107,9 @@
                             </tbody>
                         </table>
                         <div class="box-footer">
-                            <a href="<?php echo base_url() ?>Installment/installmentCollections"
-                            class="btn bg-blue-btn"><?php echo lang('back'); ?>
+                            <a href="<?php echo base_url() ?>Installment/installmentCollections" class="btn bg-blue-btn">
+                                <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
+                                <?php echo lang('back'); ?>
                             </a>
                         </div>
                     </div>

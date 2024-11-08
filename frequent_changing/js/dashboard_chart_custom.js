@@ -1,6 +1,49 @@
 // Draw chart
 //initial blank chart assign
 //Plugin is not being initialized in use strict mode, script is added here for that reason
+
+let op_precision = $("#op_precision").val();
+let op_decimals_separator = $("#op_decimals_separator").val();
+let op_thousands_separator = $("#op_thousands_separator").val();
+
+function getAmtPCustom(amount) {
+    if (isNaN(amount)) {
+        amount = 0;
+    }
+
+    amount = parseFloat(amount);
+    
+    let precision = op_precision || 0;
+    let decimalsSeparator = op_decimals_separator || '.';
+    let thousandsSeparator = op_thousands_separator || '';
+
+    // Truncate the amount to the specified precision
+    let factor = Math.pow(10, precision);
+    amount = Math.floor(amount * factor) / factor;
+
+    // Format the amount
+    let strAmount = amount.toLocaleString(undefined, {
+        minimumFractionDigits: precision,
+        maximumFractionDigits: precision,
+        useGrouping: !!thousandsSeparator
+    });
+
+    // Replace default decimal separator with custom one
+    if (decimalsSeparator !== '.') {
+        strAmount = strAmount.replace('.', decimalsSeparator);
+    }
+
+    // Replace default thousands separator with custom one
+    if (thousandsSeparator !== ',') {
+        strAmount = strAmount.replace(/,/g, thousandsSeparator);
+    }
+
+    return strAmount;
+}
+
+
+
+
 let ctx = document.getElementById("day_week_month_chart_report").getContext('2d');
 const myLineChart = new Chart(ctx, {
     type: 'line',
@@ -27,6 +70,7 @@ const myLineChart = new Chart(ctx, {
     }
 });
 
+
 $(function () {
     "use strict";
     let base_url = $("#base_url_").val();
@@ -38,6 +82,7 @@ $(function () {
             url: base_url+"Dashboard/get_sale_report_charge",
             type: "POST",
             dataType: "json",
+            async: false,
             data: {
                 outlet_id: outlet_id,
                 start_date: start_date,
@@ -46,14 +91,14 @@ $(function () {
                 action_type: action_type,
             },
             success: function (response) {
-                $(".set_total_1").html(response.set_total_1);
-                $(".set_total_2").html(response.set_total_2);
-                $(".set_total_3").html(response.set_total_3);
-                $(".set_total_4").html(response.set_total_4);
+                $(".set_total_1").text(getAmtPCustom(parseFloat(response.set_total_1)));
+                $(".set_total_2").text(getAmtPCustom(parseFloat(response.set_total_2)));
+                $(".set_total_3").text(getAmtPCustom(parseFloat(response.set_total_3)));
+                $(".set_total_4").text(getAmtPCustom(parseFloat(response.set_total_4)));
                 if(Number(response.set_total_3)){
-                    $(".set_total_5").text((Number(response.set_total_3)/ Number(response.set_total_4)).toFixed(2));
+                    $(".set_total_5").text(getAmtPCustom(Number(response.set_total_3) / Number(response.set_total_4)))  ;
                 }else{
-                    $(".set_total_5").html((0).toFixed(2));
+                    $(".set_total_5").text(getAmtPCustom(0));
                 }
                 let json = (response.data_points);
                 let data_chart = [];
@@ -83,23 +128,22 @@ $(function () {
             dataType: "json",
             data: {
                 outlet_id: outlet_id,
-                
             },
             success: function (response) {
-                $(".set_today_total_1").html(response.set_total_1);
-                $(".set_today_total_2").html(response.set_total_2);
-                $(".set_today_total_3").html(response.set_total_3);
-                $(".set_today_total_4").html(response.set_total_4);
+                $(".set_today_total_1").html(getAmtPCustom(parseFloat(response.set_total_1)));
+                $(".set_today_total_2").html(getAmtPCustom(parseFloat(response.set_total_2)));
+                $(".set_today_total_3").html(getAmtPCustom(parseFloat(response.set_total_3)));
+                $(".set_today_total_4").html(getAmtPCustom(parseFloat(response.set_total_4)));
                 if(Number(response.set_total_3)){
-                    $(".set_today_total_5").html((Number(response.set_total_3)/Number(response.set_total_4)).toFixed(2));
+                    $(".set_today_total_5").html(getAmtPCustom(Number(response.set_total_3)/Number(response.set_total_4)));
                 }else{
-                    $(".set_today_total_5").html((0).toFixed(2));
+                    $(".set_today_total_5").html(getAmtPCustom(0));
                 }
-
+                
                 $('.spincrement').spincrement({
                     from: 0.0,
-                    decimalPlaces: 2,
-                    thousandSeparator:null,
+                    decimalPlaces: op_decimals_separator,
+                    thousandSeparator: op_thousands_separator,
                     duration: 1000,
                 });
             },

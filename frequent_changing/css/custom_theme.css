@@ -352,7 +352,7 @@
   height: 40px;
 }
 .h-40{
-  height: 40px;
+  height: 45px;
 }
 .h-50{
   height: 50px !important;
@@ -1263,9 +1263,6 @@
 .width_50 {
   width: 50% !important;
 }
-.bg-blue-btn {
-  display: inline-block !important;
-}
 .bg-blue-btn-p-14 {
   padding-left: 14px !important;
   padding-right: 14px !important;
@@ -1800,8 +1797,8 @@ table.dataTable thead td {
 }
 .dashboardDateRange input{
   background-color: white !important;
-  border-radius: 4px;
-  height: 40px;
+  border-radius: 6px;
+  height: 45px;
 }
 
 .dashboardDateRange{
@@ -2074,7 +2071,7 @@ img.user-avatar-inner {
   background-color: #FF503D;
 }
 .outlet-box iconify-icon{
-  color: #636363;
+  font-size: 16px;
 }
 
 .icon-button {
@@ -2134,7 +2131,7 @@ img.user-avatar-inner {
 
 .input-group-text {
   font-size: 0.75rem;
-  height: 40px;
+  height: 45px;
 }
 
 #notification_wrap .dropdown-toggle::after {
@@ -2265,16 +2262,18 @@ img.user-avatar-inner {
 
 .input-group .form-control:focus {
   background-color: #fff;
-  border-color: rgba(139, 92, 246, 0.2705882353);
-  box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.2) !important;
+  /* border-color: rgba(139, 92, 246, 0.2705882353); */
+  /* box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.2) !important; */
+  border-color: #8b5cf6;
+  box-shadow: none;
 }
 .input-group .form-control {
   padding: 0.438rem 1rem;
   background-color: #fff;
   background-clip: padding-box;
   border: 1px solid #dfdbdb;
-  border-radius: 4px;
-  height: 40px;
+  border-radius: 6px !important;
+  height: 45px;
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.45;
@@ -2282,6 +2281,7 @@ img.user-avatar-inner {
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   margin-bottom: 4px;
 }
+
 
 .input-group input:focus::placeholder{
   padding-left: 7px !important;
@@ -2356,7 +2356,7 @@ img.user-avatar-inner {
 
 .imei-serial-err{
   color: #f51111;
-  border-radius: 4px;
+  border-radius: 6px;
   margin: 0px;
   font-weight: 500;
 }
@@ -2697,7 +2697,7 @@ img.user-avatar-inner {
 }
 .language_dropdown{
   top: 53px !important;
-  height: 185px;
+  max-height: 185px;
   overflow-y: auto;
 }
 .breadcrumb-item a{
@@ -2744,24 +2744,19 @@ img.user-avatar-inner {
   padding-bottom: 12px;
 }
 .logo_Section_main_sidebar .set_collapse{
-  color: #575b66;
+  color: #99a1b7;
 }
 .buy-now{
-  color: white;
-  text-decoration: none;
-  padding: 8.5px 21px !important;
-  font-weight: 600;
-  font-size: 14px;
-  text-transform: capitalize;
-  transition: all 0.3s;
-  position: absolute;
-  right: 30px;
-  bottom: 90px;
-  display: flex;
-  align-items: center;
-  border-radius: 6px 6px 6px 6px;
-  background-color: #f2393b;
-  box-shadow: 0 0 12px 0 rgba(242, 57, 59, .6705882352941176);
+  color: #fff;
+  background-color: #d9534f;
+  border-color: #d43f3a;
+  box-shadow: 0 1px 20px 1px rgb(234, 84, 85) !important;
+  position: fixed;
+  z-index: 999;
+  inset-block-end: 5%;
+  inset-inline-end: 79px;
+  padding: 11px;
+  font-weight: bold;
 }
 .buy-now:hover{
   color: white;
@@ -2772,6 +2767,81 @@ img.user-avatar-inner {
   color: white;
   box-shadow: none;
 }
+.vertical-align-top{
+  vertical-align: top !important;
+}
+.vertical-align-middle{
+  vertical-align: middle;
+}
+.vertical-align-bottom{
+  vertical-align: bottom;
+}
+.bulk_img_up img{
+  border: 1px dashed #dfdbdb;
+  padding: 5px;
+  object-fit: cover;
+}
+.bulk_img_up i{
+  font-size: 25px;
+}
+.cursor-pointer{
+  cursor: pointer !important;
+}
+
+
+
+
+
+.modifier_item_details_holder .combo_cart_item {
+  display: grid;
+  grid-template-columns: 42% 14% 10% 17% 17%;
+  align-items: center;
+}
+
+.modifier_item_details_holder .combo_cart_item {
+  opacity: 0.7;
+}
+
+.combo_cart_item {
+  margin-bottom: 6px;
+}
+
+.modifier_item_details_holder .order_holder .single_order .single_order_column.first_column {
+  display: flex;
+  align-items: flex-start;
+  padding-right: 5px;
+  padding-left: 5px;
+  align-items: center;
+}
+
+.modifier_item_details_holder .order_holder .single_order .single_order_column {
+  font-size: 14px;
+}
+
+.modifier_item_details_holder
+.order_holder
+.single_order
+.single_order_column.first_column
+span {
+  color: black;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.modifier_item_details_holder .order_holder .single_order .single_order_column.first_column span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#show_sale_hold_modal .combo_cart_item {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+.mt_6{
+  margin-top: 6px;
+}
+
+
 /*###########  Place the following codes at the bottom of this file for user experience ###########*/
 /* Ajax Pagination table css */
 .items_ajax_page thead tr th:nth-child(5), .items_ajax_page thead tr th:nth-child(6), .items_ajax_page tbody tr td:nth-child(5), .items_ajax_page tbody tr td:nth-child(6) {

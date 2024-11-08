@@ -69,6 +69,9 @@ $(function () {
             $('.hide_show_7').hide();
             $('.hide_show_8').hide();
             $('.hide_show_9').hide();
+            $('.hide_show_9').hide();
+            $('.hide_show_10').hide();
+            $('.hide_show_11').hide();
             $('.hide_show_1').show();
             if(print_format == '56mm' || print_format == '80mm'){
                 $('.hide_show_2').show();
@@ -91,12 +94,17 @@ $(function () {
             if(printer_type == 'network'){
                 $('.hide_show_5').show();
                 $('.hide_show_6').show();
+                $('.hide_show_10').show();
+                $('.hide_show_11').show();
             } else if(printer_type == 'windows'){
                 $('.hide_show_7').show();
                 $('.hide_show_8').show();
 
                 $('.hide_show_5').hide();
                 $('.hide_show_6').hide();
+
+                $('.hide_show_10').hide();
+                $('.hide_show_11').hide();
             }
         }
     }
@@ -399,6 +407,10 @@ $(function () {
                                     <option ${response.data.fiscal_printer_status == 'ON' ? 'selected' : '' } value="ON">ON</option>
                                     <option ${response.data.fiscal_printer_status == 'OFF' ? 'selected' : '' } value="OFF">OFF</option>
                                 `);
+                                $('#open_cash_drawer').html('').html(`
+                                    <option ${response.data.open_cash_drawer_when_printing_invoice == 'ON' ? 'selected' : '' } value="ON">ON</option>
+                                    <option ${response.data.open_cash_drawer_when_printing_invoice == 'OFF' ? 'selected' : '' } value="OFF">OFF</option>
+                                `);
                             }
                         }
                     });
@@ -428,6 +440,7 @@ $(function () {
 
     // Delete Printer
     $(document).on('click', '.delete_item', function () { 
+        let data_id = $(this).attr('data_id');
         $.ajax({
             url: base_url + "Master/checkAccess",
             method: "GET",
@@ -444,7 +457,6 @@ $(function () {
                         confirmButtonText: ok,
                     });
                 } else {
-                    let data_id = $(this).attr('data_id');
                     Swal.fire({
                         title: alert + "!",
                         text: are_you_sure,

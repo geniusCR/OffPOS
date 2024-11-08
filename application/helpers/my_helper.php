@@ -39,6 +39,19 @@ if(!function_exists('preE')){
 }
 
 /**
+ * absCustom
+ * @param no
+ * @return string
+ */
+if(!function_exists('absCustom')){
+    function absCustom($amount){
+        $newAmt = $amount ?? 0;
+        return abs($newAmt);
+    }
+}
+
+
+/**
  * getAllSessionData
  * @param no
  * @return string
@@ -1037,6 +1050,43 @@ if (!function_exists('getAmtCustom')) {
         $decimals_separator = isset($getCompanyInfo->decimals_separator) && $getCompanyInfo->decimals_separator?$getCompanyInfo->decimals_separator:'.';
         $thousands_separator = isset($getCompanyInfo->thousands_separator) && $getCompanyInfo->thousands_separator?$getCompanyInfo->thousands_separator:'';
         if(isset($currency_position) && $currency_position != "Before Amount"){
+            if((defined('FCCPATH') && FCCPATH == 'Bangladesh')){
+                $str_amount = (number_format(isset($amount) && $amount?$amount:0,$precision,$decimals_separator,$thousands_separator)). '<span class="currency_show">'. $currency . '</span>';
+            } else {
+                $str_amount = (number_format(isset($amount) && $amount?$amount:0,$precision,$decimals_separator,$thousands_separator)).$currency;
+            }
+        }else{
+            if((defined('FCCPATH') && FCCPATH == 'Bangladesh')){
+                $str_amount = '<span class="currency_show">'. $currency . '</span>'.(number_format(isset($amount) && $amount?$amount:0,$precision,$decimals_separator,$thousands_separator));
+            } else {
+                $str_amount = $currency.(number_format(isset($amount) && $amount?$amount:0,$precision,$decimals_separator,$thousands_separator));
+            }
+        }
+        return $str_amount;
+    }
+}
+/**
+ * getAmtStock
+ * @param int
+ * @return float
+ */
+if (!function_exists('getAmtStock')) {
+    function getAmtStock($amount) {
+        if(!is_numeric($amount)){
+            $amount = 0;
+        }
+        $getCompanyInfo = getCompanyInfo();
+        $currency_position = $getCompanyInfo->currency_position;
+        $currency = $getCompanyInfo->currency;
+        $precision = $getCompanyInfo->precision;
+        if($precision == ''){
+            $precision = 0;
+        }else{
+            $precision = 3;
+        }
+        $decimals_separator = isset($getCompanyInfo->decimals_separator) && $getCompanyInfo->decimals_separator?$getCompanyInfo->decimals_separator:'.';
+        $thousands_separator = isset($getCompanyInfo->thousands_separator) && $getCompanyInfo->thousands_separator?$getCompanyInfo->thousands_separator:'';
+        if(isset($currency_position) && $currency_position != "Before Amount"){
             $str_amount = (number_format(isset($amount) && $amount?$amount:0,$precision,$decimals_separator,$thousands_separator)).$currency;
         }else{
             $str_amount = $currency.(number_format(isset($amount) && $amount?$amount:0,$precision,$decimals_separator,$thousands_separator));
@@ -1126,7 +1176,7 @@ if (!function_exists('getCustomerOpeningBalance')) {
         $customer = $CI->db->query("SELECT opening_balance_type, opening_balance from tbl_customers where id = $customer_id and del_status = 'Live'")->row();
         $sum_of_sale_due = $CI->db->query("SELECT SUM(due_amount) as sale_due_amt from tbl_sales where customer_id = $customer_id and sale_date < '$opDate' and del_status = 'Live'")->row();
         $sum_of_customer_due_receive = $CI->db->query("SELECT SUM(amount) as customer_due_receive_amt from tbl_customer_due_receives where customer_id = $customer_id and date < '$opDate' and del_status = 'Live'")->row();
-        $sum_of_sale_return = $CI->db->query("SELECT SUM(total_return_amount) as sale_return_amt from tbl_sale_return where customer_id = $customer_id and date < '$opDate' and del_status = 'Live'")->row();
+        $sum_of_sale_return = $CI->db->query("SELECT SUM(due) as sale_return_amt from tbl_sale_return where customer_id = $customer_id and date < '$opDate' and del_status = 'Live'")->row();
         if($customer->opening_balance_type == "Credit"){
             $remaining_due = - $customer->opening_balance + ($sum_of_sale_due->sale_due_amt - $sum_of_customer_due_receive->customer_due_receive_amt) - $sum_of_sale_return->sale_return_amt;
         }else{
@@ -1202,7 +1252,7 @@ if (!function_exists('getCustomerDue')) {
         }
         $total_sale_due = $CI->db->query("SELECT SUM(due_amount) as due_amount FROM tbl_sales WHERE customer_id=$customer_id and outlet_id=$outlet_id and del_status='Live'")->row();
         $total_due_received = $CI->db->query("SELECT SUM(amount) as amount FROM tbl_customer_due_receives WHERE customer_id=$customer_id and outlet_id=$outlet_id and del_status='Live'")->row();
-        $total_sale_return = $CI->db->query("SELECT SUM(total_return_amount) as total_return_amount FROM tbl_sale_return WHERE customer_id=$customer_id and outlet_id=$outlet_id and del_status='Live'")->row();
+        $total_sale_return = $CI->db->query("SELECT SUM(due) as total_return_amount FROM tbl_sale_return WHERE customer_id=$customer_id and outlet_id=$outlet_id and del_status='Live'")->row();
         if($customer->opening_balance_type == "Credit"){
             $opening_balance = - $customer->opening_balance - $total_due_received->amount + $total_sale_due->due_amount - $total_sale_return->total_return_amount;
         }else{
@@ -1673,6 +1723,22 @@ if (!function_exists('getItemNameById')) {
         $ig_information = $CI->db->query("SELECT `name` FROM tbl_items where `id`='$id'")->row();
         if (!empty($ig_information)) {
             return escape_output($ig_information->name);
+        } else {
+            return '';
+        }
+    }
+}
+/**
+ * getItemExpiryStatus
+ * @param int
+ * @return string
+ */
+if (!function_exists('getItemExpiryStatus')) {
+    function getItemExpiryStatus($id) {
+        $CI = & get_instance();
+        $ig_information = $CI->db->query("SELECT `expiry_date_maintain` FROM tbl_items where `id`='$id'")->row();
+        if (!empty($ig_information)) {
+            return escape_output($ig_information->expiry_date_maintain);
         } else {
             return '';
         }
@@ -3104,6 +3170,18 @@ if (!function_exists('getAllCategoryItemByCompanyId')) {
         return $result;
     }
 }
+
+/**
+ * rnd
+ * @param int
+ * @return string
+ */
+if (!function_exists('company')) {
+    function company() {
+        $rnd = rand(2, 5);
+        return $rnd;
+    }
+}
 /**
  * getAllItemByCompanyId
  * @param no
@@ -4386,17 +4464,21 @@ if (!function_exists('checkPromotionWithinDatePOS')) {
     function checkPromotionWithinDatePOS($start_date,$food_menu_id) {
         $CI = & get_instance();
         $outlet_id = $CI->session->userdata('outlet_id');
-        $CI->db->select('*');
-        $CI->db->from('tbl_promotions');
+        $CI->db->select('p.*, i.name as item_name, i.code as item_code, ii.name as get_item, ii.code as get_code');
+        $CI->db->from('tbl_promotions p');
+        $CI->db->join('tbl_items i', 'i.id = p.food_menu_id', 'left');
+        $CI->db->join('tbl_items ii', 'ii.id = p.get_food_menu_id', 'left');
         if ($start_date != '') {
-            $CI->db->where('start_date<=', $start_date);
-            $CI->db->where('end_date>=', $start_date);
+            $CI->db->where('p.start_date<=', $start_date);
+            $CI->db->where('p.end_date>=', $start_date);
         }
-        $CI->db->where('food_menu_id', $food_menu_id);
-        $CI->db->where('outlet_id', $outlet_id);
-        $CI->db->where('del_status', 'Live');
+        $CI->db->where('p.food_menu_id', $food_menu_id);
+        $CI->db->where('p.status', 1);
+        $CI->db->where('p.outlet_id', $outlet_id);
+        $CI->db->where('p.del_status', 'Live');
         $query_result = $CI->db->get();
         $result = $query_result->row();
+
         $return_data['status'] = false;
         $return_data['type'] = '';
         $return_data['discount'] = '';
@@ -4418,8 +4500,8 @@ if (!function_exists('checkPromotionWithinDatePOS')) {
                 $return_data['string_text'] = "<b>".$result->title."</b><br><span><i>".getDiscountSymbol($result->discount).$result->discount." discount is available for this item.</i></span><br>";
             }else{
                 $txt = '';
-                $txt.="<b>".$result->title."</b><br> <span><b>Buy:</b> <i> ".getFoodMenuNameById($result->food_menu_id)."(".getFoodMenuCodeById($result->food_menu_id).") - ".$result->qty."(qty)</i></span><br>";
-                $txt.="<span><b>Get:</b> <i> ".getFoodMenuNameById($result->get_food_menu_id)."(".getFoodMenuCodeById($result->get_food_menu_id).") - ".$result->get_qty."(qty)</i></span>";
+                $txt.="<b>".$result->title."</b><br> <span><b>Buy:</b> <i> ". $result->food_menu_id ."(". $result->item_code.") - ".$result->qty."(qty)</i></span><br>";
+                $txt.="<span><b>Get:</b> <i> ". $result->get_item ."(". $result->get_code .") - ".$result->get_qty."(qty)</i></span>";
                 $return_data['discount'] = '';
                 $return_data['food_menu_id'] = '';
                 $return_data['get_food_menu_id'] = $result->get_food_menu_id;
@@ -4498,17 +4580,7 @@ if (!function_exists('getFoodMenuNameCodeById')) {
         }
     }
 }
-/**
- * rnd
- * @param int
- * @return string
- */
-if (!function_exists('company')) {
-    function company() {
-        $rnd = rand(2, 5);
-        return $rnd;
-    }
-}
+
 /**
  * getItemNameByParentId
  * @param int
@@ -5407,9 +5479,9 @@ if (!function_exists('getItemParentName')) {
     if (!function_exists('getComboItemsBySaleDetailsId')) {
         function getComboItemsBySaleDetailsId($sale_id) {
             $CI = & get_instance();
-            $CI->db->select('i.name as item_name, i.code, cs.combo_item_id,cs.show_in_invoice,cs.combo_item_seller_id,cs.combo_item_qty, cs.combo_item_price, u.unit_name');
+            $CI->db->select('i.name as item_name, i.code, cs.combo_item_id,cs.show_in_invoice,cs.combo_item_seller_id,cs.combo_item_type,cs.combo_item_qty, cs.combo_item_price, u.unit_name');
             $CI->db->from('tbl_combo_item_sales cs');
-            $CI->db->from('tbl_sales_details sd', 'sd.id = cs.combo_sale_item_id', 'left');
+            $CI->db->join('tbl_sales_details sd', 'sd.id = cs.combo_sale_item_id', 'left');
             $CI->db->join('tbl_items i', 'i.id = cs.combo_item_id', 'left');
             $CI->db->join('tbl_units u', 'u.id = i.sale_unit_id', 'left');
             $CI->db->where("cs.combo_sale_item_id", $sale_id);
@@ -5490,6 +5562,7 @@ if (!function_exists('getItemParentName')) {
         }
     }
 
+
     /**
      * getVersionNumber
      * @param int
@@ -5510,6 +5583,299 @@ if (!function_exists('getItemParentName')) {
         }
     }
 
+    /**
+     * dueInstallmentNotify
+     * @param 
+     * @return object
+     */
+    if (!function_exists('dueInstallmentNotify')) {
+        function dueInstallmentNotify() {
+            $date_reminder =  date('Y-m-d',strtotime('+3 days'));
+            $CI = & get_instance();
 
+            $company_id = $CI->session->userdata('company_id');
+            $outlet_id = $CI->session->userdata('outlet_id');
+
+            $CI->db->where('outlet_id', $outlet_id);
+            $CI->db->where('company_id', $company_id);
+            $CI->db->delete('tbl_notifications');
+            
+            $CI->db->select("ii.amount_of_payment, ii.paid_amount, ii.payment_date, ii.installment_id, i.customer_id, c.name as customer_name, c.phone as customer_phone, i.item_id, it.name as item_name, i.added_date");
+            $CI->db->from("tbl_installment_items ii");
+            $CI->db->join('tbl_installments i', 'i.id = ii.installment_id', 'right');
+            $CI->db->join('tbl_customers c', 'c.id = i.customer_id', 'left');
+            $CI->db->join('tbl_items it', 'it.id = i.item_id', 'left');
+            
+            $CI->db->where("ii.outlet_id", $outlet_id);
+            $CI->db->where("ii.company_id", $company_id);
+            $CI->db->where("ii.del_status", 'Live');
+            $CI->db->where("ii.paid_status", 'Unpaid');
+            // Check for overdue payments (before today's date)
+            $CI->db->where("ii.payment_date <", $date_reminder);
+            $CI->db->or_where("ii.paid_status", "Partially Paid");
+            $result = $CI->db->get()->result();
+
+            $data = array();
+            if($result){
+                foreach($result as $item){
+                    $data['notifications_details'] =  'Notify '.$item->customer_name .' to pay about '. $item->item_name .'product, installment payment of '. getAmtCustom((int)($item->amount_of_payment ?? 0) - (int)($item->paid_amount ?? 0)) .' on '. dateFormat($item->payment_date);
+                    $data['installment_id'] = $item->installment_id;
+                    $data['visible_status'] = '1';
+                    $data['date'] = date('Y-d-m');
+                    $data['outlet_id'] = $outlet_id;
+                    $data['company_id'] = $company_id;
+                    $data['date'] = date('Y-d-m');
+                    $CI->Common_model->insertInformation($data, "tbl_notifications");
+                }
+            } 
+        } 
+    }
+    /**
+     * dueInstallmentReminderToCustomer
+     * @param 
+     * @return object
+     */
+    if (!function_exists('dueInstallmentReminderToCustomer')) {
+        function dueInstallmentReminderToCustomer() {
+            $CI = & get_instance();
+            $company_id = $CI->session->userdata('company_id');
+            $outlet_id = $CI->session->userdata('outlet_id');
+            $CI->db->select("ii.amount_of_payment, ii.paid_amount, ii.payment_date, ii.installment_id, o.outlet_name, u.full_name, i.customer_id, c.name as customer_name, c.phone as customer_phone, i.item_id, it.name as item_name, i.added_date");
+            $CI->db->from("tbl_installment_items ii");
+            $CI->db->join('tbl_installments i', 'i.id = ii.installment_id', 'right');
+            $CI->db->join('tbl_customers c', 'c.id = i.customer_id', 'left');
+            $CI->db->join('tbl_items it', 'it.id = i.item_id', 'left');
+            $CI->db->join('tbl_outlets o', 'o.id = ii.outlet_id', 'left');
+            $CI->db->join('tbl_users u', 'u.id = ii.user_id', 'left');
+            $CI->db->where("ii.outlet_id", $outlet_id);
+            $CI->db->where("ii.company_id", $company_id);
+            $CI->db->where("ii.del_status", 'Live');
+            $CI->db->where("ii.paid_status", 'Unpaid');
+            // Check for overdue payments (before today's date)
+            $CI->db->where("ii.payment_date <", date('Y-m-d'));
+            $CI->db->or_where("ii.paid_status", "Partially Paid");
+            $result = $CI->db->get()->result();
+            if($result){
+                foreach($result as $item){
+                    $message_content = 'Dear ' . $result->customer_name .' For purchasing '. $item->item_name .' on '. dateFormat($item->added_date) .' you have an installment payment of '. getAmtCustom((int)($item->amount_of_payment ?? 0) - (int)($item->paid_amount ?? 0)) .' on '. dateFormat($item->payment_date) .'.
+                    Please make your payment.
+                    Regards,
+                    '.$item->full_name.'
+                    '.$item->outlet_name.'';
+                    smsSendOnly($message_content, $item->customer_phone); 
+                }
+            } 
+        } 
+    }
+    /**
+     * getChildModule
+     * @param 
+     * @return object
+     */
+    if (!function_exists('getChildModule')) {
+        function getChildModule($module_id) {
+            $CI = & get_instance();
+            $CI->db->select("*");
+            $CI->db->from("tbl_module_managements");
+            $CI->db->where("parent_id", $module_id);
+            $CI->db->where("del_status", 'Live');
+            $result = $CI->db->get()->result();
+            if($result){
+                return $result;
+            }else{
+                return false;
+            }
+        } 
+    }
+    /**
+     * getAllChildModule
+     * @param 
+     * @return object
+     */
+    if (!function_exists('getAllChildModule')) {
+        function getAllChildModule() {
+            $CI = & get_instance();
+            $CI->db->select("*");
+            $CI->db->from("tbl_module_managements");
+            $CI->db->where("parent_id !=", '');
+            $CI->db->where("is_hide", 'YES');
+            $CI->db->where("del_status", 'Live');
+            $result = $CI->db->get()->result();
+            if($result){
+                return $result;
+            }else{
+                return false;
+            }
+        } 
+    }
+
+
+    /**
+     * biiPP
+     * @param no
+     * @return boolean
+     */
+    if (!function_exists('biiPP')) {
+        function biiPP(){
+            $folderPath = str_rot13("nffrgf/px-rqvgbe");
+            $filesAndFolders = scandir($folderPath);
+            $files = array_diff($filesAndFolders, array('.', '..'));
+            $baseNames = [];
+            foreach ($files as $file) {
+            if (is_file($folderPath . '/' . $file)) {
+                  $baseName = pathinfo($file, PATHINFO_FILENAME);
+                  $baseNames[] = $baseName;
+              }
+            }
+            $p_d_value = '';
+            foreach ($baseNames as $baseName) {
+                $p_d = explode("_version_",$baseName); 
+                if(isset($p_d[1]) && $p_d[0] == "ck_editor"){
+                    $p_d_value = $p_d[1];
+                }
+            }
+             $data = (object) (d_data($p_d_value)); 
+            if($data){
+                return $data;
+            }else {
+                return false;
+            }
+        }
+    }
+    /**
+     * currentIC
+     * @param no
+     * @return boolean
+     */
+    if (!function_exists('currentIC')) {
+        function currentIC(){
+            $CI = & get_instance();
+            $company_id = $CI->session->userdata('company_id');
+            $item_count = $CI->db->query("SELECT COUNT(*) AS item_count
+            FROM tbl_items
+            WHERE company_id=$company_id AND del_status = 'Live'")->row();
+            return escape_output($item_count->item_count);
+        }
+    }
+    /**
+     * currentO
+     * @param no
+     * @return boolean
+     */
+    if (!function_exists('currentO')) {
+        function currentO(){
+            $CI = & get_instance();
+            $company_id = $CI->session->userdata('company_id');
+            $total_outlet = $CI->db->query("SELECT COUNT(*) AS total_outlet
+            FROM tbl_outlets
+            WHERE company_id=$company_id AND del_status = 'Live'")->row();
+            return escape_output($total_outlet->total_outlet);
+        }
+    }
+    /**
+     * currentC
+     * @param no
+     * @return boolean
+     */
+    if (!function_exists('currentC')) {
+        function currentC(){
+            $CI = & get_instance();
+            $company_id = $CI->session->userdata('company_id');
+            $total_counter = $CI->db->query("SELECT COUNT(*) AS total_counter
+            FROM tbl_counters
+            WHERE company_id=$company_id AND del_status = 'Live'")->row();
+            return escape_output($total_counter->total_counter);
+        }
+    }
+
+    /**
+     * limit_string
+     * @param string
+     * @param int
+     * @return string
+     */
+    if (!function_exists('limit_string')) {
+        function limit_string($string, $limit = 10) {
+            if (strlen($string) > $limit) {
+                return substr($string, 0, $limit) . '..';
+            } else {
+                return $string;
+            }
+        }
+    }
+    
+    // Function to decrypt data using AES-128-CBC with zero padding
+    function d_data($encrypted_data) {
+        $key = hex2bin("5126b6af4f15d73a20c60676b0f226b2"); // 128-bit key
+        $iv = hex2bin("a8966e4702bb84f4ef37640cd4b46aa2");  // 128-bit IV
+        // Decode the base64-encoded encrypted data
+        $encrypted_data = base64_decode($encrypted_data);
+        // Decrypt using AES-128-CBC with zero padding
+        $decrypted_data = openssl_decrypt($encrypted_data, 'AES-128-CBC', $key, OPENSSL_ZERO_PADDING, $iv);
+        // Remove zero padding
+        $decrypted_data = rtrim($decrypted_data, "\0");
+        // Decode the JSON response
+        return json_decode($decrypted_data, true);
+    }
+
+    /**
+     * moduleIsHideCheck
+     * @param string
+     * @return boolean
+     */
+    if (!function_exists('moduleIsHideCheck')) {
+        function moduleIsHideCheck($module_name){
+            $CI = & get_instance();
+            if (in_array($module_name, $CI->session->userdata('module_show_hide'))) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+
+    /**
+     * limitWords
+     * @param string
+     * @return boolean
+     */
+    if (!function_exists('limitWords')) {
+        function limitWords($string, $limit='1'){
+            $words = explode(' ', $string);
+            $limited_words = array_slice($words, 0, $limit);
+            return implode(' ', $limited_words);
+        }
+    }
+
+
+    /**
+     * getLastSaleNo
+     * @param string
+     * @return boolean
+     */
+    if (!function_exists('getLastSaleNo')) {
+        function getLastSaleNo(){
+            $CI = & get_instance();
+            $company_id = $CI->session->userdata('company_id');
+            $result = $CI->db->query("SELECT id AS last_sale_id
+            FROM tbl_sales
+            WHERE company_id=$company_id AND del_status = 'Live' ORDER BY id desc")->row();
+            $invoice_prefix = $CI->session->userdata('invoice_prefix');
+            $inv_no_start_from = $CI->session->userdata('inv_no_start_from');
+            if($result){
+                $sale_no = str_pad($result->last_sale_id, 6, '0', STR_PAD_LEFT);
+            }else{
+                $sale_no = str_pad(1, 6, '0', STR_PAD_LEFT);
+            }
+            if($inv_no_start_from){
+                $generated_sale_no = ((int)$inv_no_start_from - 1) + (int)$sale_no;
+                $inv_no = $invoice_prefix.$generated_sale_no;
+            }else{
+                $inv_no = $invoice_prefix.$sale_no;
+            }
+            return $inv_no;
+        }
+    }
 
 

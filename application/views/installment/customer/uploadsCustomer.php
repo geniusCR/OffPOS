@@ -49,13 +49,21 @@
             </div>
             <!-- /.box-body -->
             <div class="box-footer">
-                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn"> <?php echo lang('submit'); ?></button>
-                <a href="<?php echo base_url() ?>Installment/customers"
-                    class="btn bg-blue-btn"><?php echo lang('back'); ?>
+                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn">
+                    <iconify-icon icon="solar:upload-minimalistic-broken"></iconify-icon>
+                    <?php echo lang('submit'); ?>
+                </button>
+                
+                <a class="btn bg-blue-btn text-decoration-none" href="<?php echo base_url() ?>Installment/customers">
+                    <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
+                    <?php echo lang('back'); ?>
                 </a>
-                <a class="btn bg-blue-btn col-sm-2 col-md-1 me-3" href="<?php echo base_url() ?>Authentication/downloadPDF/Customer_Upload.xlsx">
-                    <?php echo lang('download_sample'); ?></a>
+                <a class="btn bg-blue-btn text-decoration-none" href="<?php echo base_url() ?>Authentication/downloadPDF/Customer_Upload.xlsx">
+                    <iconify-icon icon="solar:cloud-download-broken"></iconify-icon>
+                    <?php echo lang('download_sample'); ?>
+                </a>
             </div>
+
             <?php echo form_close(); ?>
         </div>
     </div>

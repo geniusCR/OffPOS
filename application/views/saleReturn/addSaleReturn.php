@@ -16,6 +16,7 @@
 <input type="hidden" id="return_qty" value="<?php echo lang('return_qty');?>">
 <input type="hidden" id="return_unit_price" value="<?php echo lang('return_unit_price');?>">
 <input type="hidden" id="sale_unit_price" value="<?php echo lang('sale_unit_price');?>">
+<input type="hidden" id="is_edit" value="No">
 
 
 
@@ -169,7 +170,7 @@
                             <label><?php echo lang('g_total'); ?> <span class="required_star">*</span></label>
                             <input class="form-control integerchk1" readonly type="text"
                                 name="grand_total" id="grand_total"
-                            <?php echo set_value('grand_total'); ?> placeholder="<?php echo lang('g_total');?>">       
+                            placeholder="<?php echo lang('g_total');?>">       
                         </div>
                     </div>
                 </div>
@@ -178,7 +179,7 @@
                         <div class="form-group mt-3">
                             <label><?php echo lang('paid'); ?> <span class="required_star"></span></label>
                             <input  autocomplete="off" class="form-control integerchk calculate_op" value="0" type="text" name="paid" id="paid" onfocus="this.select();"
-                            <?php echo set_value('paid'); ?> placeholder="<?php echo lang('paid');?>">
+                            placeholder="<?php echo lang('paid');?>">
                         </div>
                         <?php if (form_error('paid')) { ?>
                         <div class="callout callout-danger my-2">
@@ -194,7 +195,7 @@
                     <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
                         <div class="form-group mt-3">
                             <label><?php echo lang('due'); ?></label>
-                            <input class="form-control integerchk" type="text" name="due" id="due" readonly <?php echo set_value('due'); ?> placeholder="<?php echo lang('due');?>">
+                            <input class="form-control integerchk" type="text" name="due" id="due" readonly placeholder="<?php echo lang('due');?>">
                             <div class="alert alert-error error-msg due_id_err_msg_contnr op_padding_5_important">
                                 <p id="due_id_err_msg"></p>
                             </div>
@@ -246,17 +247,24 @@
                 </div>
                 <!-- /.box-body -->
             </div>
+
             <div class="box-footer">
-                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn"><?php echo lang('submit'); ?></button>
-                
+                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn">
+                    <iconify-icon icon="solar:upload-minimalistic-broken"></iconify-icon>
+                    <?php echo lang('submit'); ?>
+                </button>
                 <input type="hidden" id="set_save_and_add_more" name="add_more">
                 <button type="submit" name="submit" value="submit" class="btn bg-blue-btn" id="save_and_add_more">
+                    <iconify-icon icon="solar:undo-right-round-broken"></iconify-icon>
                     <?php echo lang('save_and_add_more'); ?>
                 </button>
-                <a href="<?php echo base_url() ?>Sale_return/saleReturns"
-                    class="btn bg-blue-btn"><?php echo lang('back'); ?>
+                <a class="btn bg-blue-btn text-decoration-none" href="<?php echo base_url() ?>Sale_return/saleReturns">
+                    <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
+                    <?php echo lang('back'); ?>
                 </a>
             </div>
+
+
             <?php echo form_close(); ?>
         </div>
     </section>

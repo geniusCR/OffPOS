@@ -206,9 +206,25 @@ class WarrantyProducts extends Cl_Controller {
      * @return void
      */
     public function warrantyAllStock(){
-        $outlet_id = $this->session->userdata('outlet_id');
         $data = array();
-        $data['warranties_all_stock'] = $this->Common_model->warrantyAllStock("tbl_warranties");
+        if (htmlspecialcharscustom($this->input->post('submit'))) {
+            $outlet_id = $this->input->post($this->security->xss_clean('outlet_id'));
+            $R_F_C = '';
+            $S_T_V = '';
+            $R_T_V = '';
+            if(isset($_POST['Received_From_Customer'])){
+               $R_F_C = 'R_F_C';
+            }
+            if(isset($_POST['Send_To_Vendor'])){
+                $S_T_V = 'S_T_V';
+            } 
+            if(isset($_POST['Received_To_Vendor'])){
+                $R_T_V = 'R_T_V';
+            }
+            $data['warranties_all_stock'] = $this->Common_model->warrantyAllStockByStatus($R_F_C, $S_T_V, $R_T_V, $outlet_id);
+        } else {
+            $data['warranties_all_stock'] = $this->Common_model->warrantyAllStock("tbl_warranties");
+        }
         $data['main_content'] = $this->load->view('warranty-product/show_all_stock', $data, TRUE);
         $this->load->view('userHome', $data);
     }

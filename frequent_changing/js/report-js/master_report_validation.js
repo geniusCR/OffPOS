@@ -139,18 +139,18 @@ $(function () {
     });
 
 
-    $(document).on('click', '.installmentReport', function(){
-        let error = false;
-        let customer_id = $('#customer_id').val();
-        if(customer_id == ''){
-            error = true;
-            $('#customer_id_err_msg').text(The_customer_field_is_required);
-            $('.customer_id_err_msg_contnr').show(200).delay(6000).hide(200, function () {});
-        }
-        if(error == true){
-            return false;
-        }
-    });
+    // $(document).on('click', '.installmentReport', function(){
+    //     let error = false;
+    //     let customer_id = $('#customer_id').val();
+    //     if(customer_id == ''){
+    //         error = true;
+    //         $('#customer_id_err_msg').text(The_customer_field_is_required);
+    //         $('.customer_id_err_msg_contnr').show(200).delay(6000).hide(200, function () {});
+    //     }
+    //     if(error == true){
+    //         return false;
+    //     }
+    // });
 
     $(document).on('click', '.installmentDueReport', function(){
         let error = false;

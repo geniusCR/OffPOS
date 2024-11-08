@@ -1,9 +1,5 @@
 $(function () {
     "use strict"
-
-    console.log(window.menu_objects)
-
-
     let stripePayementStatus = false;
     let paypalPayementStatus = false;
     toastr.options = {
@@ -22,6 +18,8 @@ $(function () {
     });
     br.update();
     let no_permission_for_this_module = $('#no_permission_for_this_module').val();
+    let pharmacy_search_place_holder_pos = $('#pharmacy_search_place_holder_pos').val();
+    let other_search_place_holder_pos = $('#other_search_place_holder_pos').val();
     let The = $('#The').val();
     let field_is_required = $('#field_is_required').val();
     let The_discount_code_field_required = $('#The_discount_code_field_required').val();
@@ -32,6 +30,8 @@ $(function () {
     let direct_cart = $("#direct_cart").val();
     let base_url = $('#base_url').val();
     let warning = $('#alert').val();
+    let phone_ln = $('#phone_ln').val();
+    let email_ln = $('#email_ln').val();
     let ok = $('#ok').val();
     let yes = $('#yes').val();
     let cancel = $('#cancel').val();
@@ -50,6 +50,8 @@ $(function () {
     let gst_state_code = $('#gst_state_code').val();
     let csrf_value_ = $("#csrf_value_").val();
     let op_precision = $("#op_precision").val();
+    let op_decimals_separator = $("#op_decimals_separator").val();
+    let op_thousands_separator = $("#op_thousands_separator").val();
     let allow_less_sale = $("#allow_less_sale").val();
     let check_issue_date_lan = $("#check_issue_date_lan").val();
     let check_no_lan = $("#check_no_lan").val();
@@ -73,45 +75,243 @@ $(function () {
     let session_uer_id = $("#session_uer_id").val();
     let role = $("#role").val();
     let grocery_experience = $("#grocery_experience").val();
+    let view_purchase_price = $("#view_purchase_price").val();
+    let Alternative_Medicine_will_shown_here = $("#Alternative_Medicine_will_shown_here").val();
+    let already_added = $("#already_added").val();
+    let default_customer = $("#default_customer").val();
+    let edit_sale_customer = Number($("#edit_sale_customer").val());
+    let invoice_logo_session = $("#invoice_logo_session").val(); 
+    let business_name = $("#business_name").val(); 
+    let outlet_address = $("#outlet_address").val(); 
+    let outlet_name = $("#outlet_name").val(); 
+    let outlet_id = $("#outlet_id").val(); 
+    let outlet_email = $("#outlet_email").val(); 
+    let outlet_phone = $("#outlet_phone").val(); 
+    let tax_title = $("#tax_title").val(); 
+    let tax_registration_no = $("#tax_registration_no").val(); 
+    let invoice_ln = $("#invoice_ln").val(); 
+    let bill_to_ln = $("#bill_to_ln").val(); 
+    let invoice_no_ln = $("#invoice_no_ln").val(); 
+    let date_ln = $("#date_ln").val(); 
+    let op_date_format = $("#op_date_format").val();
+    let item_ln = $("#item_ln").val(); 
+    let code_ln = $("#code_ln").val(); 
+    let brand_ln = $("#brand_ln").val(); 
+    let sn_ln = $("#sn_ln").val(); 
+    let unit_price_ln = $("#unit_price_ln").val(); 
+    let qty_ln = $("#qty_ln").val(); 
+    let discount_ln = $("#discount_ln").val(); 
+    let total_ln = $("#total_ln").val(); 
+    let term_conditions = $("#term_conditions").html(); 
+    let invoice_footer = $("#invoice_footer").text(); 
+    let given_amount_ln = $("#given_amount_ln").val(); 
+    let change_amount_ln = $("#change_amount_ln").val(); 
+    let payment_method_ln = $("#payment_method_ln").val(); 
+    let due_amount_ln = $("#due_amount_ln").val(); 
+    let paid_amount_ln = $("#paid_amount_ln").val(); 
+    let total_payable_ln = $("#total_payable_ln").val(); 
+    let charge_ln = $("#charge_ln").val(); 
+    let letter_head_gap = $("#letter_head_gap").val(); 
+    let letter_footer_gap = $("#letter_footer_gap").val();
+    let tax_ln = $("#tax_ln").val();
+    let sub_total_ln = $("#sub_total_ln").val();
+    let authorized_signature_ln = $("#authorized_signature_ln").val();
+    let challan_ln = $("#challan_ln").val();
 
 
-    // Left Sidebar Menu
-    $('.treeview2').hover(function(){
-        $('.treeview').removeClass("active_sub_menu");
-        $(".sidebar_sub_menu").css("display", "none");
-    });
-    $(".have_sub_menu").hover(function () {
-        //Every time hover active_sub_menu class remove
-        $(".have_sub_menu").removeClass("active_sub_menu");
-        $(".treeview-menu-in").remove();
-        $(".sidebar_sub_menu").css("display", "block");
-        $(this).addClass("active_sub_menu");
-        let html = '<ul class="treeview-menu-in">';
-        html += $(this).find(".sub__menu__list").html();
-        html += "</ul>";
-        $(".sidebar_sub_menu").html(html);
-    },
-    function () {
-        $(".sidebar_sub_menu").css("display", "block");
-    });
-    $(document).click(function (event) {
-        if (!$(event.target).closest(".have_sub_menu").length) {
-            $(".sidebar_sub_menu").css("display", "none");
-            $(".have_sub_menu").removeClass("active_sub_menu");
-        }
-    });
-
-    let activeSubMenu = $(".active_sub_menu");
-    if (activeSubMenu.length) {
-        $(".sidebar-menu").scrollTop(activeSubMenu.position().top);
+    // #################### Index DB Store Start ####################
+    let is_offline_system;
+    function checkInternetConnection(){
+        $.ajax({
+            url: base_url+'internet-check',  
+            method: 'GET',
+            cache: false,
+            success: function() {
+                // setItemStockInIndexDB();
+                is_offline_system = '1';
+                $('#is_offline_system').val('1');
+                let request = indexedDB.open("off_pos", 2);
+                request.onsuccess = function(event) {
+                    let db = event.target.result;
+                    let transaction = db.transaction(["sales"], "readonly");
+                    let objectStore = transaction.objectStore("sales");
+                    let countRequest = objectStore.count();
+                    countRequest.onsuccess = function() {
+                        if(countRequest.result > 0){
+                            $('.online_sync').click();
+                            toastr['success']('Offline Sync Successfully done.', 'Success');
+                        }else{
+                            $('.online_sync .sync_counter').text('');;
+                        }
+                    };
+                    countRequest.onerror = function(event) {
+                        console.log("Error counting sales:", event.target.error);
+                    };
+                };
+                request.onerror = function(event) {
+                    console.log("Error opening database:", event.target.error);
+                };
+                $('.online_offline_txt').text('Online');
+                $('.online_sync').addClass('bg__green');
+                $('.online_sync').removeClass('bg__red');
+            },
+            error: function() {
+                is_offline_system = '0';
+                let request = indexedDB.open("off_pos", 2);
+                request.onsuccess = function(event) {
+                    let db = event.target.result;
+                    let transaction = db.transaction(["sales"], "readonly");
+                    let objectStore = transaction.objectStore("sales");
+                    let countRequest = objectStore.count();
+                    countRequest.onsuccess = function() {
+                        if(countRequest.result > 0){
+                            $('.online_sync .sync_counter').text('').text(`( ${countRequest.result} )`);
+                        }
+                        if (!localStorage.getItem('offlineWarningShown')) {
+                            toastr['warning']('Your internet is unavailable, you are going to offline mode.', 'Warning');
+                            localStorage.setItem('offlineWarningShown', 'true');
+                        }
+                    };
+                    countRequest.onerror = function(event) {
+                        console.log("Error counting sales:", event.target.error);
+                    };
+                };
+                request.onerror = function(event) {
+                    console.log("Error opening database:", event.target.error);
+                };
+                $('.online_offline_txt').text('Offline');
+                $('.online_sync').addClass('bg__red');
+                $('.online_sync').removeClass('bg__green');
+            }
+        });
     }
-    $(document).on('click', '.arabic-lang .mobile_sideber_hide_show', function(){
-        if(!$('.sidebar-mini').hasClass('sidebar-open')){
-            $('.main-sidebar2').removeClass('active')
+
+    setInterval(function () {
+        checkInternetConnection();
+    }, 3000);
+    // #################### Index DB Store End ####################
+
+
+    $(document).on('keyup', '.select2-search__field', function(){
+        $('.select2-results__message').text('').html(`<button type="button" class="add_as_new_customer"><iconify-icon icon="solar:add-circle-broken"></iconify-icon> Add as new customer</button>`);
+    });
+    $(document).on('click', '.add_as_new_customer', function(){
+        $('#add_customer_modal').addClass('active');
+        $('.pos__modal__overlay').fadeIn(300);
+        let customer_name = $('.select2-search__field').val();
+        $('#customer_phone_modal').val(customer_name);
+        $("#walk_in_customer").val('').trigger('change');
+        setTimeout(function(){
+            $('.select2-dropdown').css('z-index', '1');
+        }, 100);
+        $('#add_or_edit_text').text(`Add Customer`);
+        $('#customer_name_modal').focus();
+    });
+
+    function itemInfoSetter(){
+        $.ajax({
+            type: "GET",
+            url: base_url+"Sale/itemInfoSetter",
+            success: function (response) {
+                let response2 = JSON.parse(response.data);
+                window.items = response2;
+                showAllItems('', '');
+            }
+        });
+    }
+    itemInfoSetter();
+
+
+    function getAmtPCustom(amount) {
+        if (isNaN(amount)) {
+            amount = 0;
+        }
+        let precision = op_precision || 0;
+        let decimalsSeparator = op_decimals_separator || '.';
+        let thousandsSeparator = op_thousands_separator || '';
+    
+        // Truncate the amount to the specified precision
+        let factor = Math.pow(10, precision);
+        amount = Math.floor(amount * factor) / factor;
+    
+        // Format the amount
+        let strAmount = amount.toLocaleString(undefined, {
+            minimumFractionDigits: precision,
+            maximumFractionDigits: precision,
+            useGrouping: !!thousandsSeparator
+        });
+    
+        // Replace default decimal separator with custom one
+        if (decimalsSeparator !== '.') {
+            strAmount = strAmount.replace('.', decimalsSeparator);
+        }
+    
+        // Replace default thousands separator with custom one
+        if (thousandsSeparator !== ',') {
+            strAmount = strAmount.replace(/,/g, thousandsSeparator);
+        }
+    
+        return strAmount;
+    }
+
+
+    function dateFormat(paramDate = '') {
+        if (paramDate === '') return '';
+        const separate = paramDate.split(" ");
+        let time = '';
+        if (separate[1]) {
+            time = ` <span class='time_design'>${separate[1]}</span>`;
+        }
+        const date = new Date(separate[0]);
+        if (isNaN(date)) return ''; 
+        let formattedDate;
+        switch (op_date_format) {
+            case 'd/m/Y':
+                formattedDate = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+                break;
+            case 'm/d/Y':
+                formattedDate = `${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}/${date.getFullYear()}`;
+                break;
+            case 'Y/m/d':
+                formattedDate = `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
+                break;
+            default:
+                formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        }
+        return formattedDate + time;
+    }
+
+
+
+    function searchPlaceHolderSetter(){
+        let generic_name_search = $('input[name="generic_serch_option_checkbox"]:checked').val();
+        if(generic_name_search == 'Yes'){
+            $('#search').attr('placeholder', 'Search by generic name');
         }else{
-            $('.sidebar-mini').removeClass('sidebar-collapse')
+            $('#search').attr('placeholder', 'Search by name, code, category');
+        }
+    }
+    searchPlaceHolderSetter();
+    
+
+
+    // Menu Access Check
+    $(".menu_assign_class").each(function() {
+        let this_access = $(this).attr("data-access");
+        if((window.menu_objects).indexOf(this_access) > -1) {
+    
+        } else {
+            if(this_access!=undefined){
+                $(this).remove();
+            }
         }
     });
+
+    $(document).on('click', '.have_sub_menu', function(){
+        $('.have_sub_menu').removeClass('submenu_active')
+        $(this).addClass('submenu_active')
+    });
+
     // Left Sidebar Menu End
     function checkItemShortType(param){
         if (param == 'General_Product'){
@@ -272,14 +472,18 @@ $(function () {
 
     // Code optimize by Azhar ** Final **
     $(document).on('click', '.smtp_enable_status', function(){
-        if(smtp_enable_status != '1'){
-            Swal.fire({
-                title: warning + "!",
-                text: 'Your SMTP is not configured yet!, configure first.',
-                confirmButtonColor: "#8b5cf6",
-                confirmButtonText: ok,
-                showCancelButton: false,
-            });
+        if(is_offline_system == '1'){
+            if(smtp_enable_status != '1'){
+                Swal.fire({
+                    title: warning + "!",
+                    text: 'Your SMTP is not configured yet!, configure first.',
+                    confirmButtonColor: "#8b5cf6",
+                    confirmButtonText: ok,
+                    showCancelButton: false,
+                });
+                $(this).prop('checked', false);
+            }
+        }else{
             $(this).prop('checked', false);
         }
     });
@@ -305,6 +509,11 @@ $(function () {
     // Code optimize by Azhar ** Final **
     function searchItemAndConstructGallery(searchedValue, sort_id='',is_main_search='') {
         let resultObject = search(searchedValue, window.items,sort_id,is_main_search);
+        return resultObject;
+    }
+
+    function searchItemAndConstructGalleryAlternative(searchedValue, sort_id='',is_main_search='') {
+        let resultObject = searchAlternative(searchedValue, window.items,sort_id,is_main_search);
         return resultObject;
     }
 
@@ -363,48 +572,50 @@ $(function () {
 
     // Code optimize by Azhar ** Final **
     function put_cart_content() {
-        let total_items_in_cart = Number($("#total_items_in_cart_with_quantity").html());
-        let sub_total = parseFloat($("#sub_total_show").html()).toFixed(op_precision);
-        let discounted_sub_total_amount = parseFloat($("#discounted_sub_total_amount").html()).toFixed(op_precision);
-        let total_vat = parseFloat($("#show_vat_modal").text()).toFixed(op_precision);
-        let total_payable = parseFloat($("#total_payable").html()).toFixed(op_precision);
-        let total_discount_amount = parseFloat($("#all_items_discount").html()).toFixed(op_precision);
-        let delivery_charge = Number($("#delivery_charge").val()).toFixed(op_precision);
-        let sub_total_discount = Number($("#sub_total_discount").html()).toFixed(op_precision);
-        let sub_total_discount_value = $("#show_discount_amount").html();
+        let total_items_in_cart = Number($("#total_items_in_cart_with_quantity").text());
+        let sub_total = parseFloat($("#sub_total_show").text());
+        let discounted_sub_total_amount = parseFloat($("#discounted_sub_total_amount").text());
+        let total_vat = parseFloat($("#show_vat_modal").text());
+        let total_payable = parseFloat($("#total_payable").text());
+        let total_discount_amount = parseFloat($("#all_items_discount").text());
+        let delivery_charge = Number($("#show_charge_amount").text());
+        let sub_total_discount = Number($("#sub_total_discount").text());
+        let sub_total_discount_value = $("#show_discount_amount").text();
+
         let order = {
-            total_items_in_cart: total_items_in_cart,
-            sub_total: sub_total,
-            total_vat: total_vat,
-            total_payable: total_payable,
-            total_discount_amount: total_discount_amount,
-            actual_discount: discounted_sub_total_amount,
-            sub_total_discount: sub_total_discount,
-            delivery_charge: delivery_charge,
-            sub_total_discount_value: sub_total_discount_value,
+            total_items_in_cart: getAmtPCustom(total_items_in_cart),
+            sub_total: getAmtPCustom(sub_total),
+            total_vat: getAmtPCustom(total_vat),
+            total_payable: getAmtPCustom(total_payable),
+            total_discount_amount: getAmtPCustom(total_discount_amount),
+            actual_discount: getAmtPCustom(discounted_sub_total_amount),
+            sub_total_discount: getAmtPCustom(sub_total_discount),
+            delivery_charge: getAmtPCustom(delivery_charge),
+            sub_total_discount_value: getAmtPCustom(sub_total_discount_value),
             items: []
         };
+
         if ($(".single_order").length > 0) {
             $(".single_order").each(function (i, obj) {
                 let item_id = Number($(this).attr("id").substr(15));
                 let item_name = $(this).find(".first_column").text();
-                let item_vat = $("#item_vat_percentage_table" + item_id).html() || '';
+                let item_vat = $("#item_vat_percentage_table" + item_id).text() || '';
                 let item_note = $(".item_modal_description_table_" + item_id).text() || '';
-                let item_unit_price = $("#item_price_table_" + item_id).html() || '';
-                let item_quantity = $("#item_quantity_table_" + item_id).html() || '';
-                let item_total_price_table = $("#item_total_price_table_" + item_id).html() || '';
-                let item_g_w = $("#item_g_w_table_" + item_id).html() || '';
-                let discount = $("#percentage_table_" + item_id).val() || '';
+                let item_unit_price = $("#item_price_table_" + item_id).text() || '';
+                let item_quantity = $("#item_quantity_table_" + item_id).text() || '';
+                let item_total_price_table = $("#item_total_price_table_" + item_id).text() || '';
+                let item_g_w = $("#item_g_w_table_" + item_id).text() || '';
+                let discount = $("#percentage_table_" + item_id).text() || '';
                 let item = {
                     item_id: $.trim(item_id),
                     item_name: $.trim(item_name),
                     item_note: $.trim(item_note),
                     item_g_w: $.trim(item_g_w),
-                    item_total_price_table: $.trim(item_total_price_table),
-                    discount: $.trim(discount),
-                    item_vat: $.trim(item_vat),
-                    item_unit_price: $.trim(item_unit_price),
-                    item_quantity: $.trim(item_quantity)
+                    item_total_price_table: getAmtPCustom($.trim(item_total_price_table)),
+                    discount: getAmtPCustom($.trim(discount)),
+                    item_vat: getAmtPCustom($.trim(item_vat)),
+                    item_unit_price: getAmtPCustom($.trim(item_unit_price)),
+                    item_quantity: getAmtPCustom($.trim(item_quantity))
                 };
                 order.items.push(item);
             });
@@ -422,7 +633,6 @@ $(function () {
         });
     }
     // Code optimize by Azhar ** Final **
-
     $(document).on('keyup', '#search_barcode', function(e){
         let this_value = $(this).val();
         let key = e.which;
@@ -484,33 +694,35 @@ $(function () {
 
     // Code optimize by Azhar ** Final **
     $(document).on('click', '#edit_customer', function () {
-        $.ajax({
-            url: base_url + "Master/checkAccess",
-            method: "GET",
-            async: false,
-            dataType: 'json',
-            data: { controller: "147", function: "edit" },
-            success: function (response) {
-                if (response == false) {
-                    Swal.fire({
-                        title: warning+" !",
-                        text: no_permission_for_this_module,
-                        showDenyButton: false,
-                        showCancelButton: false,
-                        confirmButtonText: ok,
-                    });
-                } else {
-                    let selected_customer_id = $('#walk_in_customer').val();
-                    let selected_customer_name = $('option:selected', '#walk_in_customer').attr('data-customer-name');
-                    if (selected_customer_name == 'Walk-in Customer') {
-                        toastr['error']((edit_warning), '');
+        if(is_offline_system == '1'){
+            $.ajax({
+                url: base_url + "Master/checkAccess",
+                method: "GET",
+                async: false,
+                dataType: 'json',
+                data: { controller: "147", function: "edit" },
+                success: function (response) {
+                    if (response == false) {
+                        Swal.fire({
+                            title: warning+" !",
+                            text: no_permission_for_this_module,
+                            showDenyButton: false,
+                            showCancelButton: false,
+                            confirmButtonText: ok,
+                        });
                     } else {
-                        $('#add_or_edit_text').html('Edit Customer');
-                        getCustomerForEdit(selected_customer_id);
+                        let selected_customer_id = $('#walk_in_customer').val();
+                        let selected_customer_name = $('option:selected', '#walk_in_customer').attr('data-customer-name');
+                        if (selected_customer_name == 'Walk-in Customer') {
+                            toastr['error']((edit_warning), '');
+                        } else {
+                            $('#add_or_edit_text').html('Edit Customer');
+                            getCustomerForEdit(selected_customer_id);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     });
 
 
@@ -709,245 +921,556 @@ $(function () {
         $('.single_hold_sale').attr('data-selected', 'unselected');
         $(this).css('background-color', '#cfcfcf');
         $(this).attr('data-selected', 'selected');
-        $.ajax({
-            url: base_url + "Sale/get_single_hold_info_by_ajax",
-            method: "POST",
-            data: {
-                hold_id: hold_id,
-                csrf_offpos: csrf_value_
-            },
-            success: function (response) {
-                response = JSON.parse(response);
-                let totalQty = 0;
-                $('#hold_customer_id').html(response.customer_id);
-                $('#hold_customer_name').html(response.customer_name);
-                let draw_table_for_hold_order = '';
-                for (let key in response.items) {
-                    let this_item = response.items[key];
-                    totalQty+=Number(this_item.qty);
-                    let discount_value = (this_item.menu_discount_value != "") ? this_item.menu_discount_value : Number(0).toFixed(op_precision);
-                    
-
-                    let expiry_imei_serial = '';
-                    if((this_item.item_type == 'IMEI_Product' || this_item.item_type == 'Serial_Product' || this_item.item_type == 'Medicine_Product') && this_item.expiry_imei_serial){
-                        expiry_imei_serial = `<span class="recent_imei_serial_note" id="expiry_imei_serial">${checkItemShortType(this_item.item_type)}: <span class="expiry_imei_serial_${this_item.food_menu_id}">${$.trim(this_item.expiry_imei_serial)}</span></span>`;
-                    }else{
-                        expiry_imei_serial = '';
-                    }
-
-                    draw_table_for_hold_order += `
-                    <div data-variation-parent="${this_item.parent_id}" class="single_item_modifier" id="hold_order_for_item_${this_item.food_menu_id}">
-                        <div class="first_portion">
-                            <span class="item_vat_hold d-none" id="hold_item_vat_percentage_table${this_item.food_menu_id}">${this_item.menu_vat_percentage}</span>
-                            <span class="item_discount_hold d-none" id="hold_item_discount_table${this_item.food_menu_id}">${this_item.discount_amount}</span>
-                            <span class="item_price_without_discount_hold d-none" id="hold_item_price_without_discount_${this_item.food_menu_id}">${this_item.menu_price_without_discount}</span>
-                            <div class="single_order_column_hold first_column column">
-                                <span id="hold_item_name_table_${this_item.food_menu_id}">${ (this_item.parent_name ? this_item.parent_name + ' ' : '') + this_item.item_name +'('+ this_item.code +')'}</span>
-                            </div>
-                            <div class="single_order_column_hold second_column column">
-                                <span id="hold_item_price_table_${this_item.food_menu_id}">${parseFloat(this_item.menu_unit_price).toFixed(op_precision)}</span>
-                            </div>
-                            <div class="single_order_column_hold third_column column">
-                                <span id="hold_item_quantity_table_${this_item.food_menu_id}">${this_item.qty}</span>
-                            </div>
-                            <div class="single_order_column_hold forth_column column">
-                                <span class="hold_special_textbox" id="hold_percentage_table_${this_item.food_menu_id}">${discount_value}</span>
-                            </div>
-                            <div class="single_order_column_hold fifth_column column">
-                                <span id="hold_item_total_price_table_${this_item.food_menu_id}">${parseFloat(this_item.menu_price_with_discount).toFixed(op_precision)}</span>
-                            </div>
-                        </div>
-                    </div>${expiry_imei_serial}`;
-
-                    if(this_item.promo_item_object){
-                        let jsonObj = jQuery.parseJSON(this_item.promo_item_object);
-                        draw_table_for_hold_order+=`<div class="single_item_modifier" id="hold_order_for_item_${this_item.food_menu_id}">
-                                <div class="first_portion">
-                                    <span class="item_vat_hold d-none" id="hold_item_vat_percentage_table${this_item.food_menu_id}">0</span>
-                                    <span class="item_discount_hold d-none" id="hold_item_discount_table${this_item.food_menu_id}">0</span>
-                                    <span class="item_price_without_discount_hold d-none" id="hold_item_price_without_discount_${this_item.food_menu_id}">0</span>
-                                    <div class="single_order_column_hold first_column column">
-                                        <span id="hold_item_name_table_${this_item.food_menu_id}">${jsonObj.promo_item_name} <small class="font-style-i">Frre Item</small></span>
-                                    </div>
-                                    <div class="single_order_column_hold second_column column"> 
-                                        <span id="hold_item_price_table_${this_item.food_menu_id}">${Number(0).toFixed(op_precision)}</span>
-                                    </div>
-                                    <div class="single_order_column_hold third_column column">
-                                        <span id="hold_item_quantity_table_${this_item.food_menu_id}">${jsonObj.promo_item_qty}</span>
-                                    </div>
-                                    <div class="single_order_column_hold forth_column column">
-                                        <span class="hold_special_textbox" id="hold_percentage_table_${this_item.food_menu_id}">${Number(0)}</span>
-                                    </div>
-                                    <div class="single_order_column_hold fifth_column column"> 
-                                        <span id="hold_item_total_price_table_${this_item.food_menu_id}">${Number(0).toFixed(op_precision)}</span>
-                                    </div>
+        if(is_offline_system == '1'){
+            $.ajax({
+                url: base_url + "Sale/get_single_hold_info_by_ajax",
+                method: "POST",
+                data: {
+                    hold_id: hold_id,
+                    csrf_offpos: csrf_value_
+                },
+                success: function (response) {
+                    response = JSON.parse(response);
+                    let totalQty = 0;
+                    $('#hold_customer_id').html(response.customer_id);
+                    $('#hold_customer_name').html(response.customer_name);
+                    let draw_table_for_hold_order = '';
+                    for (let key in response.items) {
+                        let this_item = response.items[key];
+                        let comboHtml = '';
+    
+                        if(this_item.item_type == 'Combo_Product'){
+                            $.ajax({
+                                type: "POST",
+                                url: base_url+"Sale/getAllHoldComboItems",
+                                async: false,
+                                data: {
+                                    hold_item_id: this_item.id
+                                },
+                                dataType: "JSON",
+                                success: function (response) {
+                                    if(this_item.item_type == 'Combo_Product'){
+                                        let comboName = 0;
+                                        let comboQty = 0;
+                                        let comboUnitPrice = 0;
+                                        let combSubTotal = 0;
+                                        let combChildId = '';
+                                        let comboType = '';
+                                        let combParentId = '';
+                                        let combSellerId = '';
+                                        let combIFSale = '';
+                                        let combItemShownInInvoice = '';
+                                        $.each(response.data, function (ind, val) { 
+                                            comboName = val.item_name;
+                                            comboType = val.combo_item_type;
+                                            comboQty = val.combo_item_qty;
+                                            comboUnitPrice = val.combo_item_price;
+                                            combSubTotal = parseFloat(parseFloat(val.combo_item_qty) * parseFloat(val.combo_item_price)).toFixed(op_precision);
+                                            combChildId = val.combo_item_id;
+                                            combParentId = this_item.food_menu_id;
+                                            combSellerId = val.combo_item_seller_id;
+                                            combIFSale = true;
+                                            combItemShownInInvoice = val.show_in_invoice == 'Yes' ? true : false;
+                                            if(combIFSale){
+                                                comboHtml +=`<div class="combo_cart_item combo_item_div_${combChildId}"  data-is_combo="Yes">
+                                                    <div data-id="${combChildId}" class="customer_panel single_order_column first_column">
+                                                        
+                                                        <span id="combo_item_name_table_${combChildId}">${comboName}</span>
+                                                        <span id="combo_item_type_table_${combChildId}">${comboType}</span>
+                                                        <span class="d-none" id="combo_seller_table_${combChildId}">${combSellerId}</span>
+                                                        <span class="d-none" id="combo_inv_show_table_${combChildId}">${combItemShownInInvoice ? 'Yes' : 'No'}</span>
+                                                        <span class="d-none" id="combo_ifsale_table_${combChildId}">${combIFSale ? 'Yes' : 'No'}</span>
+                                                    </div>
+                                                    <div class="single_order_column second_column text-center"> 
+                                                        <span id="combo_item_price_table_${combChildId}">${parseFloat(comboUnitPrice).toFixed(op_precision)}</span>
+                                                    </div>
+                                                    <div class="single_order_column third_column text-center">
+                                                        <span class="4_cp_qty_${combChildId} qty_item_custom cart_quantity" id="combo_item_quantity_table_${combChildId}">${parseFloat(comboQty)}</span> 
+                                                    </div>
+                                                    <div class="single_order_column forth_column text-center">
+                                                        <span class="hold_special_textbox" id="hold_percentage_table_${combChildId}">${parseFloat(0).toFixed(op_precision)}</span>
+                                                    </div>
+                                                    <div class="single_order_column fifth_column text-right"> 
+                                                        <span id="combo_item_total_price_table_${combChildId}">${parseFloat(combSubTotal).toFixed(op_precision)}</span>
+                                                    </div>
+                                                </div>`;
+                                            }
+                                        });
+                                    }
+                                    
+                                }
+                            });
+                        }
+                        totalQty+=Number(this_item.qty);
+                        let discount_value = (this_item.menu_discount_value != "") ? this_item.menu_discount_value : Number(0).toFixed(op_precision);
+                        let expiry_imei_serial = '';
+                        if((this_item.item_type == 'IMEI_Product' || this_item.item_type == 'Serial_Product' || this_item.item_type == 'Medicine_Product') && this_item.expiry_imei_serial){
+                            expiry_imei_serial = `<span class="recent_imei_serial_note" id="expiry_imei_serial">${checkItemShortType(this_item.item_type)}: <span class="expiry_imei_serial_${this_item.food_menu_id}">${$.trim(this_item.expiry_imei_serial)}</span></span>`;
+                        }else{
+                            expiry_imei_serial = '';
+                        }
+                        draw_table_for_hold_order += `
+                        <div data-variation-parent="${this_item.parent_id}" class="single_item_modifier" id="hold_order_for_item_${this_item.food_menu_id}">
+                            <div class="first_portion">
+                                <span class="item_vat_hold d-none" id="hold_item_vat_percentage_table${this_item.food_menu_id}">${this_item.menu_vat_percentage}</span>
+                                <span class="item_discount_hold d-none" id="hold_item_discount_table${this_item.food_menu_id}">${this_item.discount_amount}</span>
+                                <span class="item_price_without_discount_hold d-none" id="hold_item_price_without_discount_${this_item.food_menu_id}">${this_item.menu_price_without_discount}</span>
+                                <div class="single_order_column_hold first_column column">
+                                    <span id="hold_item_name_table_${this_item.food_menu_id}">${ (this_item.parent_name ? this_item.parent_name + ' ' : '') + this_item.item_name +'('+ this_item.code +')'}</span>
                                 </div>
-                            </div>`;
+                                <div class="single_order_column_hold second_column column">
+                                    <span id="hold_item_price_table_${this_item.food_menu_id}">${parseFloat(this_item.menu_unit_price).toFixed(op_precision)}</span>
+                                </div>
+                                <div class="single_order_column_hold third_column column">
+                                    <span id="hold_item_quantity_table_${this_item.food_menu_id}">${this_item.qty}</span>
+                                </div>
+                                <div class="single_order_column_hold forth_column column">
+                                    <span class="hold_special_textbox" id="hold_percentage_table_${this_item.food_menu_id}">${discount_value}</span>
+                                </div>
+                                <div class="single_order_column_hold fifth_column column">
+                                    <span id="hold_item_total_price_table_${this_item.food_menu_id}">${parseFloat(this_item.menu_price_with_discount).toFixed(op_precision)}</span>
+                                </div>
+                            </div>
+                            ${expiry_imei_serial}
+                            ${comboHtml}
+                        </div>`;
+                        if(this_item.promo_item_object){
+                            let jsonObj = jQuery.parseJSON(this_item.promo_item_object);
+                            draw_table_for_hold_order+=`<div class="single_item_modifier" id="hold_order_for_item_${this_item.food_menu_id}">
+                                    <div class="first_portion">
+                                        <span class="item_vat_hold d-none" id="hold_item_vat_percentage_table${this_item.food_menu_id}">0</span>
+                                        <span class="item_discount_hold d-none" id="hold_item_discount_table${this_item.food_menu_id}">0</span>
+                                        <span class="item_price_without_discount_hold d-none" id="hold_item_price_without_discount_${this_item.food_menu_id}">0</span>
+                                        <div class="single_order_column_hold first_column column">
+                                            <span id="hold_item_name_table_${this_item.food_menu_id}">${jsonObj.promo_item_name} <small class="font-style-i">Frre Item</small></span>
+                                        </div>
+                                        <div class="single_order_column_hold second_column column"> 
+                                            <span id="hold_item_price_table_${this_item.food_menu_id}">${Number(0).toFixed(op_precision)}</span>
+                                        </div>
+                                        <div class="single_order_column_hold third_column column">
+                                            <span id="hold_item_quantity_table_${this_item.food_menu_id}">${jsonObj.promo_item_qty}</span>
+                                        </div>
+                                        <div class="single_order_column_hold forth_column column">
+                                            <span class="hold_special_textbox" id="hold_percentage_table_${this_item.food_menu_id}">${Number(0)}</span>
+                                        </div>
+                                        <div class="single_order_column_hold fifth_column column"> 
+                                            <span id="hold_item_total_price_table_${this_item.food_menu_id}">${Number(0).toFixed(op_precision)}</span>
+                                        </div>
+                                    </div>
+                                </div>`;
+                        }
+                        draw_table_for_hold_order += '</div>';
                     }
-                    draw_table_for_hold_order += '</div>';
+                    $(".item_modifier_details .modifier_item_details_holder").empty();
+                    $(".item_modifier_details .modifier_item_details_holder").prepend(draw_table_for_hold_order);
+                    $('#total_items_in_cart_hold').text(response.total_items);
+                    $('#hold_all_tax_amount').text(Number(response.vat).toFixed(op_precision));
+                    $('#total_items_qty_in_cart_hold').text(totalQty);
+                    let sub_total_discount_hold = (response.sub_total_discount_value != "") ? Number(response.sub_total_discount_value).toFixed(op_precision) : Number(0).toFixed(op_precision);
+                    $("#sub_total_show_hold").text(parseFloat(response.sub_total).toFixed(op_precision));
+                    $("#sub_total_hold").text(Number(response.sub_total).toFixed(op_precision));
+                    $("#total_item_discount_hold").text(Number(response.total_item_discount_amount).toFixed(op_precision));
+                    $("#discounted_sub_total_amount_hold").text(Number(response.sub_total_discount_amount).toFixed(op_precision));
+                    $("#sub_total_discount_hold").text(Number(sub_total_discount_hold).toFixed(op_precision));
+                    let total_vat_section_to_show = '';
+                    $.each(JSON.parse(response.sale_vat_objects), function (key, value) {
+                        total_vat_section_to_show += `<span class="tax_field_order_details" id="tax_field_order_details_${value.tax_field_id}">${value.tax_field_type}</span> 
+                            <span class="tax_field_amount_order_details" id="tax_field_amount_order_details_${value.tax_field_id}">${parseFloat(value.tax_field_amount).toFixed(op_precision)}</span><br>`;
+                    });
+                    $("#all_items_discount_hold").text(parseFloat(response.total_discount_amount).toFixed(op_precision));
+                    $("#delivery_charge_hold").text(parseFloat(response.delivery_charge).toFixed(op_precision));
+                    $("#total_payable_hold").text(parseFloat(response.total_payable).toFixed(op_precision));
                 }
-                $(".item_modifier_details .modifier_item_details_holder").empty();
-                $(".item_modifier_details .modifier_item_details_holder").prepend(draw_table_for_hold_order);
-                $('#total_items_in_cart_hold').text(response.total_items);
-                $('#hold_all_tax_amount').text(Number(response.vat).toFixed(op_precision));
-                $('#total_items_qty_in_cart_hold').text(totalQty);
-                let sub_total_discount_hold = (response.sub_total_discount_value != "") ? Number(response.sub_total_discount_value).toFixed(op_precision) : Number(0).toFixed(op_precision);
-                $("#sub_total_show_hold").text(parseFloat(response.sub_total).toFixed(op_precision));
-                $("#sub_total_hold").text(Number(response.sub_total).toFixed(op_precision));
-                $("#total_item_discount_hold").text(Number(response.total_item_discount_amount).toFixed(op_precision));
-                $("#discounted_sub_total_amount_hold").text(Number(response.sub_total_discount_amount).toFixed(op_precision));
-                $("#sub_total_discount_hold").text(Number(sub_total_discount_hold).toFixed(op_precision));
-                let total_vat_section_to_show = '';
-                $.each(JSON.parse(response.sale_vat_objects), function (key, value) {
-                    total_vat_section_to_show += `<span class="tax_field_order_details" id="tax_field_order_details_${value.tax_field_id}">${value.tax_field_type}</span> 
-                        <span class="tax_field_amount_order_details" id="tax_field_amount_order_details_${value.tax_field_id}">${parseFloat(value.tax_field_amount).toFixed(op_precision)}</span><br>`;
-                });
-                $("#all_items_discount_hold").text(parseFloat(response.total_discount_amount).toFixed(op_precision));
-                $("#delivery_charge_hold").text(parseFloat(response.delivery_charge).toFixed(op_precision));
-                $("#total_payable_hold").text(parseFloat(response.total_payable).toFixed(op_precision));
-            }
-        });
+            });
+        }else{
+            let db;
+            const request = indexedDB.open("off_pos_3", 3);
+            request.onerror = function(event) {
+                console.error("Database error: " + event.target.error);
+            };
+            request.onsuccess = function(event) {
+                db = event.target.result;
+                const transaction = db.transaction(["draft_sales"], "readonly");
+                const objectStore = transaction.objectStore("draft_sales");
+                const getRequest = objectStore.get(parseInt(hold_id));
+                getRequest.onerror = function(event) {
+                    console.log("Error fetching hold sale:", event.target.error);
+                };
+                getRequest.onsuccess = function(event) {
+                    const holdOrder = event.target.result;
+                    if (holdOrder) {
+                        let response = holdOrder.order;
+                        let draw_table_for_hold_order = '';
+                        let totalQty = 0;
+                        let expiry_imei_serial = '';
+                        for (let key in response.items) {
+                            let this_item = response.items[key];
+                            totalQty += Number(this_item.item_quantity);
+                            let discount_value = (this_item.item_discount != "") ? this_item.item_discount : Number(0).toFixed(op_precision);
+                            if ((this_item.item_type == 'IMEI_Product' || this_item.item_type == 'Serial_Product' || this_item.item_type == 'Medicine_Product') && this_item.expiry_imei_serial) {
+                                expiry_imei_serial = `<span class="recent_imei_serial_note" id="expiry_imei_serial">${checkItemShortType(this_item.item_type)}: <span class="expiry_imei_serial_${this_item.item_id}">${$.trim(this_item.expiry_imei_serial)}</span></span>`;
+                            } else {
+                                expiry_imei_serial = '';
+                            }
+                            draw_table_for_hold_order += `
+                                <div class="single_item_modifier" id="hold_order_for_item_${this_item.item_id}">
+                                    <div class="first_portion">
+                                        <span class="item_vat_hold d-none" id="hold_item_vat_percentage_table${this_item.item_id}">${this_item.menu_taxes}</span>
+                                        <span class="item_type d-none" id="item_type_table${this_item.item_id}">${this_item.item_type}</span>
+                                        <span class="item_discount_hold d-none" id="hold_item_discount_table${this_item.item_id}">${this_item.item_discount_amount}</span>
+                                        <span class="item_price_without_discount_hold d-none" id="hold_item_price_without_discount_${this_item.item_id}">${this_item.item_price_without_discount}</span>
+                                        <div class="single_order_column_hold first_column column">
+                                            <span id="hold_item_name_table_${this_item.item_id}">${this_item.item_name}</span>
+                                            ${expiry_imei_serial}
+                                        </div>
+                                        <div class="single_order_column_hold second_column column">
+                                            <span id="hold_item_price_table_${this_item.item_id}">${this_item.item_unit_price}</span>
+                                        </div>
+                                        <div class="single_order_column_hold third_column column">
+                                            <span id="hold_item_quantity_table_${this_item.item_id}">${this_item.item_quantity}</span>
+                                        </div>
+                                        <div class="single_order_column_hold forth_column column">
+                                            <span class="hold_special_textbox" id="hold_percentage_table_${this_item.item_id}">${discount_value}</span>
+                                        </div>
+                                        <div class="single_order_column_hold fifth_column column">
+                                            <span id="hold_item_total_price_table_${this_item.item_id}">${this_item.item_price_with_discount}</span>
+                                        </div>
+                                    </div>
+                                    <div class="second_portion">
+                                        <span id="hold_item_note_table_${this_item.item_id}">${this_item.menu_note}</span>
+                                    </div>
+                                </div>`;
+                            if (this_item.is_promo_item_exist) {
+                                draw_table_for_hold_order += `<div class="single_item_modifier" id="hold_order_for_item_${this_item.item_id}">
+                                        <div class="first_portion">
+                                            <span class="item_vat_hold d-none" id="hold_item_vat_percentage_table${this_item.item_id}">0</span>
+                                            <span class="item_discount_hold d-none" id="hold_item_discount_table${this_item.item_id}">0</span>
+                                            <span class="item_price_without_discount_hold d-none" id="hold_item_price_without_discount_${this_item.item_id}">0</span>
+                                            <div class="single_order_column_hold first_column column">
+                                                <span id="hold_item_name_table_${this_item.item_id}">${this_item.freeItemName} <small class="font-style-i">Free Item</small></span>
+                                            </div>
+                                            <div class="single_order_column_hold second_column column"> 
+                                                <span id="hold_item_price_table_${this_item.item_id}">${Number(0).toFixed(op_precision)}</span>
+                                            </div>
+                                            <div class="single_order_column_hold third_column column">
+                                                <span id="hold_item_quantity_table_${this_item.item_id}">${this_item.freeItemGetQty}</span>
+                                            </div>
+                                            <div class="single_order_column_hold forth_column column">
+                                                <span class="hold_special_textbox" id="hold_percentage_table_${this_item.item_id}">${Number(0)}</span>
+                                            </div>
+                                            <div class="single_order_column_hold fifth_column column"> 
+                                                <span id="hold_item_total_price_table_${this_item.item_id}">${Number(0).toFixed(op_precision)}</span>
+                                            </div>
+                                        </div>
+                                    </div>`;
+                            }
+                        }
+                        $(".item_modifier_details .modifier_item_details_holder").empty();
+                        $(".item_modifier_details .modifier_item_details_holder").prepend(draw_table_for_hold_order);
+                        $('#total_items_in_cart_hold').text(response.total_items_in_cart);
+                        $('#hold_all_tax_amount').text(Number(response.total_vat).toFixed(op_precision));
+                        $('#total_items_qty_in_cart_hold').text(totalQty);
+                        let customer_phone = (response.customer_phone_number == null || response.customer_phone_number == 'null' || response.customer_phone_number == "") ? '' : response.customer_phone_number;
+                        $('#hold_customer_name').text(`${response.customer_name} ${customer_phone != '' ? '(' + customer_phone + ')' : ''}` );
+                        let sub_total_discount_hold = (response.sub_total_discount_value != "") ? Number(response.sub_total_discount_value).toFixed(op_precision) : Number(0).toFixed(op_precision);
+                        $("#sub_total_show_hold").text(parseFloat(response.sub_total).toFixed(op_precision));
+                        $("#sub_total_hold").text(Number(response.sub_total).toFixed(op_precision));
+                        $("#total_item_discount_hold").text(Number(response.total_item_discount_amount).toFixed(op_precision));
+                        $("#discounted_sub_total_amount_hold").text(Number(response.sub_total_with_discount).toFixed(op_precision));
+                        $("#sub_total_discount_hold").text(Number(sub_total_discount_hold).toFixed(op_precision));
+                        let total_vat_section_to_show = '';
+                        $.each(response.sale_vat_objects, function (key, value) {
+                            total_vat_section_to_show += `<span class="tax_field_order_details" id="tax_field_order_details_${value.tax_field_id}">${value.tax_field_type}</span> 
+                                <span class="tax_field_amount_order_details" id="tax_field_amount_order_details_${value.tax_field_id}">${parseFloat(value.tax_field_amount).toFixed(op_precision)}</span><br>`;
+                        });
+                        $("#all_items_discount_hold").text(parseFloat(response.total_discount_amount).toFixed(op_precision));
+                        $("#delivery_charge_hold").text(parseFloat(response.delivery_charge).toFixed(op_precision));
+                        $("#total_payable_hold").text(parseFloat(response.total_payable).toFixed(op_precision));
+                    }
+                };
+            };
+        }
+        
     });
 
 
 
     // Code optimize by Azhar ** Final **
     $(document).on('click', '.single_last_ten_sale', function () {
-        let sale_id = $(this).attr('id').substr(9);
         $('.single_last_ten_sale').css('background-color', '#ffffff');
         $('.single_last_ten_sale').attr('data-selected', 'unselected');
-        $(this).css('background-color', '#cfcfcf');
         $(this).attr('data-selected', 'selected');
-        $.ajax({
-            url: base_url + "Sale/get_all_information_of_a_sale_ajax",
-            method: "POST",
-            data: {
-                sale_id: sale_id,
-                csrf_offpos: csrf_value_
-            },
-            success: function (response) {
-                response = JSON.parse(response);
-                let totalQty = 0;
-                $('#last_10_customer_id').html(response.customer_id);
-                $('#last_10_customer_name').html(`${response.customer_name}`);
-                $('#last_ten_customer_mobile').html(`${response.c_phone ? '(' + response.c_phone + ')' : ''}`);
-                $('#last_10_order_date_time').html(opDateFormat(response.date_time) + ' ' + response.order_time);
-                let draw_table_for_last_ten_sales_order = '';
-                for (let key in response.items) {
-                    let this_item = response.items[key];
-                    let is_free_text = '';
-                    if(this_item.is_promo_item == ''){
-                        is_free_text = `<small class="font-style-i">(Frre Item)</small>`;
-                    }else{
-                        is_free_text = '';
+        $(this).css('background-color', '#cfcfcf');
+        if(is_offline_system == '1'){
+            let sale_id = $(this).attr('id').substr(9);
+            $.ajax({
+                url: base_url + "Sale/get_all_information_of_a_sale_ajax",
+                method: "POST",
+                data: {
+                    sale_id: sale_id,
+                    csrf_offpos: csrf_value_
+                },
+                success: function (response) {
+                    response = JSON.parse(response);
+                    let totalQty = 0;
+                    $('#last_10_customer_id').html(response.customer_id);
+                    $('#last_10_customer_name').html(`${response.customer_name}`);
+                    $('#last_ten_customer_mobile').html(`${response.c_phone ? '(' + response.c_phone + ')' : ''}`);
+                    $('#last_10_order_date_time').html(opDateFormat(response.date_time) + ' ' + response.order_time);
+                    let draw_table_for_last_ten_sales_order = '';
+                    for (let key in response.items) {
+                        let this_item = response.items[key];
+                        let is_free_text = '';
+                        if(this_item.is_promo_item == ''){
+                            is_free_text = `<small class="font-style-i">(Frre Item)</small>`;
+                        }else{
+                            is_free_text = '';
+                        }
+                        totalQty+=Number(this_item.qty);
+                        let discount_value = (this_item.menu_discount_value != "") ? this_item.menu_discount_value : Number(0).toFixed(op_precision);
+                        let expiry_imei_serial = '';
+                        if((this_item.item_type == 'IMEI_Product' || this_item.item_type == 'Serial_Product' || this_item.item_type == 'Medicine_Product') && this_item.expiry_imei_serial){
+                            expiry_imei_serial = `<span class="recent_imei_serial_note" id="expiry_imei_serial">${checkItemShortType(this_item.item_type)}: <span class="expiry_imei_serial_${this_item.food_menu_id}">${$.trim(this_item.expiry_imei_serial)}</span></span>`;
+                        }else{
+                            expiry_imei_serial = '';
+                        }
+                        draw_table_for_last_ten_sales_order += `
+                            <div class="single_item_modifier" id="last_10_order_for_item_${this_item.food_menu_id}">
+                                <div class="first_portion">
+                                    <span class="item_vat_hold d-none" id="last_10_item_vat_percentage_table${this_item.food_menu_id}">${this_item.menu_taxes}</span>
+                                    <span class="item_type d-none" id="item_type_table${this_item.food_menu_id}">${this_item.item_type}</span>
+                                    <span class="item_discount_hold d-none" id="last_10_item_discount_table${this_item.food_menu_id}">${parseFloat(this_item.discount_amount).toFixed(op_precision)}</span>
+                                    <span class="item_price_without_discount_hold d-none" id="last_10_item_price_without_discount_${this_item.food_menu_id}">${parseFloat(this_item.menu_price_without_discount).toFixed(op_precision)}</span>
+                                    <div class="single_order_column_hold first_column column">
+                                        <span id="last_10_item_name_table_${this_item.food_menu_id}">${this_item.item_name +'('+ this_item.code +')'}  ${is_free_text}</span>
+                                    </div>
+                                    <div class="single_order_column_hold second_column column">
+                                        <span id="last_10_item_price_table_${this_item.food_menu_id}">${parseFloat(this_item.menu_unit_price).toFixed(op_precision)}</span>
+                                    </div>
+                                    <div class="single_order_column_hold third_column column">
+                                        <span id="last_10_item_quantity_table_${this_item.food_menu_id}">${this_item.qty}</span>
+                                    </div>
+                                    <div class="single_order_column_hold forth_column column">
+                                        <span class="hold_special_textbox" id="last_10_percentage_table_${this_item.food_menu_id}">${discount_value}</span>
+                                    </div>
+                                    <div class="single_order_column_hold fifth_column column">
+                                        <span id="last_10_item_total_price_table_${this_item.food_menu_id}">${parseFloat(this_item.menu_price_with_discount).toFixed(op_precision)}</span>
+                                    </div>
+                                </div>
+                                ${expiry_imei_serial}`;
+                                if (this_item.menu_note !== "") {
+                                    draw_table_for_last_ten_sales_order += `<span class="cart_item_modal_des_last_ten_sale item_modal_description_table_${this_item.food_menu_id}">${this_item.menu_note !== '' ? this_item.menu_note : ''}</span>`;
+                                }
+                        draw_table_for_last_ten_sales_order += `</div>`;
                     }
-                    totalQty+=Number(this_item.qty);
-                    let discount_value = (this_item.menu_discount_value != "") ? this_item.menu_discount_value : Number(0).toFixed(op_precision);
-                    let expiry_imei_serial = '';
-                    if((this_item.item_type == 'IMEI_Product' || this_item.item_type == 'Serial_Product' || this_item.item_type == 'Medicine_Product') && this_item.expiry_imei_serial){
-                        expiry_imei_serial = `<span class="recent_imei_serial_note" id="expiry_imei_serial">${checkItemShortType(this_item.item_type)}: <span class="expiry_imei_serial_${this_item.food_menu_id}">${$.trim(this_item.expiry_imei_serial)}</span></span>`;
-                    }else{
-                        expiry_imei_serial = '';
-                    }
-                    draw_table_for_last_ten_sales_order += `
-                        <div class="single_item_modifier" id="last_10_order_for_item_${this_item.food_menu_id}">
-                            <div class="first_portion">
-                                <span class="item_vat_hold d-none" id="last_10_item_vat_percentage_table${this_item.food_menu_id}">${this_item.menu_taxes}</span>
-                                <span class="item_type d-none" id="item_type_table${this_item.food_menu_id}">${this_item.item_type}</span>
-                                <span class="item_discount_hold d-none" id="last_10_item_discount_table${this_item.food_menu_id}">${parseFloat(this_item.discount_amount).toFixed(op_precision)}</span>
-                                <span class="item_price_without_discount_hold d-none" id="last_10_item_price_without_discount_${this_item.food_menu_id}">${parseFloat(this_item.menu_price_without_discount).toFixed(op_precision)}</span>
-                                <div class="single_order_column_hold first_column column">
-                                    <span id="last_10_item_name_table_${this_item.food_menu_id}">${this_item.item_name +'('+ this_item.code +')'}  ${is_free_text}</span>
-                                </div>
-                                <div class="single_order_column_hold second_column column">
-                                    <span id="last_10_item_price_table_${this_item.food_menu_id}">${parseFloat(this_item.menu_unit_price).toFixed(op_precision)}</span>
-                                </div>
-                                <div class="single_order_column_hold third_column column">
-                                    <span id="last_10_item_quantity_table_${this_item.food_menu_id}">${this_item.qty}</span>
-                                </div>
-                                <div class="single_order_column_hold forth_column column">
-                                    <span class="hold_special_textbox" id="last_10_percentage_table_${this_item.food_menu_id}">${discount_value}</span>
-                                </div>
-                                <div class="single_order_column_hold fifth_column column">
-                                    <span id="last_10_item_total_price_table_${this_item.food_menu_id}">${parseFloat(this_item.menu_price_with_discount).toFixed(op_precision)}</span>
-                                </div>
-                            </div>
-                            ${expiry_imei_serial}`;
-                            if (this_item.menu_note !== "") {
-                                draw_table_for_last_ten_sales_order += `<span class="cart_item_modal_des_last_ten_sale item_modal_description_table_${this_item.food_menu_id}">${this_item.menu_note !== '' ? this_item.menu_note : ''}</span>`;
-                            }
-                    draw_table_for_last_ten_sales_order += `</div>`;
+                    $(".item_modifier_details .modifier_item_details_holder").empty();
+                    $(".item_modifier_details .modifier_item_details_holder").prepend(draw_table_for_last_ten_sales_order);
+                    $('#total_items_in_cart_last_10').text(response.total_items);
+                    $('#last_10_order_invoice_no').text(response.sale_no);
+                    $('#total_items_qty_in_cart_last_10').text(totalQty);
+                    $("#sub_total_show_last_10").text(parseFloat(response.sub_total).toFixed(op_precision));
+                    $("#sub_total_last_10").text(parseFloat(response.sub_total).toFixed(op_precision));
+                    $("#total_item_discount_last_10").text(parseFloat(response.total_item_discount_amount).toFixed(op_precision));
+                    $("#discounted_sub_total_amount_last_10").text(parseFloat(response.sub_total_discount_amount).toFixed(op_precision));
+                    $("#sub_total_discount_last_10").text(parseFloat(response.sub_total_discount_amount).toFixed(op_precision));
+                    $("#all_items_vat_last_10").text(Number(response.vat).toFixed(op_precision));
+                    $("#all_items_discount_last_10").text(parseFloat(response.total_discount_amount).toFixed(op_precision));
+                    $("#delivery_charge_last_10").text(parseFloat(response.delivery_charge).toFixed(op_precision));
+                    $("#paid_amount_last_10").text(parseFloat(response.paid_amount).toFixed(op_precision));
+                    $("#due_amount_last_10").text(parseFloat(response.due_amount).toFixed(op_precision));
+                    $("#total_payable_last_10").text(parseFloat(response.total_payable).toFixed(op_precision));
                 }
-                $(".item_modifier_details .modifier_item_details_holder").empty();
-                $(".item_modifier_details .modifier_item_details_holder").prepend(draw_table_for_last_ten_sales_order);
-                $('#total_items_in_cart_last_10').text(response.total_items);
-                $('#last_10_order_invoice_no').text(response.sale_no);
-                $('#total_items_qty_in_cart_last_10').text(totalQty);
-                $("#sub_total_show_last_10").text(parseFloat(response.sub_total).toFixed(op_precision));
-                $("#sub_total_last_10").text(parseFloat(response.sub_total).toFixed(op_precision));
-                $("#total_item_discount_last_10").text(parseFloat(response.total_item_discount_amount).toFixed(op_precision));
-                $("#discounted_sub_total_amount_last_10").text(parseFloat(response.sub_total_discount_amount).toFixed(op_precision));
-                $("#sub_total_discount_last_10").text(parseFloat(response.sub_total_discount_amount).toFixed(op_precision));
-                $("#all_items_vat_last_10").text(Number(response.vat).toFixed(op_precision));
-                $("#all_items_discount_last_10").text(parseFloat(response.total_discount_amount).toFixed(op_precision));
-                $("#delivery_charge_last_10").text(parseFloat(response.delivery_charge).toFixed(op_precision));
-                $("#paid_amount_last_10").text(parseFloat(response.paid_amount).toFixed(op_precision));
-                $("#due_amount_last_10").text(parseFloat(response.due_amount).toFixed(op_precision));
-                $("#total_payable_last_10").text(parseFloat(response.total_payable).toFixed(op_precision));
-            }
-        });
+            });
+        }else{
+
+            let sale_no = $(this).find('.first_column').text();
+
+            let db;
+            const request = indexedDB.open("off_pos", 2);
+            request.onerror = function(event) {
+                console.error("Database error: " + event.target.error);
+            };
+            request.onsuccess = function(event) {
+                db = event.target.result;
+                const transaction = db.transaction(["sales"], "readonly");
+                const objectStore = transaction.objectStore("sales");
+                const getRequest = objectStore.getAll();
+                getRequest.onerror = function(event) {
+                    console.log("Error fetching Rcent sale:", event.target.error);
+                };
+                getRequest.onsuccess = function(event) {
+                    const recentSale = event.target.result;
+                    if (recentSale) {
+                        let find_this_item = '';
+                        recentSale.forEach(record => {
+                            if(record.sale_no == sale_no){
+                                find_this_item = record;
+                                return
+                            }
+                        });
+                        let single_item = JSON.parse(find_this_item.order);
+                        $('#last_10_customer_id').html(find_this_item.customer_id);
+                        $('#last_10_customer_name').html(`${find_this_item.customer_name}`);
+                        $('#last_ten_customer_mobile').html('');
+                        $('#last_10_order_date_time').html((find_this_item.sale_date) + ' ' + find_this_item.sale_time);
+                        let itemCount = 0;
+                        let totalQty = 0;
+                        let discount_value = '';
+                        let draw_table_for_last_ten_sales_order = '';
+                        let expiry_imei_serial = '';
+                        let is_free_text = '';
+                        
+                        single_item.items.forEach(function(this_item){
+                            itemCount++;
+                            if(this_item.is_promo_item == ''){
+                                is_free_text = `<small class="font-style-i">(Frre Item)</small>`;
+                            }else{
+                                is_free_text = '';
+                            }
+                            totalQty+=Number(this_item.item_quantity);
+                            discount_value = (this_item.item_discount != "") ? this_item.item_discount : Number(0).toFixed(op_precision);
+                            if((this_item.item_type == 'IMEI_Product' || this_item.item_type == 'Serial_Product' || this_item.item_type == 'Medicine_Product') && this_item.expiry_imei_serial){
+                                expiry_imei_serial = `<span class="recent_imei_serial_note" id="expiry_imei_serial">${checkItemShortType(this_item.item_type)}: <span class="expiry_imei_serial_${this_item.item_id}">${$.trim(this_item.expiry_imei_serial)}</span></span>`;
+                            }else{
+                                expiry_imei_serial = '';
+                            }
+                            draw_table_for_last_ten_sales_order += `
+                                <div class="single_item_modifier" id="last_10_order_for_item_${this_item.item_id}">
+                                    <div class="first_portion">
+                                        <span class="item_vat_hold d-none" id="last_10_item_vat_percentage_table${this_item.item_id}">${this_item.item_vat}</span>
+                                        <span class="item_type d-none" id="item_type_table${this_item.item_id}">${this_item.item_type}</span>
+                                        <span class="item_discount_hold d-none" id="last_10_item_discount_table${this_item.item_id}">${parseFloat(this_item.item_discount_amount).toFixed(op_precision)}</span>
+                                        <span class="item_price_without_discount_hold d-none" id="last_10_item_price_without_discount_${this_item.item_id}">${parseFloat(this_item.item_price_without_discount).toFixed(op_precision)}</span>
+                                        <div class="single_order_column_hold first_column column">
+                                            <span id="last_10_item_name_table_${this_item.item_id}">${this_item.item_name}  ${is_free_text}</span>
+                                        </div>
+                                        <div class="single_order_column_hold second_column column">
+                                            <span id="last_10_item_price_table_${this_item.item_id}">${parseFloat(this_item.is_promo_item == '' ? 0 : this_item.item_unit_price).toFixed(op_precision)}</span>
+                                        </div>
+                                        <div class="single_order_column_hold third_column column">
+                                            <span id="last_10_item_quantity_table_${this_item.item_id}">${this_item.item_quantity}</span>
+                                        </div>
+                                        <div class="single_order_column_hold forth_column column">
+                                            <span class="hold_special_textbox" id="last_10_percentage_table_${this_item.item_id}">${discount_value}</span>
+                                        </div>
+                                        <div class="single_order_column_hold fifth_column column">
+                                            <span id="last_10_item_total_price_table_${this_item.item_id}">${parseFloat(this_item.is_promo_item == '' ? 0 : this_item.item_price_with_discount).toFixed(op_precision)}</span>
+                                        </div>
+                                    </div>
+                                    ${expiry_imei_serial}`;
+                                    if (this_item.item_description !== "") {
+                                        draw_table_for_last_ten_sales_order += `<span class="cart_item_modal_des_last_ten_sale item_modal_description_table_${this_item.item_id}">${this_item.item_description !== '' ? this_item.item_description : ''}</span>`;
+                                    }
+                            draw_table_for_last_ten_sales_order += `</div>`;
+                        });
+                        paid_amount_last_10
+                        $(".item_modifier_details .modifier_item_details_holder").empty();
+                        $(".item_modifier_details .modifier_item_details_holder").prepend(draw_table_for_last_ten_sales_order);
+                        $('#total_items_in_cart_last_10').text(itemCount);
+                        $('#last_10_order_invoice_no').text(sale_no);
+                        $('#total_items_qty_in_cart_last_10').text(totalQty);
+                        $("#sub_total_show_last_10").text(parseFloat(single_item.sub_total).toFixed(op_precision));
+                        $("#sub_total_last_10").text(parseFloat(single_item.sub_total).toFixed(op_precision));
+                        $("#total_item_discount_last_10").text(parseFloat(single_item.item_discount_amount).toFixed(op_precision));
+                        $("#discounted_sub_total_amount_last_10").text(parseFloat(single_item.sub_total_discount_amount).toFixed(op_precision));
+                        $("#sub_total_discount_last_10").text(parseFloat(single_item.sub_total_discount_amount).toFixed(op_precision));
+                        $("#all_items_vat_last_10").text(Number(single_item.total_vat).toFixed(op_precision));
+                        $("#all_items_discount_last_10").text(parseFloat(single_item.total_discount_amount).toFixed(op_precision));
+                        $("#delivery_charge_last_10").text(parseFloat(single_item.delivery_charge).toFixed(op_precision));
+                        $("#paid_amount_last_10").text(parseFloat(find_this_item.paid_amount).toFixed(op_precision));
+                        $("#due_amount_last_10").text(parseFloat(find_this_item.due_amount).toFixed(op_precision));
+                        $("#total_payable_last_10").text(parseFloat(single_item.total_payable).toFixed(op_precision));
+                    }
+                };
+            }; 
+        }
+        
     });
 
 
     // Code optimize by Azhar ** Final **
     $(document).on('click', '#delete_all_hold_sales_button', function () {
         if ($('.detail_hold_sale_holder .single_hold_sale').length > 0) {
-            $.ajax({
-                url: base_url + "Master/checkAccess",
-                method: "GET",
-                async: false,
-                dataType: 'json',
-                data: { controller: "138", function: "delete" },
-                success: function (response) {
-                    if (response == false) {
-                        Swal.fire({
-                            title: warning+" !",
-                            text: no_permission_for_this_module,
-                            showDenyButton: false,
-                            showCancelButton: false,
-                            confirmButtonText: ok,
-                        });
-                    } else {
-                        Swal.fire({
-                            title: warning + '!',
-                            text: are_you_delete_all_hold_sale,
-                            showDenyButton: true,
-                            showCancelButton: false,
-                            confirmButtonText: yes,
-                            denyButtonText: cancel
-                        }).then((result) => {
-                            /* Read more about isConfirmed, isDenied below */
-                            if (result.isConfirmed) {
-                                $.ajax({
-                                    url: base_url + "Sale/delete_all_holds_with_information_by_ajax",
-                                    method: "POST",
-                                    data: {
-                                        csrf_offpos: csrf_value_
-                                    },
-                                    success: function (response) {
-                                        if (response == 1) {
-                                            $('.hold_sale_modal_info_holder .detail_hold_sale_holder .hold_sale_left .detail_holder').empty();
+            if(is_offline_system == '1'){
+                $.ajax({
+                    url: base_url + "Master/checkAccess",
+                    method: "GET",
+                    async: false,
+                    dataType: 'json',
+                    data: { controller: "138", function: "delete" },
+                    success: function (response) {
+                        if (response == false) {
+                            Swal.fire({
+                                title: warning+" !",
+                                text: no_permission_for_this_module,
+                                showDenyButton: false,
+                                showCancelButton: false,
+                                confirmButtonText: ok,
+                            });
+                        } else {
+                            Swal.fire({
+                                title: warning + '!',
+                                text: are_you_delete_all_hold_sale,
+                                showDenyButton: true,
+                                showCancelButton: false,
+                                confirmButtonText: yes,
+                                denyButtonText: cancel
+                            }).then((result) => {
+                                /* Read more about isConfirmed, isDenied below */
+                                if (result.isConfirmed) {
+                                    $.ajax({
+                                        url: base_url + "Sale/delete_all_holds_with_information_by_ajax",
+                                        method: "POST",
+                                        data: {
+                                            csrf_offpos: csrf_value_
+                                        },
+                                        success: function (response) {
+                                            if (response == 1) {
+                                                $('.hold_sale_modal_info_holder .detail_hold_sale_holder .hold_sale_left .detail_holder').empty();
+                                            }
+                                            holdSaleModalDataClear();
+                                            $('#show_sale_hold_modal').removeClass('active');
+                                            $(".pos__modal__overlay").fadeOut(300);
                                         }
-                                        holdSaleModalDataClear();
-                                        $('#show_sale_hold_modal').removeClass('active');
-                                        $(".pos__modal__overlay").fadeOut(300);
-                                    }
-                                });
-                            }
-                        });
+                                    });
+                                }
+                            });
+                        }
                     }
-                }
-            });
+                });
+            }else{
+                Swal.fire({
+                    title: warning + '!',
+                    text: are_you_delete_all_hold_sale,
+                    showDenyButton: true,
+                    showCancelButton: false,
+                    confirmButtonText: yes,
+                    denyButtonText: cancel
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        let request = indexedDB.open('off_pos_3', 3);
+                        request.onerror = function(event) {
+                            console.error("Database error: " + event.target.error);
+                        };
+                        request.onsuccess = function(event) {
+                            let db = event.target.result;
+                            let transaction = db.transaction(['draft_sales'], 'readwrite');
+                            let objectStore = transaction.objectStore('draft_sales');
+                            let clearRequest = objectStore.clear();
+                            clearRequest.onerror = function(event) {
+                                console.error("Error clearing data: " + event.target.error);
+                            };
+                            clearRequest.onsuccess = function(event) {
+                                $('.hold_sale_modal_info_holder .detail_hold_sale_holder .hold_sale_left .detail_holder').empty();
+                                holdSaleModalDataClear();
+                                $('#show_sale_hold_modal').removeClass('active');
+                                $(".pos__modal__overlay").fadeOut(300);
+                                toastr['success'](('All Hold Sales deleted successfully'), 'Success');
+                            };
+                        };
+                    }
+                });
+            }
         } else {
             toastr['error']((no_hold), '');
         }
@@ -959,49 +1482,89 @@ $(function () {
     $(document).on('click', '#hold_delete_button', function () {
         if ($('.single_hold_sale[data-selected=selected]').length > 0) {
             let hold_id = $('.single_hold_sale[data-selected=selected]').attr('id').substr(5);
-            $.ajax({
-                url: base_url + "Master/checkAccess",
-                method: "GET",
-                async: false,
-                dataType: 'json',
-                data: { controller: "138", function: "delete" },
-                success: function (response) {
-                    if (response == false) {
-                        Swal.fire({
-                            title: warning+" !",
-                            text: no_permission_for_this_module,
-                            showDenyButton: false,
-                            showCancelButton: false,
-                            confirmButtonText: ok,
-                        });
-                    } else {
-                        Swal.fire({
-                            title: warning + '!',
-                            text: sure_delete_this_hold,
-                            showDenyButton: true,
-                            showCancelButton: false,
-                            confirmButtonText: yes,
-                            denyButtonText: cancel
-                        }).then((result) => {
-                            /* Read more about isConfirmed, isDenied below */
-                            if (result.isConfirmed) {
-                                $.ajax({
-                                    url: base_url + "Sale/delete_all_information_of_hold_by_ajax",
-                                    method: "POST",
-                                    data: {
-                                        hold_id: hold_id,
-                                        csrf_offpos: csrf_value_
-                                    },
-                                    success: function (response) {
+
+            if(is_offline_system == '1'){
+                $.ajax({
+                    url: base_url + "Master/checkAccess",
+                    method: "GET",
+                    async: false,
+                    dataType: 'json',
+                    data: { controller: "138", function: "delete" },
+                    success: function (response) {
+                        if (response == false) {
+                            Swal.fire({
+                                title: warning+" !",
+                                text: no_permission_for_this_module,
+                                showDenyButton: false,
+                                showCancelButton: false,
+                                confirmButtonText: ok,
+                            });
+                        } else {
+                            Swal.fire({
+                                title: warning + '!',
+                                text: sure_delete_this_hold,
+                                showDenyButton: true,
+                                showCancelButton: false,
+                                confirmButtonText: yes,
+                                denyButtonText: cancel
+                            }).then((result) => {
+                                /* Read more about isConfirmed, isDenied below */
+                                if (result.isConfirmed) {
+                                    $.ajax({
+                                        url: base_url + "Sale/delete_all_information_of_hold_by_ajax",
+                                        method: "POST",
+                                        data: {
+                                            hold_id: hold_id,
+                                            csrf_offpos: csrf_value_
+                                        },
+                                        success: function (response) {
+                                            getAllHoldSales();
+                                            holdSaleModalDataClear();
+                                        }
+                                    });
+                                } 
+                            });
+                        }
+                    }
+                });
+            }else{
+                Swal.fire({
+                    title: warning + '!',
+                    text: sure_delete_this_hold,
+                    showDenyButton: true,
+                    showCancelButton: false,
+                    confirmButtonText: yes,
+                    denyButtonText: cancel
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        let request = indexedDB.open('off_pos_3', 3);
+                        request.onerror = function(event) {
+                            console.error("Database error: " + event.target.error);
+                        };
+                        request.onsuccess = function(event) {
+                            let db = event.target.result;
+                            let transaction = db.transaction(['draft_sales'], 'readwrite');
+                            let objectStore = transaction.objectStore('draft_sales');
+                            
+                            let getRequest = objectStore.get(parseInt(hold_id));
+                            getRequest.onsuccess = function(event) {
+                                let data = event.target.result;
+                                if (data) {
+                                    let deleteRequest = objectStore.delete(data.id);
+                                    deleteRequest.onsuccess = function(event) {
                                         getAllHoldSales();
                                         holdSaleModalDataClear();
-                                    }
-                                });
-                            } 
-                        });
+                                        toastr['success'](('Hold Sale deleted successfully'), 'Success');
+                                    };
+                                } else {
+                                    toastr['error'](('Hold Sale Not Found'), '');
+                                }
+                            };
+                        };
                     }
-                }
-            });
+                });
+            }
+            
         } else {
             toastr['error']((please_select_hold_sale), '');
         }
@@ -1010,49 +1573,81 @@ $(function () {
     // Code optimize by Azhar ** Final **
     $(document).on('click', '#last_ten_delete_button', function () {
         if ($('.single_last_ten_sale[data-selected=selected]').length > 0) {
-            let sale_id = $('.single_last_ten_sale[data-selected=selected]').attr('id').substr(9);
-            $.ajax({
-                url: base_url + "Master/checkAccess",
-                method: "GET",
-                async: false,
-                dataType: 'json',
-                data: { controller: "138", function: "delete" },
-                success: function (response) {
-                    if (response == false) {
-                        Swal.fire({
-                            title: warning+" !",
-                            text: no_permission_for_this_module,
-                            showDenyButton: false,
-                            showCancelButton: false,
-                            confirmButtonText: ok,
-                        });
-                    } else {
-                        Swal.fire({
-                            title: warning + '!',
-                            text: sure_delete_this_sale,
-                            showDenyButton: true,
-                            showCancelButton: false,
-                            confirmButtonText: yes,
-                            denyButtonText: cancel
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                $.ajax({
-                                    url: base_url + "Sale/cancel_particular_order_ajax",
-                                    method: "POST",
-                                    data: {
-                                        sale_id: sale_id,
-                                        csrf_offpos: csrf_value_
-                                    },
-                                    success: function (response) {
-                                        $("#last_ten_sales_button").click();
-                                        recentSaleModalDataClear();
-                                    }
-                                });
-                            }
-                        });
+
+            let recent_sale = $('.single_last_ten_sale[data-selected=selected]').attr('id').substr(9);
+
+            if(is_offline_system == '1'){
+                let sale_id = $('.single_last_ten_sale[data-selected=selected]').attr('id').substr(9);
+                $.ajax({
+                    url: base_url + "Master/checkAccess",
+                    method: "GET",
+                    async: false,
+                    dataType: 'json',
+                    data: { controller: "138", function: "delete" },
+                    success: function (response) {
+                        if (response == false) {
+                            Swal.fire({
+                                title: warning+" !",
+                                text: no_permission_for_this_module,
+                                showDenyButton: false,
+                                showCancelButton: false,
+                                confirmButtonText: ok,
+                            });
+                        } else {
+                            Swal.fire({
+                                title: warning + '!',
+                                text: sure_delete_this_sale,
+                                showDenyButton: true,
+                                showCancelButton: false,
+                                confirmButtonText: yes,
+                                denyButtonText: cancel
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    $.ajax({
+                                        url: base_url + "Sale/cancel_particular_order_ajax",
+                                        method: "POST",
+                                        data: {
+                                            sale_id: sale_id,
+                                            csrf_offpos: csrf_value_
+                                        },
+                                        success: function (response) {
+                                            $("#last_ten_sales_button").click();
+                                            recentSaleModalDataClear();
+                                        }
+                                    });
+                                }
+                            });
+                        }
                     }
-                }
-            });
+                });
+            } else {
+                let db;
+                const request = indexedDB.open("off_pos", 2);
+                request.onerror = function(event) {
+                    console.error("Database error: " + event.target.error);
+                };
+                request.onsuccess = function(event) {
+                    db = event.target.result;
+                    const transaction = db.transaction(["sales"], "readwrite");
+                    const objectStore = transaction.objectStore("sales");
+                    const getRequest = objectStore.get(parseInt(recent_sale));
+                    getRequest.onerror = function(event) {
+                        console.log("Error fetching Rcent sale:", event.target.error);
+                    };
+                    getRequest.onsuccess = function(event) {
+                        const recentSale = event.target.result;
+                        if (recentSale) {
+                            let deleteRequest = objectStore.delete(recentSale.id);
+                            deleteRequest.onsuccess = function(event) {
+                                getLastSale('', '', '', '');
+                                toastr['success'](('Recent Sale deleted successfully'), 'Success');
+                            };
+                        } else {
+                            toastr['error'](('Recent Sale Not Found'), '');
+                        }
+                    };
+                }; 
+            }    
         } else {
             toastr['error']((please_select_an_order), '');
         }
@@ -1063,7 +1658,37 @@ $(function () {
     $(document).on('click', '#last_ten_print_invoice_button', function () {
         if ($('.single_last_ten_sale[data-selected=selected]').length > 0) {
             let sale_id = $('.single_last_ten_sale[data-selected=selected]').attr('id').substr(9);
-            printInvoice(sale_id);
+            if(is_offline_system == '1'){
+                printInvoice(sale_id);
+            }else{
+                const request = indexedDB.open("off_pos", 2);
+                request.onsuccess = function(event) {
+                    const db = event.target.result;
+                    const transaction = db.transaction(["sales"], "readonly");
+                    const objectStore = transaction.objectStore("sales");
+                    // Get all records and sort by timestamp to get latest
+                    const getAllRequest = objectStore.getAll();
+                    getAllRequest.onsuccess = function(event) {
+                        const allRecords = event.target.result;
+                        if(allRecords.length > 0) {
+                            allRecords.forEach(record => {
+                                // If all AJAX requests are done, clear the 'sales' object store
+                                if (record.id == parseInt(sale_id)) {
+                                    printOfflineInvoice(record)
+                                }
+                            });
+                        } 
+                    };
+                    getAllRequest.onerror = function(event) {
+                        console.log("Error fetching records:", event);
+                        toastr['error']("Error fetching records", '');
+                    };
+                };
+                request.onerror = function(event) {
+                    console.log("Error opening database:", event);
+                    toastr['error']("Error opening database", '');
+                };
+            }
         } else {
             toastr['error']((please_select_an_order), '');
         }
@@ -1074,10 +1699,42 @@ $(function () {
     $(document).on('click', '#last_ten_print_challan_button', function () {
         if ($('.single_last_ten_sale[data-selected=selected]').length > 0) {
             let sale_id = $('.single_last_ten_sale[data-selected=selected]').attr('id').substr(9);
-            printChallan(sale_id);
+            if(is_offline_system == '1'){
+                printChallan(sale_id);
+            }else{
+
+                const request = indexedDB.open("off_pos", 2);
+                request.onsuccess = function(event) {
+                    const db = event.target.result;
+                    const transaction = db.transaction(["sales"], "readonly");
+                    const objectStore = transaction.objectStore("sales");
+                    // Get all records and sort by timestamp to get latest
+                    const getAllRequest = objectStore.getAll();
+                    getAllRequest.onsuccess = function(event) {
+                        const allRecords = event.target.result;
+                        if(allRecords.length > 0) {
+                            allRecords.forEach(record => {
+                                if (record.id == parseInt(sale_id)) {
+                                    printOfflineChallan(record);
+                                }
+                            });
+                        } 
+                    };
+                    getAllRequest.onerror = function(event) {
+                        console.log("Error fetching records:", event);
+                        toastr['error']("Error fetching records", '');
+                    };
+                };
+                request.onerror = function(event) {
+                    console.log("Error opening database:", event);
+                    toastr['error']("Error opening database", '');
+                };
+            }
         } else {
             toastr['error']((please_select_an_order), '');
         }
+
+
     });
 
 
@@ -1098,66 +1755,159 @@ $(function () {
 
     // Code optimize by Azhar ** Final **
     $(document).on('click', '#print_last_invoice', function () {
-        let last_sale_id = ($("#last_sale_id").val());
-        if (last_sale_id) {
-            printInvoice(last_sale_id);
-        } else {
-            toastr['error']((please_select_an_order), '');
+        if(is_offline_system == '1'){
+            let last_sale_id = ($("#last_sale_id").val());
+            if (last_sale_id) {
+                printInvoice(last_sale_id);
+            } else {
+                toastr['error']((please_select_an_order), '');
+            }
+        }else{
+            const request = indexedDB.open("off_pos", 2);
+            request.onsuccess = function(event) {
+                const db = event.target.result;
+                const transaction = db.transaction(["sales"], "readonly");
+                const objectStore = transaction.objectStore("sales");
+                // Get all records and sort by timestamp to get latest
+                const getAllRequest = objectStore.getAll();
+                getAllRequest.onsuccess = function(event) {
+                    const allRecords = event.target.result;
+                    if(allRecords.length > 0) {
+                        let completedRequests = 0; 
+                        const totalRequests = allRecords.length;
+                        allRecords.forEach(record => {
+                            completedRequests++;
+                            // If all AJAX requests are done, clear the 'sales' object store
+                            if (completedRequests === totalRequests) {
+                                printOfflineInvoice(record)
+                            }
+                        });
+                    } 
+                };
+                getAllRequest.onerror = function(event) {
+                    console.log("Error fetching records:", event);
+                    toastr['error']("Error fetching records", '');
+                };
+            };
+            request.onerror = function(event) {
+                console.log("Error opening database:", event);
+                toastr['error']("Error opening database", '');
+            };
         }
     });
 
     // Code optimize by Azhar ** Final **
     $(document).on('click', '.print_last_invoice', function () {
-        let last_sale_id = ($("#last_sale_id").val());
-        if (last_sale_id) {
-            printInvoice(last_sale_id);
-        } else {
-            toastr['error']((please_select_an_order), '');
+        if(is_offline_system == '1'){
+            let last_sale_id = ($("#last_sale_id").val());
+            if (last_sale_id) {
+                printInvoice(last_sale_id);
+            } else {
+                toastr['error']((please_select_an_order), '');
+            }
+        }else{
+            const request = indexedDB.open("off_pos", 2);
+            request.onsuccess = function(event) {
+                const db = event.target.result;
+                const transaction = db.transaction(["sales"], "readonly");
+                const objectStore = transaction.objectStore("sales");
+                // Get all records and sort by timestamp to get latest
+                const getAllRequest = objectStore.getAll();
+                getAllRequest.onsuccess = function(event) {
+                    const allRecords = event.target.result;
+                    if(allRecords.length > 0) {
+                        let completedRequests = 0; 
+                        const totalRequests = allRecords.length;
+                        allRecords.forEach(record => {
+                            completedRequests++;
+                            // If all AJAX requests are done, clear the 'sales' object store
+                            if (completedRequests === totalRequests) {
+                                printOfflineInvoice(record)
+                            }
+                        });
+                    } 
+                };
+                getAllRequest.onerror = function(event) {
+                    console.log("Error fetching records:", event);
+                    toastr['error']("Error fetching records", '');
+                };
+            };
+            request.onerror = function(event) {
+                console.log("Error opening database:", event);
+                toastr['error']("Error opening database", '');
+            };
         }
     });
 
     // Code optimize by Azhar ** Final **
     $(document).on('click', '#hold_edit_in_cart_button', function () {
         let this_action = $(this);
-        if ($('.single_hold_sale[data-selected=selected]').length > 0) {
-            $.ajax({
-                url: base_url + "Sale/checkAccess",
-                method: "GET",
-                async: false,
-                dataType: 'json',
-                data: { controller: "4", function: "edit" },
-                success: function (response) {
-                    if (response == false) {
-                        toastr['error']((no_access), '');
-                    } else {
-                        let hold_id = $('.single_hold_sale[data-selected=selected]').attr('id').substr(5);
-                        let total_items_in_cart = $('.order_holder .single_order').length;
-                        if (total_items_in_cart > 0) {
-                            Swal.fire({
-                                title: warning + "!",
-                                text: `Are you sure? previous cart data will be empty!`,
-                                showDenyButton: true,
-                                showCancelButton: false,
-                                confirmButtonText: yes,
-                                denyButtonText: cancel
-                            }).then((result) => {
-                                /* Read more about isConfirmed, isDenied below */
-                                if (result.isConfirmed) {
-                                    $(".order_holder").empty();
-                                    clearFooterCartCalculation();
-                                    getDetailsOfParticularHold(hold_id);
-                                }
-                            });
+
+        if(is_offline_system == '1'){
+            if ($('.single_hold_sale[data-selected=selected]').length > 0) {
+                $.ajax({
+                    url: base_url + "Sale/checkAccess",
+                    method: "GET",
+                    async: false,
+                    dataType: 'json',
+                    data: { controller: "4", function: "edit" },
+                    success: function (response) {
+                        if (response == false) {
+                            toastr['error']((no_access), '');
                         } else {
-                            clearFooterCartCalculation();
-                            getDetailsOfParticularHold(hold_id);
+                            let hold_id = $('.single_hold_sale[data-selected=selected]').attr('id').substr(5);
+                            let total_items_in_cart = $('.order_holder .single_order').length;
+                            if (total_items_in_cart > 0) {
+                                Swal.fire({
+                                    title: warning + "!",
+                                    text: `Are you sure? previous cart data will be empty!`,
+                                    showDenyButton: true,
+                                    showCancelButton: false,
+                                    confirmButtonText: yes,
+                                    denyButtonText: cancel
+                                }).then((result) => {
+                                    /* Read more about isConfirmed, isDenied below */
+                                    if (result.isConfirmed) {
+                                        $(".order_holder").empty();
+                                        clearFooterCartCalculation();
+                                        getDetailsOfParticularHold(hold_id);
+                                    }
+                                });
+                            } else {
+                                clearFooterCartCalculation();
+                                getDetailsOfParticularHold(hold_id);
+                            }
                         }
                     }
-                }
-            });
-        } else {
-            toastr['error']((please_select_hold_sale), '');
+                });
+            } else {
+                toastr['error']((please_select_hold_sale), '');
+            }
+        }else{
+            let hold_id = $('.single_hold_sale[data-selected=selected]').attr('id').substr(5);
+            let total_items_in_cart = $('.order_holder .single_order').length;
+            if (total_items_in_cart > 0) {
+                Swal.fire({
+                    title: warning + "!",
+                    text: `Are you sure? previous cart data will be empty!`,
+                    showDenyButton: true,
+                    showCancelButton: false,
+                    confirmButtonText: yes,
+                    denyButtonText: cancel
+                }).then((result) => {
+                    /* Read more about isConfirmed, isDenied below */
+                    if (result.isConfirmed) {
+                        $(".order_holder").empty();
+                        clearFooterCartCalculation();
+                        getDetailsOfParticularHold(hold_id);
+                    }
+                });
+            } else {
+                clearFooterCartCalculation();
+                getDetailsOfParticularHold(hold_id);
+            }
         }
+        
     });
 
 
@@ -1201,14 +1951,14 @@ $(function () {
     $('.brand_button').on('click', function () {
         let brand_id = $(this).attr('id').substr(15);
         $("#search").val('');
-        $("#alternative_item_render").empty();
+        $('#alternative_item_render').html(`<h6>${Alternative_Medicine_will_shown_here} <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>`);
         showAllItems(brand_id,'');
     });
 
     // Code optimize by Azhar ** Final **
     $(document).on('click', '.button_category_show_all', function () {
         $("#search").val('');
-        $("#alternative_item_render").empty();
+        $('#alternative_item_render').html(`<h6>${Alternative_Medicine_will_shown_here} <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>`);
         showAllItems('','');
     });
 
@@ -1218,14 +1968,14 @@ $(function () {
     $(document).on('keyup', '#search', function (e) {
         let searched_string = $(this).val().trim();
         let foundItems = searchItemAndConstructGallery(searched_string,'',1);
-        let searched_category_items_to_show = `<div id="searched_item_found" class="specific_category_items_holder d-block"><div class="single-inner-div ${grocery_experience == 'ON' ? 'grocery_single_on' : 'grocery_single_off'}">`;
-        if(grocery_experience == 'ON'){
+        let searched_category_items_to_show = `<div id="searched_item_found" class="specific_category_items_holder d-block"><div class="single-inner-div ${grocery_experience == 'Medicine' || grocery_experience == 'Grocery' ? 'grocery_single_on' : 'grocery_single_off'}">`;
+        if(grocery_experience == 'Medicine' || grocery_experience == 'Grocery'){
             for (let key in foundItems) {
                 if(foundItems[key].item_type != '0'){
                     if (foundItems.hasOwnProperty(key)) {
                         searched_category_items_to_show += `
-                        <div item-type="${foundItems[key].item_type}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" class="single_item grocery_medicine_el    brand_${foundItems[key].brand_id} ${product_display == 'Image View' ? '' : 'bg-box-view'} d-flex align-items-center" id="item_${foundItems[key].item_id}">
-                            <p class="item_name mt-0" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name} (${foundItems[key].item_code}) ${foundItems[key].brand_name ? foundItems[key].brand_name : ''}
+                        <div item-type="${foundItems[key].item_type}" expiry_date_maintain="${foundItems[key].expiry_date_maintain}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" class="single_item grocery_medicine_el    brand_${foundItems[key].brand_id} ${product_display == 'Image View' ? '' : 'bg-box-view'} d-flex align-items-center" id="item_${foundItems[key].item_id}">
+                            <p class="item_name mt-0" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name} (${foundItems[key].item_code}) ${grocery_experience != 'Medicine' ? foundItems[key].brand_name : foundItems[key].supplier_name}
                             
                             ${foundItems[key].generic_name ? '<br> <small class="generic_small">Generic Name: '+foundItems[key].generic_name+'</small>' : ''}
                             
@@ -1242,9 +1992,9 @@ $(function () {
                 if(foundItems[key].item_type != '0'){
                     if (foundItems.hasOwnProperty(key)) {
                         searched_category_items_to_show += `
-                        <div item-type="${foundItems[key].item_type}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" class="single_item brand_${foundItems[key].brand_id} ${product_display == 'Image View' ? '' : 'bg-box-view'}" id="item_${foundItems[key].item_id}">
-                            <div class="single-item-img ${product_display == 'Image View' ? 'd-block' : 'd-none'}">
-                                <img src="${foundItems[key].image}" alt="">
+                        <div item-type="${foundItems[key].item_type}" expiry_date_maintain="${foundItems[key].expiry_date_maintain}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" class="single_item brand_${foundItems[key].brand_id} ${product_display == 'Image View' ? '' : 'bg-box-view'}" id="item_${foundItems[key].item_id}">
+                            <div class="single-item-img">
+                                <img src="${foundItems[key].image}" alt="" class="${product_display == 'Image View' ? 'd-block' : 'd-none'}">
                             </div>
                             <p class="item_name" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name}${foundItems[key].brand_name} (${foundItems[key].item_code})</p>
                             <p class="generic_name ${$.trim(foundItems[key].generic_name) ? '' : 'd-none'}" data-tippy-content="${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}">${$.trim(foundItems[key].generic_name) ? $.trim($.trim(foundItems[key].generic_name)) : ''}</p>
@@ -1256,66 +2006,67 @@ $(function () {
             }
         }
         if(searched_string){
-            let array_as = {};            
-            if(foundItems[0].item_type != '0'){
-                if (foundItems.hasOwnProperty(0)) {
-                    if(foundItems[0].generic_name){
-                        let foundItemsForItems = searchItemAndConstructGallery(foundItems[0].generic_name,'','');
-                        for (let key1 in foundItemsForItems) {
-                         if(foundItemsForItems[key1].item_type != '0'){
-                             if (foundItemsForItems.hasOwnProperty(key1)) {
-                                 if(!array_as[foundItemsForItems[key1].item_id]){
-                                     array_as[foundItemsForItems[key1].item_id] = foundItemsForItems[key1].item_id;
-                                 }
-                             }
-                          }
+            if(foundItems[0]){
+                let array_as = {};            
+                if(foundItems[0].item_type != '0'){
+                    if (foundItems.hasOwnProperty(0)) {
+                        if(foundItems[0].generic_name){
+                            console.log(foundItems[0].generic_name);
+                            let foundItemsForItems = searchItemAndConstructGalleryAlternative(foundItems[0].generic_name,'','');
+                            for (let key1 in foundItemsForItems) {
+                            if(foundItemsForItems[key1].item_type != '0'){
+                                if (foundItemsForItems.hasOwnProperty(key1)) {
+                                    if(!array_as[foundItemsForItems[key1].item_id]){
+                                        array_as[foundItemsForItems[key1].item_id] = foundItemsForItems[key1].item_id;
+                                    }
+                                }
+                            }
+                            }
                         }
                     }
                 }
-            }
-            let alternativeProduct = '';
-            for (let ar in array_as) {
-                let item_details = findItemByItemId(ar);
-                if(item_details.item_type != '0'){
-                    let if_exist = true;
-                    for (let key in foundItems) {
-                        if(foundItems[key].item_id==ar){
-                            if_exist = false;
+                let alternativeProduct = '';
+                for (let ar in array_as) {
+                    let item_details = findItemByItemId(ar);
+                    if(item_details.item_type != '0'){
+                        let if_exist = true;
+                        for (let key in foundItems) {
+                            if(foundItems[key].item_id==ar){
+                                if_exist = false;
+                            }
+                        }
+                        if(if_exist==true){
+                            alternativeProduct+=`<div class="alternative-medicine single_item medicine_el  brand_${item_details.brand_id}" item-type="${item_details.item_type}" plain-id="${item_details.item_id}" data-last_purchase_price="${item_details.last_purchase_price}" data-whole_sale_price="${item_details.whole_sale_price}" data-sale_price="${item_details.price}" id="item_${item_details.item_id}">
+                            <p class="item_name" data-tippy-content="${item_details.item_name}(${item_details.item_code})">${item_details.item_name}${item_details.brand_name} (${item_details.item_code})</p>
+                            <p class="generic_name ${$.trim(item_details.generic_name) ? '' : 'd-none'}" data-tippy-content="${$.trim(item_details.generic_name) ? $.trim(item_details.generic_name) : ''}">${$.trim(item_details.generic_name) ? $.trim($.trim(item_details.generic_name)) : ''}</p>
+                            <p class="item_price">SP: <span id="price_${item_details.item_id}">${parseFloat(item_details.price).toFixed(op_precision)}</span></p>
+                            <span class="item_vat_percentage d-none">${item_details.vat_percentage}</span>
+                        </div>`;
                         }
                     }
-                    if(if_exist==true){
-                        alternativeProduct+=`<div class="alternative-medicine single_item medicine_el  brand_${item_details.brand_id}" item-type="${item_details.item_type}" plain-id="${item_details.item_id}" data-last_purchase_price="${item_details.last_purchase_price}" data-whole_sale_price="${item_details.whole_sale_price}" data-sale_price="${item_details.price}" id="item_${item_details.item_id}">
-                        <p class="item_name" data-tippy-content="${item_details.item_name}(${item_details.item_code})">${item_details.item_name}${item_details.brand_name} (${item_details.item_code})</p>
-                        <p class="generic_name ${$.trim(item_details.generic_name) ? '' : 'd-none'}" data-tippy-content="${$.trim(item_details.generic_name) ? $.trim(item_details.generic_name) : ''}">${$.trim(item_details.generic_name) ? $.trim($.trim(item_details.generic_name)) : ''}</p>
-                        <p class="item_price">SP: <span id="price_${item_details.item_id}">${parseFloat(item_details.price).toFixed(op_precision)}</span></p>
-                        <span class="item_vat_percentage d-none">${item_details.vat_percentage}</span>
-                    </div>`;
-                    }
                 }
+                
+                if(alternativeProduct){
+                    $('#alternative_item_render').html('');
+                    $('#alternative_item_render').html(alternativeProduct);
+                    $('#main_left').addClass('alternative-exist');
+                }else{
+                    $('#main_left').removeClass('alternative-exist');
+                    $('#alternative_item_render').html(`<h6>${Alternative_Medicine_will_shown_here} <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>`);
+                }
+                setTimeout(function(){
+                    $(".grocery_medicine_el").eq(0).addClass('active_gm');
+                }, 100);
             }
-            if(alternativeProduct){
-                $('#alternative_item_render').html('');
-                $('#alternative_item_render').html(alternativeProduct);
-                $('#main_left').addClass('alternative-exist');
-            }else{
-                $('#main_left').removeClass('alternative-exist');
-                $('#alternative_item_render').html(`<h6>Generic Medicine will shown here <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>`);
-            }
-            setTimeout(function(){
-                $(".grocery_medicine_el").eq(0).addClass('active_gm');
-            }, 100);
         }else{
             $('#alternative_item_render').html('');
             $('#main_left').removeClass('alternative-exist');
-            $('#alternative_item_render').html(`<h6>Generic Medicine will shown here <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>`);
+            $('#alternative_item_render').html(`<h6>${Alternative_Medicine_will_shown_here} <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>`);
         }
         searched_category_items_to_show += `<div></div>`;
         $("#searched_item_found").remove();
         $('.specific_category_items_holder').hide('1000');
         $(".category_items").html(searched_category_items_to_show);
-        // tippy("[data-tippy-content]", {
-        //     animation: "scale",
-        // });
     });
 
 
@@ -1371,9 +2122,18 @@ $(function () {
 
     //when single ite is clicked pop-up modal is appeared
     $(document).on('click', '.single_item', function () {
+
+        let selector = $('.single-inner-div').find('.active_gm');
+        selector.removeClass('active_gm');
+        $(this).addClass('active_gm_temp');
+
+        // let selector2 = $('.single-inner-div').find('.active_gm_temp');
+        // selector2.removeClass('active_gm_temp');
+        
         let itemName = $(this).find('.item_name').text();
         let cartItemLength = $('.order_holder .single_order').length;
         let item_type = $(this).attr('item-type');
+        let expiry_date_maintain = $(this).attr('expiry_date_maintain');
         let item_id = $(this).attr('plain-id');
         let is_promo = $(this).attr('is_promo');
         $('#edit_item_modal_header').text(itemName);
@@ -1390,7 +2150,7 @@ $(function () {
                 'cursor':'unset',
             });
         }
-        if(item_type == 'IMEI_Product' || item_type == 'Serial_Product' || item_type == 'Medicine_Product'){
+        if(item_type == 'IMEI_Product' || item_type == 'Serial_Product' || (item_type == 'Medicine_Product' && expiry_date_maintain == 'Yes')){
             if (window.matchMedia("(min-width: 320px) and (max-width: 575.98px)").matches) {
                 $('.item-modal-top-header').css({
                     'grid-template-columns':'1fr',
@@ -1453,62 +2213,115 @@ $(function () {
     });
 
     function itemAppentToCart(item_id, item_type, is_promo, default_qty){
-        let quantity = 0;
-        if(item_type == 'General_Product'){
-            quantity = 1;
-        } else if(item_type == 'Installment_Product'){
-            quantity = 1;
-        } else if(item_type == 'IMEI_Product' || item_type == 'Serial_Product'){
-            quantity = 0;
-        } else if(item_type == 'Medicine_Product'){
-            quantity = 0;
-        } else if(item_type == 'Service_Product'){
-            quantity = 1;
-        }
-
-        if(item_type != 'Service_Product' && item_type != 'Combo_Product'){
-            if(item_type == 'Variation_Product'){
-                callAddToCartModal(item_id, item_type, default_qty);
-            }else{
-                $.ajax({
-                    url: base_url + "Sale/stockCheckingForThisOutletById",
-                    method: "POST",
-                    dataType: 'json',
-                    async: false,
-                    data: { item_id: item_id},
-                    success: function (response) {
-                        if(response.status == 'success'){
-                            $('.current_stock_t').text((Number(response.data)).toFixed(op_precision));
-                            $('#current_stock_hidden').val((Number(response.data)).toFixed(op_precision));
-                            if(Number(response.data) > 0){ 
-                                if(is_promo == 'Yes'){
-                                    callAddToCartModal(item_id, item_type, default_qty);
-                                }else if(direct_cart == 'Yes' && item_type == 'General_Product'){
-                                    generalItemdirectAddToCart(item_id, item_type, default_qty)
+        if(is_offline_system == '1'){
+            if(item_type != 'Service_Product' && item_type != 'Combo_Product'){
+                if(item_type == 'Variation_Product'){
+                    callAddToCartModal(item_id, item_type, default_qty);
+                }else{
+                    $.ajax({
+                        url: base_url + "Sale/stockCheckingForThisOutletById",
+                        method: "POST",
+                        dataType: 'json',
+                        async: false,
+                        data: { item_id: item_id},
+                        success: function (response) {
+                            if(response.status == 'success'){
+                                $('.current_stock_t').text((Number(response.data)).toFixed(op_precision));
+                                $('#current_stock_hidden').val((Number(response.data)).toFixed(op_precision));
+                                if(Number(response.data) > 0){ 
+                                    if(is_promo == 'Yes'){
+                                        callAddToCartModal(item_id, item_type, default_qty);
+                                    }else if(direct_cart == 'Yes' && item_type == 'General_Product'){
+                                        generalItemdirectAddToCart(item_id, item_type, default_qty)
+                                    }else{
+                                        callAddToCartModal(item_id, item_type, default_qty);
+                                    }
                                 }else{
-                                    callAddToCartModal(item_id, item_type, default_qty);
-                                }
-                            }else{
-                                if(is_promo == 'Yes' && allow_less_sale == 'Yes'){
-                                    callAddToCartModal(item_id, item_type, default_qty);
-                                }else if(direct_cart == 'Yes' && item_type == 'General_Product' && allow_less_sale == 'Yes'){
-                                    generalItemdirectAddToCart(item_id, item_type, default_qty)
-                                }else if(allow_less_sale == 'Yes'){
-                                    callAddToCartModal(item_id, item_type, default_qty);
-                                }else{
-                                    toastr['error'](("Over selling is not allowed!"), '');
+                                    if(is_promo == 'Yes' && allow_less_sale == 'Yes'){
+                                        callAddToCartModal(item_id, item_type, default_qty);
+                                    }else if(direct_cart == 'Yes' && item_type == 'General_Product' && allow_less_sale == 'Yes'){
+                                        generalItemdirectAddToCart(item_id, item_type, default_qty)
+                                    }else if(allow_less_sale == 'Yes'){
+                                        callAddToCartModal(item_id, item_type, default_qty);
+                                    }else{
+                                        toastr['error'](("Over selling is not allowed!"), '');
+                                        if($(`#item_${item_id}`).hasClass('active_gm_temp')){
+                                            $(`#item_${item_id}`).removeClass('active_gm_temp');
+                                        }
+                                    }
                                 }
                             }
                         }
-                    }
-                });
+                    });
+                }
+            }else if(item_type == 'Service_Product'){
+                callAddToCartModal(item_id, item_type, default_qty)
+            }else if(item_type == 'Combo_Product'){
+                callAddToCartModal(item_id, item_type, default_qty)
+            }else{
+                generalItemdirectAddToCart(item_id, item_type, default_qty)
             }
-        }else if(item_type == 'Service_Product'){
-            callAddToCartModal(item_id, item_type, default_qty)
-        }else if(item_type == 'Combo_Product'){
-            callAddToCartModal(item_id, item_type, default_qty)
-        }else{
-            generalItemdirectAddToCart(item_id, item_type, default_qty)
+        } else {
+            if(item_type != 'Service_Product' && item_type != 'Combo_Product'){
+                if(item_type == 'Variation_Product'){
+                    callAddToCartModal(item_id, item_type, default_qty);
+                }else{
+
+                    // Open a connection to the IndexedDB database
+                    let request = indexedDB.open('off_pos_2', 2);
+
+                    request.onerror = function(event) {
+                        console.log("Error opening the database:", event.target.error ? event.target.error.message : "Unknown error");
+                    };
+
+                    request.onsuccess = function(event) {
+                        let db = event.target.result;
+                        // Start a transaction to read from the database
+                        let transaction = db.transaction(['items'], 'readonly');
+                        let objectStore = transaction.objectStore('items');
+                        // Use getAll() to read all data from the 'items' object store
+                        let getAllRequest = objectStore.getAll();
+                        getAllRequest.onsuccess = function(event) {
+                            let items = event.target.result;
+                            let product = items[0].find(function(item) {
+                                return item.id == item_id;
+                            });
+                            if(product){
+                                $('.current_stock_t').text((Number(product.stock_qty - product.out_qty)).toFixed(op_precision));
+                                $('#current_stock_hidden').val((Number(product.stock_qty - product.out_qty)).toFixed(op_precision));
+                                if(Number(product.stock_qty - product.out_qty) > 0){ 
+                                    if(is_promo == 'Yes'){
+                                        callAddToCartModal(item_id, item_type, default_qty);
+                                    }else if(direct_cart == 'Yes' && item_type == 'General_Product'){
+                                        generalItemdirectAddToCart(item_id, item_type, default_qty)
+                                    }else{
+                                        callAddToCartModal(item_id, item_type, default_qty);
+                                    }
+                                }else{
+                                    if(is_promo == 'Yes' && allow_less_sale == 'Yes'){
+                                        callAddToCartModal(item_id, item_type, default_qty);
+                                    }else if(direct_cart == 'Yes' && item_type == 'General_Product' && allow_less_sale == 'Yes'){
+                                        generalItemdirectAddToCart(item_id, item_type, default_qty)
+                                    }else if(allow_less_sale == 'Yes'){
+                                        callAddToCartModal(item_id, item_type, default_qty);
+                                    }else{
+                                        toastr['error'](("Over selling is not allowed!"), '');
+                                    }
+                                }  
+                            }
+                        };
+                        getAllRequest.onerror = function(event) {
+                            console.log("Error reading data:", event.target.error.message);
+                        };
+                    };
+                }
+            }else if(item_type == 'Service_Product'){
+                callAddToCartModal(item_id, item_type, default_qty)
+            }else if(item_type == 'Combo_Product'){
+                callAddToCartModal(item_id, item_type, default_qty)
+            }else{
+                generalItemdirectAddToCart(item_id, item_type, default_qty)
+            }
         }
     }
 
@@ -1543,7 +2356,7 @@ $(function () {
                 cDiscount = 0;
             }
         }
-        modalFieldHideShowByItemType(item_type)
+        modalFieldHideShowByItemType(item_type, item_object.expiry_date_maintain)
         let draw_table_for_order = '';
         draw_table_for_order = `<div class="single_order" is_promo="${item_object.is_promo}" data-qty_default="1" data-sale-unit="${item_object.sale_unit_name}" id="order_for_item_${item_id}" data-single-order-row-no="" data_cart_item_id="${item_id}">
             <div class="first_portion">
@@ -1588,7 +2401,6 @@ $(function () {
 
     function callAddToCartModal(item_id, item_type, default_unit){
         // Modal Field Hide Show By Item Type
-        modalFieldHideShowByItemType(item_type);
         productSound1.play();
         let combo_checker = '';
         let modalQty = 0;
@@ -1596,6 +2408,7 @@ $(function () {
         let customer_price_type = $("#walk_in_customer option:selected").attr("price_type");
         let customer_discount = $("#walk_in_customer option:selected").attr("discount");
         let item_object = findItemByItemId(item_id);
+        modalFieldHideShowByItemType(item_type, item_object.expiry_date_maintain);
         if(item_type == 'General_Product'){
             modalQty = 1;
             $('#item_quantity_modal_input').val(Number(default_unit));
@@ -1609,56 +2422,150 @@ $(function () {
             $('.item-modal-top-header').show();
             $('.modal_qty_area').removeClass('item_modal_quantity_area_disabled');
         }else if(item_type == 'IMEI_Product' || item_type == 'Serial_Product'){
+
             $('.item_type_heading').text(`Available ${item_type == 'IMEI_Product' ? 'IMEI Number' : 'Serial Number'}`);
             modalQty = 1;
             $('#item_quantity_modal_input').val(Number(0));
-            $('#sale_unit_name_modal').text(item_object.sale_unit_name);
-            $.ajax({
-                url: base_url + "Sale/getIMEISerial",
-                method: "POST",
-                async: false,
-                dataType: 'json',
-                data: { item_id: item_id },
-                success: function (response) {
-                    let imeiHtml = '';
-                    imeiHtml = `<option value="">Select ${item_type == 'IMEI_Product' ? 'IMEI' : 'Serial'}</option>`;
-                    if(response.data.allimei){
-                        let stockIMEI = response.data.allimei.split("||");
-                        $.each(stockIMEI, function (i, v) { 
-                            imeiHtml += `<option value="${$.trim(v)}">${$.trim(v)}</option>`;
-                        });
+
+            if(is_offline_system == '1'){
+                $('#sale_unit_name_modal').text(item_object.sale_unit_name);
+                $.ajax({
+                    url: base_url + "Sale/getIMEISerial",
+                    method: "POST",
+                    async: false,
+                    dataType: 'json',
+                    data: { item_id: item_id },
+                    success: function (response) {
+                        let imeiHtml = '';
+                        imeiHtml = `<option value="">Select ${item_type == 'IMEI_Product' ? 'IMEI' : 'Serial'}</option>`;
+                        if(response.data.allimei){
+                            let stockIMEI = response.data.allimei.split("||");
+                            $.each(stockIMEI, function (i, v) { 
+                                imeiHtml += `<option value="${$.trim(v)}">${$.trim(v)}</option>`;
+                            });
+                        }
+                        $('#IMEI_Serial').html('');
+                        $('#IMEI_Serial').append(imeiHtml);
                     }
-                    $('#IMEI_Serial').html('');
-                    $('#IMEI_Serial').append(imeiHtml);
-                }
-            });
-            $('.item-modal-top-header').show();
-            $('.modal_qty_area').removeClass('item_modal_quantity_area_disabled');
+                });
+                $('.item-modal-top-header').show();
+                $('.modal_qty_area').removeClass('item_modal_quantity_area_disabled');
+            } else{
+                // Open a connection to the IndexedDB database
+                let request = indexedDB.open('off_pos_2', 2);
+
+                request.onerror = function(event) {
+                    console.log("Error opening the database:", event.target.error ? event.target.error.message : "Unknown error");
+                };
+
+                request.onsuccess = function(event) {
+                    let db = event.target.result;
+                    // Start a transaction to read from the database
+                    let transaction = db.transaction(['items'], 'readonly');
+                    let objectStore = transaction.objectStore('items');
+                    // Use getAll() to read all data from the 'items' object store
+                    let getAllRequest = objectStore.getAll();
+                    getAllRequest.onsuccess = function(event) {
+                        let items = event.target.result;
+                        let product = items[0].find(function(item) {
+                            return item.id == item_id;
+                        });
+                        // console.log(product);
+                        if(product){
+                            let imeiHtml = '';
+                            imeiHtml = `<option value="">Select ${item_type == 'IMEI_Product' ? 'IMEI' : 'Serial'}</option>`;
+                            if(product.allimei){
+                                product.allimei.map(function(imei_serial) {
+                                    imeiHtml += `<option value="${$.trim(imei_serial.single_imei_serial)}">${$.trim(imei_serial.single_imei_serial)}</option>`;
+                                });
+                            }
+                            $('#IMEI_Serial').html('');
+                            $('#IMEI_Serial').append(imeiHtml);
+                            $('.item-modal-top-header').show();
+                            $('.modal_qty_area').removeClass('item_modal_quantity_area_disabled');
+                        }
+                    };
+                    getAllRequest.onerror = function(event) {
+                        console.log("Error reading data:", event.target.error.message);
+                    };
+                };
+            }
+            
         }else if(item_type == 'Medicine_Product'){
             $('.item_type_heading').text('Expiry Dates');
-            modalQty = 0;
-            $('#item_quantity_modal_input').val(Number(0));
-            $('#sale_unit_name_modal').text(item_object.sale_unit_name);
-            $.ajax({
-                url: base_url + "Sale/getExpiryByOutlet",
-                method: "POST",
-                async: false,
-                dataType: 'json',
-                data: { item_id: item_id },
-                success: function (response) {
-                    let expiryHtml = '';
-                    expiryHtml = `<option value="">Select Expiry</option>`;
-                    if(response.data){
-                        $.each(response.data, function (i, v) { 
-                            if(v.stock_quantity != 0){
-                                expiryHtml += `<option value="${$.trim(v.expiry_imei_serial)}">${$.trim(v.expiry_imei_serial)}</option>`;
+            if(is_offline_system == '1'){
+                $('#sale_unit_name_modal').text(item_object.sale_unit_name);
+                if(item_object.expiry_date_maintain == 'Yes'){
+                    modalQty = 0;
+                    $('#item_quantity_modal_input').val(Number(0));
+                    $.ajax({
+                        url: base_url + "Sale/getExpiryByOutlet",
+                        method: "POST",
+                        async: false,
+                        dataType: 'json',
+                        data: { item_id: item_id },
+                        success: function (response) {
+                            let expiryHtml = '';
+                            expiryHtml = `<option value="">Select Expiry</option>`;
+                            if(response.data){
+                                $.each(response.data, function (i, v) { 
+                                    if(v.stock_quantity != 0){
+                                        expiryHtml += `<option value="${$.trim(v.expiry_imei_serial)}">${$.trim(v.expiry_imei_serial)}</option>`;
+                                    }
+                                });
                             }
-                        });
-                    }
-                    $('#IMEI_Serial').html('');
-                    $('#IMEI_Serial').append(expiryHtml);
+                            $('#IMEI_Serial').html('');
+                            $('#IMEI_Serial').append(expiryHtml);
+                        }
+                    });
+                }else{
+                    modalQty = 1;
+                    $('#item_quantity_modal_input').val(Number(1));
                 }
-            });
+            } else {
+                if(item_object.expiry_date_maintain == 'Yes'){
+                    // Open a connection to the IndexedDB database
+                    let request = indexedDB.open('off_pos_2', 2);
+                    request.onerror = function(event) {
+                        console.log("Error opening the database:", event.target.error ? event.target.error.message : "Unknown error");
+                    };
+                    request.onsuccess = function(event) {
+                        let db = event.target.result;
+                        // Start a transaction to read from the database
+                        let transaction = db.transaction(['items'], 'readonly');
+                        let objectStore = transaction.objectStore('items');
+                        // Use getAll() to read all data from the 'items' object store
+                        let getAllRequest = objectStore.getAll();
+                        getAllRequest.onsuccess = function(event) {
+                            let items = event.target.result;
+                            let product = items[0].find(function(item) {
+                                return item.id == item_id;
+                            });
+                            if(product){
+                                modalQty = 0;
+                                $('#item_quantity_modal_input').val(Number(0));
+                                let expiryHtml = '';
+                                expiryHtml = `<option value="">Select Expiry</option>`;
+                                if(product.allexpiry){
+                                    product.allexpiry.map(function(single_expiry) {
+                                        for (let key_date in single_expiry) {
+                                            expiryHtml += `<option value="${$.trim(key_date)}">${$.trim(key_date)}</option>`;
+                                        }
+                                    });
+                                }
+                                $('#IMEI_Serial').html('');
+                                $('#IMEI_Serial').append(expiryHtml);
+                            }
+                        };
+                        getAllRequest.onerror = function(event) {
+                            console.log("Error reading data:", event.target.error.message);
+                        };
+                    };
+                }else{
+                    modalQty = 1;
+                    $('#item_quantity_modal_input').val(Number(1));
+                }
+            }
             $('.item-modal-top-header').show();
             $('.modal_qty_area').removeClass('item_modal_quantity_area_disabled');
         }else if(item_type == 'Variation_Product'){
@@ -1667,97 +2574,145 @@ $(function () {
             $('#variation_parent').text(item_id);
             modalQty = 0;
             $('#item_quantity_modal_input').val(Number(0));
-            $.ajax({
-                url: base_url + "Sale/getVariationByItemId",
-                method: "POST",
-                async: false,
-                dataType: 'json',
-                data: { item_id: item_id },
-                success: function (response) {
-                    if(response.status == 'success'){
-                        let variationHtml = '';
-                        $.each(response.data, function (i, v) { 
-                            variationHtml += `<div class="container variationSingleItem" data-is-promo="" data-item-id="${v.id}" id="item-id-${v.id}" data-item-name="${v.parent_name +' ' + v.name + '('+v.code+')'}" data-sale-price="${v.sale_price ? v.sale_price : 0}" data-whole-sale-price="${v.whole_sale_price ? v.whole_sale_price : 0}" data-purchase-price="${v.purchase_price ? v.purchase_price : 0 }" data-menu-tax='${v.tax_information}' data-sale-unit="${v.sale_unit_name}">
-                                <span>${v.name}</span>
-                                <span class="pl-10">Price: ${v.sale_price}</span>
-                                <input type="radio" name="variation_items">
-                                <span class="checkmark"></span>
-                            </div>`;
-                        });
-                        $('.variationProductHtmlRender').html('');
-                        $('.variationProductHtmlRender').append(variationHtml);
+
+            if(is_offline_system == '1'){
+                $.ajax({
+                    url: base_url + "Sale/getVariationByItemId",
+                    method: "POST",
+                    async: false,
+                    dataType: 'json',
+                    data: { item_id: item_id },
+                    success: function (response) {
+                        if(response.status == 'success'){
+                            let variationHtml = '';
+                            $.each(response.data, function (i, v) { 
+                                variationHtml += `<div data-variation-parent="${item_id}" class="container variationSingleItem" data-is-promo="" data-item-id="${v.id}" id="item-id-${v.id}" data-item-name="${v.parent_name +' ' + v.name + '('+v.code+')'}" data-sale-price="${v.sale_price ? v.sale_price : 0}" data-whole-sale-price="${v.whole_sale_price ? v.whole_sale_price : 0}" data-purchase-price="${v.purchase_price ? v.purchase_price : 0 }" data-menu-tax='${v.tax_information}' data-sale-unit="${v.sale_unit_name}">
+                                    <span>${v.name}</span>
+                                    <span class="pl-10">Price: ${v.sale_price}</span>
+                                    <input type="radio" name="variation_items">
+                                    <span class="checkmark"></span>
+                                </div>`;
+                            });
+                            $('.variationProductHtmlRender').html('');
+                            $('.variationProductHtmlRender').append(variationHtml);
+                        }
                     }
-                }
-            });
+                });
+            } else {
+                // Open a connection to the IndexedDB database
+                let request = indexedDB.open('off_pos_2', 2);
+                request.onerror = function(event) {
+                    console.log("Error opening the database:", event.target.error ? event.target.error.message : "Unknown error");
+                };
+                request.onsuccess = function(event) {
+                    let db = event.target.result;
+                    // Start a transaction to read from the database
+                    let transaction = db.transaction(['items'], 'readonly');
+                    let objectStore = transaction.objectStore('items');
+                    // Use getAll() to read all data from the 'items' object store
+                    let getAllRequest = objectStore.getAll();
+                    getAllRequest.onsuccess = function(event) {
+                        let items = event.target.result;
+                        let product = items[0].find(function(item) {
+                            return item.id == item_id;
+                        });
+                        if(product){
+                            let variationHtml = '';
+                            let item_obj;
+                            $.each(product.variations, function (i, v) { 
+                                console.log();
+                                item_obj = findItemByItemId(v.vId);
+                                variationHtml += `<div data-variation-parent="${product.id}" class="container variationSingleItem" data-is-promo="" data-item-id="${v.vId}" id="item-id-${v.vId}" data-item-name="${product.name +' ' + v.name + '('+v.code+')'}" data-sale-price="${item_obj.price ? item_obj.price : 0}" data-whole-sale-price="${item_obj.whole_sale_price ? item_obj.whole_sale_price : 0}" data-purchase-price="${item_obj.purchase_price ? item_obj.purchase_price : 0 }" data-menu-tax='${item_obj.tax_information}' data-sale-unit="${item_obj.sale_unit_name}">
+                                    <span>${v.name}</span>
+                                    <span class="pl-10">Price: ${item_obj.price}</span>
+                                    <input type="radio" name="variation_items">
+                                    <span class="checkmark"></span>
+                                </div>`;
+                            });
+                            $('.variationProductHtmlRender').html('');
+                            $('.variationProductHtmlRender').append(variationHtml);
+                        }
+                    };
+                    getAllRequest.onerror = function(event) {
+                        console.log("Error reading data:", event.target.error.message);
+                    };
+                };
+            }
+
             $('.item-modal-top-header').show();
         }else if(item_type == 'Combo_Product'){
-            $('.item-modal-top-header').hide();
-            $('.modal_qty_area').addClass('item_modal_quantity_area_disabled');
-            $.ajax({
-                url: base_url + "Sale/getComboItemCheck",
-                method: "POST",
-                async: false,
-                dataType: 'json',
-                data: { item_id: item_id },
-                success: function (response) {
-                    if(response.status == 'success'){
-                        if(!response.data.combo_items){
-                            Swal.fire({
-                                title: warning + "!",
-                                text: `No Combo  items found of this  product.`,
-                                showDenyButton: false,
-                                showCancelButton: false,
-                                confirmButtonText: ok,
+            if(is_offline_system == '1'){
+                $('.item-modal-top-header').hide();
+                $('.modal_qty_area').addClass('item_modal_quantity_area_disabled');
+                $.ajax({
+                    url: base_url + "Sale/getComboItemCheck",
+                    method: "POST",
+                    async: false,
+                    dataType: 'json',
+                    data: { item_id: item_id },
+                    success: function (response) {
+                        if(response.status == 'success'){
+                            if(!response.data.combo_items){
+                                Swal.fire({
+                                    title: warning + "!",
+                                    text: `No Combo  items found of this  product.`,
+                                    showDenyButton: false,
+                                    showCancelButton: false,
+                                    confirmButtonText: ok,
+                                });
+                                combo_checker = 'Not Exist';
+                            }
+                            let html = '';
+                            let html2 = '<option value="">Select Employee</option>';
+                            $.each(response.data.sellers, function (i, v) { 
+                                html2+=`<option value="${v.id}">${v.full_name}</option>`;
                             });
-                            combo_checker = 'Not Exist';
+                            $.each(response.data.combo_items, function (i, v) { 
+                                html +=`<li>
+                                    <div>${i + 1}</div>
+                                    <div class="text-center">
+                                        <label class="container">
+                                            <input type="checkbox" class="show_in_invoice" ${v.show_invoice == 'Yes' ? 'checked' : ''}>
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <div class="text-center">
+                                        <label class="container">
+                                            <input type="checkbox" class="to_sales_item" checked>
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <p class="combo_name">${v.item_name}</p>
+                                        <input type="hidden" class="combo_type" value="${v.type}">
+                                        <input type="hidden" class="combo_child_id" value="${v.child_combo_item_id}">
+                                        <input type="hidden" class="combo_parent_id" value="${v.combo_parent_id}">
+                                    </div>
+                                    <div>
+                                        <input type="text" class="form-control combo_quantity  comboCalculation" value="${parseFloat(v.quantity)}">
+                                    </div>
+                                    <div>
+                                        <input type="text" class="form-control combo_unit_price  comboCalculation" value="${parseFloat(v.unit_price)}">
+                                    </div>
+                                    <div>
+                                        <p class="subtotal_combo comboCalculation text-center">${(parseFloat(v.quantity) * parseFloat(v.unit_price)).toFixed(op_precision)}</p>
+                                    </div>
+                                    <div>
+                                        <select class="inline_seller_id select2">
+                                            ${html2}
+                                        </select>
+                                    </div>
+                                </li>`;
+                            });
+                            $('.combo_product_html_render .combo_modal_body').html('');
+                            $('.combo_product_html_render .combo_modal_body').append(html);
+                            $(".select2").select2();
                         }
-                        let html = '';
-                        let html2 = '<option value="">Select Employee</option>';
-                        $.each(response.data.sellers, function (i, v) { 
-                            html2+=`<option value="${v.id}">${v.full_name}</option>`;
-                        });
-                        $.each(response.data.combo_items, function (i, v) { 
-                            html +=`<li>
-                                <div>${i + 1}</div>
-                                <div class="text-center">
-                                    <label class="container">
-                                        <input type="checkbox" class="show_in_invoice" ${v.show_invoice == 'Yes' ? 'checked' : ''}>
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </div>
-                                <div class="text-center">
-                                    <label class="container">
-                                        <input type="checkbox" class="to_sales_item" checked>
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </div>
-                                <div>
-                                    <p class="combo_name">${v.item_name}</p>
-                                    <input type="hidden" class="combo_child_id" value="${v.child_combo_item_id}">
-                                    <input type="hidden" class="combo_parent_id" value="${v.combo_parent_id}">
-                                </div>
-                                <div>
-                                    <input type="text" class="form-control combo_quantity  comboCalculation" value="${parseFloat(v.quantity)}">
-                                </div>
-                                <div>
-                                    <input type="text" class="form-control combo_unit_price  comboCalculation" value="${parseFloat(v.unit_price)}">
-                                </div>
-                                <div>
-                                    <p class="subtotal_combo comboCalculation text-center">${(parseFloat(v.quantity) * parseFloat(v.unit_price)).toFixed(op_precision)}</p>
-                                </div>
-                                <div>
-                                    <select class="inline_seller_id select2">
-                                        ${html2}
-                                    </select>
-                                </div>
-                            </li>`;
-                        });
-                        $('.combo_product_html_render .combo_modal_body').html('');
-                        $('.combo_product_html_render .combo_modal_body').append(html);
-                        $(".select2").select2();
                     }
-                }
-            });
+                });
+            }else {
+                toastr['error'](("In Offline Sync can't sale combo items"), '');
+            }
         }else{
             modalQty = 1;
             $('#item_quantity_modal_input').val(Number(default_unit));
@@ -1774,10 +2729,14 @@ $(function () {
         $('#modal_item_type').text(item_object.item_type);
         $('#modal_item_sale_unit').text(item_object.sale_unit_name);
         $('#modal_item_vat_percentage').text(item_object.tax_information);
-        $('#m_p_price').text(Number(item_object.last_purchase_price).toFixed(op_precision));
-        $('#w_s_price').text(Number(item_object.whole_sale_price).toFixed(op_precision));
+        if(view_purchase_price == 'Yes'){
+            $('#w_s_price').text(Number(item_object.whole_sale_price).toFixed(op_precision));
+            $('#m_p_price').text(Number(item_object.last_purchase_price / item_object.conversion_rate).toFixed(op_precision));
+        }else{
+            $('#w_s_price').text(Number(0).toFixed(op_precision));
+            $('#m_p_price').text(Number(0).toFixed(op_precision));
+        }
         $('#s_price').text(Number(item_object.price).toFixed(op_precision));
-
 
         // Promotion Check And Discount Set
         if(item_object.is_promo == 'Yes'){
@@ -1827,11 +2786,7 @@ $(function () {
     }
 
 
-
-    
-    
-
-    function modalFieldHideShowByItemType(item_type){
+    function modalFieldHideShowByItemType(item_type, expiry_date_maintain){
         if(item_type == 'General_Product'){
             $('.Available_IMEI_Srial').hide();
             $('.variationProductHtmlRenderWrap').hide();
@@ -1857,13 +2812,17 @@ $(function () {
             $('.modal_increase_item_table').prop('disabled', true);
             $('.modal_decrease_item_table').prop('disabled', true);
         }else if(item_type == 'Medicine_Product'){
-            $('.Available_IMEI_Srial').show();
+            if(expiry_date_maintain == 'Yes'){
+                $('.Available_IMEI_Srial').show();
+                $('#item_quantity_modal_input').prop('readonly', true);
+                $('.modal_increase_item_table').prop('disabled', true);
+                $('.modal_decrease_item_table').prop('disabled', true);
+                $('#modal_item_price_input_field').prop('readonly', false);
+                $('#modal_discount').prop('readonly', false);
+            }else{
+                $('.Available_IMEI_Srial').hide();
+            }
             $('.variationProductHtmlRenderWrap').hide();
-            $('#modal_item_price_input_field').prop('readonly', false);
-            $('#modal_discount').prop('readonly', false);
-            $('#item_quantity_modal_input').prop('readonly', true);
-            $('.modal_increase_item_table').prop('disabled', true);
-            $('.modal_decrease_item_table').prop('disabled', true);
         }else if(item_type == 'Variation_Product' || item_type == '0'){
             $('.Available_IMEI_Srial').hide();
             $('.variationProductHtmlRenderWrap').show();
@@ -1888,11 +2847,11 @@ $(function () {
 
 
     $(document).on('click', '.variationSingleItem', function(){
-        item_quantity_modal_input
         let subtotal = 0;
         let cutomerPriceType = $('option:selected','#walk_in_customer').attr('price_type');
         let cutomerDiscount = $('option:selected','#walk_in_customer').attr('discount');
         let item_id = $(this).attr('data-item-id');
+        let item_parent_id = $(this).attr('data-variation-parent');
         let item_name = $(this).attr('data-item-name');
         let salePrice = $(this).attr('data-sale-price');
         let wholePrice = $(this).attr('data-whole-sale-price');
@@ -1906,28 +2865,67 @@ $(function () {
             modalQty = 1;
             $('#item_quantity_modal_input').val(1);
         }
-        $.ajax({
-            type: "POST",
-            url: base_url+"Sale/stockCheckingForThisOutletById",
-            async: false,
-            data: {
-                item_id: item_id,
-            },
-            success: function (response) {
-                if(response.status == 'success'){
-                    $('.current_stock_t').text((Number(response.data)).toFixed(op_precision));
-                    $('#current_stock_hidden').val(Number(response.data));
+        if(is_offline_system == '1'){
+            $.ajax({
+                type: "POST",
+                url: base_url+"Sale/stockCheckingForThisOutletById",
+                async: false,
+                data: {
+                    item_id: item_id,
+                },
+                success: function (response) {
+                    if(response.status == 'success'){
+                        $('.current_stock_t').text((Number(response.data)).toFixed(op_precision));
+                        $('#current_stock_hidden').val(Number(response.data));
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            // Open a connection to the IndexedDB database
+            let request = indexedDB.open('off_pos_2', 2);
+            request.onerror = function(event) {
+                console.log("Error opening the database:", event.target.error ? event.target.error.message : "Unknown error");
+            };
+            request.onsuccess = function(event) {
+                let db = event.target.result;
+                // Start a transaction to read from the database
+                let transaction = db.transaction(['items'], 'readonly');
+                let objectStore = transaction.objectStore('items');
+                // Use getAll() to read all data from the 'items' object store
+                let getAllRequest = objectStore.getAll();
+                getAllRequest.onsuccess = function(event) {
+                    let items = event.target.result;
+                    let product = items[0].find(function(item) {
+                        return item.id == item_parent_id;
+                    });
+                    if(product){
+                        $.each(product.variations, function (i, v) { 
+                            if(v.vId == item_id){
+                                $('.current_stock_t').text((Number(v.stock_in) - Number(v.stock_out)).toFixed(op_precision));
+                                $('#item_quantity_modal_input').val(parseFloat(1));
+                            }
+                        });
+                    }
+                };
+                getAllRequest.onerror = function(event) {
+                    console.log("Error reading data:", event.target.error.message);
+                };
+            };
+        }
+        
         $('.modal_increase_item_table').prop('disabled', false);
         $('.modal_decrease_item_table').prop('disabled', false);
         $('#item_quantity_modal_input').prop('readonly', false);
         $('#modal_item_price_input_field').prop('readonly', false);
         $('#modal_discount').prop('readonly', false);
         $('#s_price').text(Number(salePrice).toFixed(op_precision));
-        $('#w_s_price').text(Number(wholePrice).toFixed(op_precision));
-        $('#m_p_price').text(Number(purchasePrice).toFixed(op_precision));
+        if(view_purchase_price == 'Yes'){
+            $('#w_s_price').text(Number(wholePrice).toFixed(op_precision));
+            $('#m_p_price').text(Number(purchasePrice).toFixed(op_precision));
+        }else{
+            $('#w_s_price').text(Number(0).toFixed(op_precision));
+            $('#m_p_price').text(Number(0).toFixed(op_precision));
+        }
         $('#modal_item_id').text(item_id);
         $('#modal_item_name').text(item_name);
         $('#modal_item_vat_percentage').text(modal_item_vat_percentage);
@@ -1974,6 +2972,7 @@ $(function () {
         let variation_parent = $.trim($('#variation_parent').text());
         let sale_unit_name = $.trim($('#modal_item_sale_unit').text());
         let item_type = $.trim($('#modal_item_type').text());
+        let expiry_date_maintain = $(`#item_${item_id}`).attr('expiry_date_maintain');
         let modal_item_vat_percentage = $.trim($('#modal_item_vat_percentage').text());
         let modal_item_price = $.trim($('#modal_item_price_input_field').val());
         let item_quantity_modal_input = $.trim($('#item_quantity_modal_input').val());
@@ -1990,6 +2989,9 @@ $(function () {
         let getPromoQty = $.trim($('#modal_promo_get_qty').text());
         let itemPromoNo = parseInt(Number(item_quantity_modal_input) / Number(buyPromoQty)) * parseInt(getPromoQty);
         let cartItemLength = $('.order_holder .single_order').length;
+        let sale_unit_name_modal = $('#sale_unit_name_modal').text();
+
+        let current_stock = $('.current_stock_t').text();
         // Alear When Modal Quantity is "0"
         if(item_type != 'Combo_Product' && Number(item_quantity_modal_input) == 0){
             Swal.fire({
@@ -2001,10 +3003,9 @@ $(function () {
             });
             error = true;
         }
-
         // Item Type Wise Condition Set
         if(item_type == 'General_Product'){
-        }else if(item_type == 'IMEI_Product' || item_type == 'Serial_Product' || item_type == 'Medicine_Product'){
+        }else if(item_type == 'IMEI_Product' || item_type == 'Serial_Product' || (item_type == 'Medicine_Product' && expiry_date_maintain == 'Yes')){
             let expiry_imei_serial = $.trim($('#IMEI_Serial').val());
             if(expiry_imei_serial == ''){
                 $('#expiry_imei_serial_err_msg').text(`${The} ${checkItemShortType(item_type)} ${field_is_required}`);
@@ -2042,6 +3043,15 @@ $(function () {
                 error = true;
             }
         }
+
+
+        if(item_type == 'Medicine_Product' && (Number(current_stock) < Number(item_quantity_modal_input))){
+            toastr['error'](('Over selling is not allowed for medicine product!'), '');
+            error = true;
+            return false;
+        }
+
+
         // Return False When error occur
         if(error == true){
             return false;
@@ -2049,6 +3059,13 @@ $(function () {
             $('#item_modal').removeClass('active');
             $(".pos__modal__overlay").fadeOut(300);
             posDefaultCursor();
+            setTimeout(function(){
+                let selector = $('.single-inner-div').find('.active_gm_temp');
+                selector.removeClass('active_gm_temp');
+                selector.addClass('active_gm');
+                $('#search').val('')
+                $('#search_barcode').val('')
+            }, 500);
         }
 
         if(cartItemLength == '0'){
@@ -2114,7 +3131,7 @@ $(function () {
             let draw_table_for_order = '';
             let expiry_imei_serial = '';
             let promotionHtml = '';
-            if(item_type == 'IMEI_Product' || item_type == 'Serial_Product'|| item_type == 'Medicine_Product'){
+            if(item_type == 'IMEI_Product' || item_type == 'Serial_Product'|| (item_type == 'Medicine_Product' && expiry_date_maintain == 'Yes')){
                 expiry_imei_serial = `<span class="imei_serial_note" id="expiry_imei_serial">${checkItemShortType(item_type)}: <span class="expiry_imei_serial_${item_id}">${IMEI_Serial}</span></span>`;
             }else{
                 expiry_imei_serial = '';
@@ -2128,12 +3145,14 @@ $(function () {
                 let comboUnitPrice = 0;
                 let combSubTotal = 0;
                 let combChildId = '';
+                let comboType = '';
                 let combParentId = '';
                 let combSellerId = '';
                 let combIFSale = '';
                 let combItemShownInInvoice = '';
                 $('.combo_product_html_render .combo_modal_body li').each(function(){
                     comboName = $(this).find('.combo_name').text();
+                    comboType = $(this).find('.combo_type').val();
                     comboQty = $(this).find('.combo_quantity').val();
                     comboUnitPrice = $(this).find('.combo_unit_price').val();
                     combSubTotal = $(this).find('.subtotal_combo').text();
@@ -2149,6 +3168,7 @@ $(function () {
                             <div data-id="${combChildId}" class="customer_panel single_order_column first_column">
                                 <iconify-icon icon="solar:pen-broken" class="op_cursor_pointer" width="22" data-parent_id=""></iconify-icon>
                                 <span id="combo_item_name_table_${combChildId}">${comboName}</span>
+                                <span id="combo_item_type_table_${combChildId}">${comboType}</span>
                                 <span class="d-none" id="combo_seller_table_${combChildId}">${combSellerId}</span>
                                 <span class="d-none" id="combo_inv_show_table_${combChildId}">${combItemShownInInvoice ? 'Yes' : 'No'}</span>
                                 <span class="d-none" id="combo_ifsale_table_${combChildId}">${combIFSale ? 'Yes' : 'No'}</span>
@@ -2204,9 +3224,10 @@ $(function () {
             }
 
 
-            draw_table_for_order = `<div data-variation-parent="${variation_parent}" class="single_order imei_serial_expiry_${IMEI_Serial}" is_promo="${is_promo}" data-qty_default="${default_qty_amt}" data-sale-unit="${sale_unit_name}" id="order_for_item_${item_id}" data-single-order-row-no="" data_cart_item_id="${item_id}">
+            draw_table_for_order = `<div data-sale-unit="${sale_unit_name_modal}" data-variation-parent="${variation_parent}" class="single_order imei_serial_expiry_${IMEI_Serial}" is_promo="${is_promo}" data-qty_default="${default_qty_amt}" data-sale-unit="${sale_unit_name}" id="order_for_item_${item_id}" data-single-order-row-no="" data_cart_item_id="${item_id}">
                 <div class="first_portion">
                     <span id="item_seller_table${item_id}" class="d-none">${seller_id}</span>
+                    <span class="expiry_date_maintain d-none" id="expiry_date_maintain_${item_id}">${expiry_date_maintain}</span>
                     <span class="item_type d-none" id="item_type_table${item_id}">${item_type}</span>
                     <span class="item_vat d-none" id="item_vat_percentage_table${item_id}">${modal_item_vat_percentage}</span>
                     <span class="item_discount d-none" id="item_discount_table${item_id}">${percentValueCalculateByPriceQtyDiscount(modal_item_price, item_quantity_modal_input, modal_discount)}</span>
@@ -2259,7 +3280,6 @@ $(function () {
         }, 100)
 
     });
-
     function cartMobileSuccessMsgAndItemCount(){
         toastr.options = {
             "toas-container": "toast-top-right"
@@ -2331,25 +3351,65 @@ $(function () {
                 $('#modal_total_price').text(Number(0).toFixed(op_precision));
                 $('.current_stock_t').text(Number(current_stock_hidden).toFixed(op_precision));
             }else{
+
                 $('#item_quantity_modal_input').prop('readonly', false);
                 $('.modal_increase_item_table').prop('disabled', false);
                 $('.modal_decrease_item_table').prop('disabled', false);
                 $('#sale_unit_name_modal').text(sale_unit);
-                $.ajax({
-                    type: "POST",
-                    url: base_url+"Sale/singleExpiryDateStockCheck",
-                    async: false,
-                    data: {
-                        expiry_imei_serial: singleExpiryDate,
-                        item_id: item_id,
-                    },
-                    success: function (response) {
-                        if(response.status == 'success'){
-                            $('.current_stock_t').text((Number(response.data.stock_quantity)).toFixed(op_precision));
-                            $('#item_quantity_modal_input').val(parseFloat(1));
+
+                if(is_offline_system == '1'){
+                    $.ajax({
+                        type: "POST",
+                        url: base_url+"Sale/singleExpiryDateStockCheck",
+                        async: false,
+                        data: {
+                            expiry_imei_serial: singleExpiryDate,
+                            item_id: item_id,
+                        },
+                        success: function (response) {
+                            if(response.status == 'success'){
+                                $('.current_stock_t').text((Number(response.data.stock_quantity)).toFixed(op_precision));
+                                $('#item_quantity_modal_input').val(parseFloat(1));
+                            }
                         }
-                    }
-                });
+                    });
+                }else{
+                    
+                    // Open a connection to the IndexedDB database
+                    let request = indexedDB.open('off_pos_2', 2);
+                    request.onerror = function(event) {
+                        console.log("Error opening the database:", event.target.error ? event.target.error.message : "Unknown error");
+                    };
+                    request.onsuccess = function(event) {
+                        let db = event.target.result;
+                        // Start a transaction to read from the database
+                        let transaction = db.transaction(['items'], 'readonly');
+                        let objectStore = transaction.objectStore('items');
+                        // Use getAll() to read all data from the 'items' object store
+                        let getAllRequest = objectStore.getAll();
+                        getAllRequest.onsuccess = function(event) {
+                            let items = event.target.result;
+                            let product = items[0].find(function(item) {
+                                return item.id == item_id;
+                            });
+                            if(product){
+                                if(product.allexpiry){
+                                    product.allexpiry.map(function(single_expiry) {
+                                        for (let key_date in single_expiry) {
+                                            if(singleExpiryDate == key_date){
+                                                $('.current_stock_t').text((Number(single_expiry[key_date])).toFixed(op_precision));
+                                                $('#item_quantity_modal_input').val(parseFloat(1));
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        };
+                        getAllRequest.onerror = function(event) {
+                            console.log("Error reading data:", event.target.error.message);
+                        };
+                    };
+                }
                 if(customer_price_type == 2){
                     $(".whole_price_active").click();
                 }else{
@@ -2392,7 +3452,8 @@ $(function () {
                     $('.main_top').find('button').css('background-color', '#F3F3F3');
                     $('.main_top').find('button').attr('data-selected', 'unselected');
                     $("#walk_in_customer").val('').trigger('change');
-                    $('#place_edit_order').text('Place Order');
+                    $("#select_employee_id").val('').trigger('change');
+                    $('#place_edit_order').text('Payment');
                 } 
             });
         }
@@ -2411,11 +3472,15 @@ $(function () {
     function itemModalQtyUpDown(modalQty){
         let single_item_subtotal;
         let item_type = $(`#modal_item_type`).text();
-        let fixedCurrentStock = $('#current_stock_hidden').val();
+        let fixedCurrentStock = $('.current_stock_t').text();
         let discount = $('option:selected', "#walk_in_customer").attr('discount');
         let modalPrice = $('#modal_item_price_input_field').val();
         let modal_discount =  $('#modal_discount').val();
-        if(allow_less_sale == 'No' && (Number(fixedCurrentStock) < Number(modalQty)) && item_type != 'Service_Product'){
+
+        if(item_type == 'Medicine_Product' && (Number(fixedCurrentStock) < Number(modalQty))){
+            toastr['error'](('Over selling is not allowed for medicine product!'), '');
+            return false;
+        }else if(allow_less_sale == 'No' && (Number(fixedCurrentStock) < Number(modalQty)) && item_type != 'Service_Product'){
             let curr_qty = $('.current_stock_t').text();
             $('#item_quantity_modal_input').val(Number(fixedCurrentStock));
             toastr['error'](('Over selling is not allowed!'), '');
@@ -2547,21 +3612,54 @@ $(function () {
 
 
         // Get Item Id and Set Current Stock
-        if(item_type != 'Service_Product' && item_type != 'Combo_Product'){
-            $.ajax({
-                url: base_url + "Sale/stockCheckingForThisOutletById",
-                method: "POST",
-                async: false,
-                dataType: 'json',
-                data: { item_id: item_id },
-                success: function (response) {
-                    $('.current_stock_t').text((Number(response.data)).toFixed(op_precision));
-                    $('#current_stock_hidden').val((Number(response.data)).toFixed(op_precision));
-                }
-            });
+        if(is_offline_system == '1'){
+            if(item_type != 'Service_Product' && item_type != 'Combo_Product'){
+                $.ajax({
+                    url: base_url + "Sale/stockCheckingForThisOutletById",
+                    method: "POST",
+                    async: false,
+                    dataType: 'json',
+                    data: { item_id: item_id },
+                    success: function (response) {
+                        $('.current_stock_t').text((Number(response.data)).toFixed(op_precision));
+                        $('#current_stock_hidden').val((Number(response.data)).toFixed(op_precision));
+                    }
+                });
+            }else{
+                $('.current_stock_t').text(Number(0).toFixed(op_precision));
+            }
         }else{
-            $('.current_stock_t').text(Number(0).toFixed(op_precision));
+            if(item_type != 'Service_Product' && item_type != 'Combo_Product'){
+                // Open a connection to the IndexedDB database
+                let request = indexedDB.open('off_pos_2', 2);
+                request.onerror = function(event) {
+                    console.log("Error opening the database:", event.target.error ? event.target.error.message : "Unknown error");
+                };
+                request.onsuccess = function(event) {
+                    let db = event.target.result;
+                    // Start a transaction to read from the database
+                    let transaction = db.transaction(['items'], 'readonly');
+                    let objectStore = transaction.objectStore('items');
+                    // Use getAll() to read all data from the 'items' object store
+                    let getAllRequest = objectStore.getAll();
+                    getAllRequest.onsuccess = function(event) {
+                        let items = event.target.result;
+                        let product = items[0].find(function(item) {
+                            return item.id == item_id;
+                        });
+                        if(product){
+                            $('.current_stock_t').text((Number(product.stock_qty - product.out_qty)).toFixed(op_precision));
+                            $('#current_stock_hidden').val((Number(product.stock_qty - product.out_qty)).toFixed(op_precision)); 
+                        }
+                    };
+                    getAllRequest.onerror = function(event) {
+                        console.log("Error reading data:", event.target.error.message);
+                    };
+                };
+            
+            }
         }
+        
         
         if(item_type == 'General_Product'){
             $('.item-modal-top-header').show();
@@ -2571,92 +3669,220 @@ $(function () {
             $('.modal_qty_area').removeClass('item_modal_quantity_area_disabled');
         }else if(item_type == 'IMEI_Product' || item_type == 'Serial_Product'){
             let cartImeiSerial = $(this).parent().parent().parent().find('.imei_serial_note span').eq(0).text();
-            $.ajax({
-                url: base_url + "Sale/getIMEISerial",
-                method: "POST",
-                async: false,
-                dataType: 'json',
-                data: { item_id: item_id, item_type:item_type },
-                success: function (response) {
-                    let imeiHtml = '';
-                    imeiHtml = `<option value="">Select ${item_type == 'IMEI_Product' ? 'IMEI' : 'Serial'}</option>`;
-                    if(response.data.allimei){
-                        let stockIMEI = response.data.allimei.split("||");
-                        $.each(stockIMEI, function (i, v) { 
-                            imeiHtml += `<option ${$.trim(cartImeiSerial) == $.trim(v) ? 'selected' : ''} value="${$.trim(v)}">${v}</option>`;
-                        });
+            if(is_offline_system == '1'){
+                $.ajax({
+                    url: base_url + "Sale/getIMEISerial",
+                    method: "POST",
+                    async: false,
+                    dataType: 'json',
+                    data: { item_id: item_id, item_type:item_type },
+                    success: function (response) {
+                        let imeiHtml = '';
+                        imeiHtml = `<option value="">Select ${item_type == 'IMEI_Product' ? 'IMEI' : 'Serial'}</option>`;
+                        if(response.data.allimei){
+                            let stockIMEI = response.data.allimei.split("||");
+                            $.each(stockIMEI, function (i, v) { 
+                                imeiHtml += `<option ${$.trim(cartImeiSerial) == $.trim(v) ? 'selected' : ''} value="${$.trim(v)}">${v}</option>`;
+                            });
+                        }
+                        $('#IMEI_Serial').html('');
+                        $('#IMEI_Serial').append(imeiHtml);
+                        setTimeout(function(){
+                            $('#IMEI_Serial').val(cartImeiSerial).trigger('change');
+                            $('#item_quantity_modal_input').val(item_quantity);
+                        }, 500);
                     }
-                    $('#IMEI_Serial').html('');
-                    $('#IMEI_Serial').append(imeiHtml);
-                    setTimeout(function(){
-                        $('#IMEI_Serial').val(cartImeiSerial).trigger('change');
-                        $('#item_quantity_modal_input').val(item_quantity);
-                    }, 500);
-                }
-            });
-            $('.item-modal-top-header').show();
-            $('.modal_qty_area').removeClass('item_modal_quantity_area_disabled');
+                });
+                $('.item-modal-top-header').show();
+                $('.modal_qty_area').removeClass('item_modal_quantity_area_disabled');
+            }else{
+                // Open a connection to the IndexedDB database
+                let request = indexedDB.open('off_pos_2', 2);
+                request.onerror = function(event) {
+                    console.log("Error opening the database:", event.target.error ? event.target.error.message : "Unknown error");
+                };
+                request.onsuccess = function(event) {
+                    let db = event.target.result;
+                    // Start a transaction to read from the database
+                    let transaction = db.transaction(['items'], 'readonly');
+                    let objectStore = transaction.objectStore('items');
+                    // Use getAll() to read all data from the 'items' object store
+                    let getAllRequest = objectStore.getAll();
+                    getAllRequest.onsuccess = function(event) {
+                        let items = event.target.result;
+                        let product = items[0].find(function(item) {
+                            return item.id == item_id;
+                        });
+                        if(product){
+                            let imeiHtml = '';
+                            imeiHtml = `<option value="">Select ${item_type == 'IMEI_Product' ? 'IMEI' : 'Serial'}</option>`;
+                            if(product.allimei){
+                                product.allimei.map(function(imei_serial) {
+                                    imeiHtml += `<option ${$.trim(cartImeiSerial) == $.trim(imei_serial.single_imei_serial) ? 'selected' : ''} value="${$.trim(imei_serial.single_imei_serial)}">${$.trim(imei_serial.single_imei_serial)}</option>`;
+                                });
+                            }
+                            $('#IMEI_Serial').html('');
+                            $('#IMEI_Serial').append(imeiHtml);
+                            $('.item-modal-top-header').show();
+                            $('.modal_qty_area').removeClass('item_modal_quantity_area_disabled');
+                        }
+                    };
+                    getAllRequest.onerror = function(event) {
+                        console.log("Error reading data:", event.target.error.message);
+                    };
+                };
+            }
+            
         }else if(item_type == 'Medicine_Product'){
             $('.item_type_heading').text('Expiry Dates');
             let cartExpiryDate = $(this).parent().parent().parent().find('.imei_serial_note span').eq(0).text();
-            $.ajax({
-                url: base_url + "Sale/getExpiryByOutlet",
-                method: "POST",
-                async: false,
-                dataType: 'json',
-                data: { item_id: item_id },
-                success: function (response) {
-                    let expiryHtml = '';
-                    expiryHtml = `<option value="">Select Expiry</option>`;
-                    if(response.data){
-                        $.each(response.data, function (i, v) { 
-                            if(v.stock_quantity != 0){
-                                expiryHtml += `<option ${$.trim(cartExpiryDate) == v.expiry_imei_serial ? 'selected' : ''} value="${$.trim(v.expiry_imei_serial)}">${$.trim(v.expiry_imei_serial)}</option>`;
-                            }
-                            if($.trim(cartExpiryDate) == v.expiry_imei_serial){
-                                $('.current_stock_t').text((Number(v.stock_quantity)).toFixed(op_precision));
-                                $('#current_stock_hidden').val((Number(v.stock_quantity)).toFixed(op_precision));
-                            }
-                        });
+            if(is_offline_system == '1'){
+                $.ajax({
+                    url: base_url + "Sale/getExpiryByOutlet",
+                    method: "POST",
+                    async: false,
+                    dataType: 'json',
+                    data: { item_id: item_id },
+                    success: function (response) {
+                        let expiryHtml = '';
+                        expiryHtml = `<option value="">Select Expiry</option>`;
+                        if(response.data){
+                            $.each(response.data, function (i, v) { 
+                                if(v.stock_quantity != 0){
+                                    expiryHtml += `<option ${$.trim(cartExpiryDate) == v.expiry_imei_serial ? 'selected' : ''} value="${$.trim(v.expiry_imei_serial)}">${$.trim(v.expiry_imei_serial)}</option>`;
+                                }
+                                if($.trim(cartExpiryDate) == v.expiry_imei_serial){
+                                    $('.current_stock_t').text((Number(v.stock_quantity)).toFixed(op_precision));
+                                    $('#current_stock_hidden').val((Number(v.stock_quantity)).toFixed(op_precision));
+                                }
+                            });
+                        }
+                        $('#IMEI_Serial').html('');
+                        $('#IMEI_Serial').append(expiryHtml);
+                        setTimeout(function(){
+                            $('#IMEI_Serial').val(cartExpiryDate).trigger('change');
+                            $('#item_quantity_modal_input').val(item_quantity);
+                        }, 500);
                     }
-                    $('#IMEI_Serial').html('');
-                    $('#IMEI_Serial').append(expiryHtml);
-                    setTimeout(function(){
-                        $('#IMEI_Serial').val(cartExpiryDate).trigger('change');
-                        $('#item_quantity_modal_input').val(item_quantity);
-                    }, 500);
+                });
+                $('.item-modal-top-header').show();
+                $('.modal_qty_area').removeClass('item_modal_quantity_area_disabled');
+            }else{
+                if(item_obj.expiry_date_maintain == 'Yes'){
+                    // Open a connection to the IndexedDB database
+                    let request = indexedDB.open('off_pos_2', 2);
+                    request.onerror = function(event) {
+                        console.log("Error opening the database:", event.target.error ? event.target.error.message : "Unknown error");
+                    };
+                    request.onsuccess = function(event) {
+                        let db = event.target.result;
+                        // Start a transaction to read from the database
+                        let transaction = db.transaction(['items'], 'readonly');
+                        let objectStore = transaction.objectStore('items');
+                        // Use getAll() to read all data from the 'items' object store
+                        let getAllRequest = objectStore.getAll();
+                        getAllRequest.onsuccess = function(event) {
+                            let items = event.target.result;
+                            let product = items[0].find(function(item) {
+                                return item.id == item_id;
+                            });
+                            if(product){
+                                $('#item_quantity_modal_input').val(Number(0));
+                                let expiryHtml = '';
+                                expiryHtml = `<option value="">Select Expiry</option>`;
+                                if(product.allexpiry){
+                                    product.allexpiry.map(function(single_expiry) {
+                                        for (let key_date in single_expiry) {
+                                            expiryHtml += `<option ${$.trim(cartExpiryDate) == key_date ? 'selected' : ''} value="${$.trim(key_date)}">${$.trim(key_date)}</option>`;
+                                            if($.trim(cartExpiryDate) == key_date){
+                                                $('.current_stock_t').text((Number(single_expiry[key_date])).toFixed(op_precision));
+                                                $('#current_stock_hidden').val((Number(single_expiry[key_date])).toFixed(op_precision));
+                                            }
+
+                                        }
+                                    });
+                                }
+                                $('#IMEI_Serial').html('');
+                                $('#IMEI_Serial').append(expiryHtml);
+                            }
+                        };
+                        getAllRequest.onerror = function(event) {
+                            console.log("Error reading data:", event.target.error.message);
+                        };
+                    };
+                }else{
+                    $('#item_quantity_modal_input').val(Number(1));
                 }
-            });
-            $('.item-modal-top-header').show();
-            $('.modal_qty_area').removeClass('item_modal_quantity_area_disabled');
+            }
+            
         }else if(item_type == 'Variation_Product' || item_type == '0'){
             $('.item_type_variation_heading').text('Variations');
             $('#variation_parent').text(variationParent_id);
             $('#item_quantity_modal_input').val(Number(item_quantity));
-            $.ajax({
-                url: base_url + "Sale/getVariationByItemId",
-                method: "POST",
-                async: false,
-                dataType: 'json',
-                data: { item_id: variationParent_id },
-                success: function (response) {
-                    if(response.status == 'success'){
-                        let variationHtml = '';
-                        $.each(response.data, function (i, v) { 
-                            variationHtml += `<div class="container variationSingleItem ${v.id == item_id ? 'v-active' : ''}" data-is-promo="" data-item-id="${v.id}" id="item-id-${v.id}" data-item-name="${v.parent_name +' ' + v.name + '('+v.code+')'}" data-sale-price="${v.sale_price ? v.sale_price : 0}" data-whole-sale-price="${v.whole_sale_price ? v.whole_sale_price : 0}" data-purchase-price="${v.purchase_price ? v.purchase_price : 0 }" data-menu-tax='${v.tax_information}' data-sale-unit="${v.sale_unit_name}">
-                                <span>${v.name}</span>
-                                <span class="pl-10">Price: ${v.sale_price}</span>
-                                <input type="radio" name="variation_items">
-                                <span class="checkmark"></span>
-                            </div>`;
-                        });
-                        $('.variationProductHtmlRender').html('');
-                        $('.variationProductHtmlRender').append(variationHtml);
+            if(is_offline_system == '1'){
+                $.ajax({
+                    url: base_url + "Sale/getVariationByItemId",
+                    method: "POST",
+                    async: false,
+                    dataType: 'json',
+                    data: { item_id: variationParent_id },
+                    success: function (response) {
+                        if(response.status == 'success'){
+                            let variationHtml = '';
+                            $.each(response.data, function (i, v) { 
+                                variationHtml += `<div class="container variationSingleItem ${v.id == item_id ? 'v-active' : ''}" data-is-promo="" data-item-id="${v.id}" id="item-id-${v.id}" data-item-name="${v.parent_name +' ' + v.name + '('+v.code+')'}" data-sale-price="${v.sale_price ? v.sale_price : 0}" data-whole-sale-price="${v.whole_sale_price ? v.whole_sale_price : 0}" data-purchase-price="${v.purchase_price ? v.purchase_price : 0 }" data-menu-tax='${v.tax_information}' data-sale-unit="${v.sale_unit_name}">
+                                    <span>${v.name}</span>
+                                    <span class="pl-10">Price: ${v.sale_price}</span>
+                                    <input type="radio" name="variation_items">
+                                    <span class="checkmark"></span>
+                                </div>`;
+                            });
+                            $('.variationProductHtmlRender').html('');
+                            $('.variationProductHtmlRender').append(variationHtml);
+                        }
                     }
-                }
-            });
-            $('.item-modal-top-header').show();
-            $('.modal_qty_area').removeClass('item_modal_quantity_area_disabled');
+                });
+                $('.item-modal-top-header').show();
+                $('.modal_qty_area').removeClass('item_modal_quantity_area_disabled');
+            }else{
+                // Open a connection to the IndexedDB database
+                let request = indexedDB.open('off_pos_2', 2);
+                request.onerror = function(event) {
+                    console.log("Error opening the database:", event.target.error ? event.target.error.message : "Unknown error");
+                };
+                request.onsuccess = function(event) {
+                    let db = event.target.result;
+                    // Start a transaction to read from the database
+                    let transaction = db.transaction(['items'], 'readonly');
+                    let objectStore = transaction.objectStore('items');
+                    // Use getAll() to read all data from the 'items' object store
+                    let getAllRequest = objectStore.getAll();
+                    getAllRequest.onsuccess = function(event) {
+                        let items = event.target.result;
+                        let product = items[0].find(function(item) {
+                            return item.id == item_id;
+                        });
+                        if(product){
+                            let variationHtml = '';
+                            let item_obj;
+                            $.each(product.variations, function (i, v) { 
+                                item_obj = findItemByItemId(v.vId);
+                                variationHtml += `<div data-variation-parent="${product.id}" class="container variationSingleItem" data-is-promo="" data-item-id="${v.vId}" id="item-id-${v.vId}" data-item-name="${product.name +' ' + v.name + '('+v.code+')'}" data-sale-price="${item_obj.price ? item_obj.price : 0}" data-whole-sale-price="${item_obj.whole_sale_price ? item_obj.whole_sale_price : 0}" data-purchase-price="${item_obj.purchase_price ? item_obj.purchase_price : 0 }" data-menu-tax='${item_obj.tax_information}' data-sale-unit="${item_obj.sale_unit_name}">
+                                    <span>${v.name}</span>
+                                    <span class="pl-10">Price: ${item_obj.price}</span>
+                                    <input type="radio" name="variation_items">
+                                    <span class="checkmark"></span>
+                                </div>`;
+                            });
+                            $('.variationProductHtmlRender').html('');
+                            $('.variationProductHtmlRender').append(variationHtml);
+                        }
+                    };
+                    getAllRequest.onerror = function(event) {
+                        console.log("Error reading data:", event.target.error.message);
+                    };
+                };
+            }
         }else if(item_type == 'Combo_Product'){
             $('.item-modal-top-header').hide();
             $('.modal_qty_area').addClass('item_modal_quantity_area_disabled');
@@ -2708,6 +3934,7 @@ $(function () {
                                 </div>
                                 <div>
                                     <p class="combo_name">${v.item_name}</p>
+                                    <input type="hidden" class="combo_type" value="${v.type}">
                                     <input type="hidden" class="combo_child_id" value="${v.child_combo_item_id}">
                                     <input type="hidden" class="combo_parent_id" value="${v.combo_parent_id}">
                                 </div>
@@ -2739,12 +3966,12 @@ $(function () {
         }
 
         // Item Modal Data Set
-        if (last_purchase_price != '' && last_purchase_price != null) {
+        if (last_purchase_price != '' && last_purchase_price != null && view_purchase_price == 'Yes') {
             $("#m_p_price").html(parseFloat(last_purchase_price).toFixed(op_precision));
         } else {
             $("#m_p_price").html(Number(0).toFixed(op_precision));
         }
-        if (whole_sale_price != '' && whole_sale_price != null) {
+        if (whole_sale_price != '' && whole_sale_price != null && view_purchase_price == 'Yes') {
             $("#w_s_price").html(parseFloat(whole_sale_price).toFixed(op_precision));
         } else {
             $("#w_s_price").html(Number(0).toFixed(op_precision));
@@ -2834,32 +4061,35 @@ $(function () {
 
     // Code optimize by Azhar ** Final **
     $(document).on('click', '#plus_button', function () {
-        $.ajax({
-            url: base_url + "Master/checkAccess",
-            method: "GET",
-            async: false,
-            dataType: 'json',
-            data: { controller: "147", function: "add" },
-            success: function (response) {
-                if (response == false) {
-                    Swal.fire({
-                        title: warning+" !",
-                        text: no_permission_for_this_module,
-                        showDenyButton: false,
-                        showCancelButton: false,
-                        confirmButtonText: ok,
-                    });
-                } else {
-                    resetAddCustomerModalAfterAddOrClose();
-                    $('#customer_discount_modal').val("").change();
-                    $('#customer_id_modal').val("");
-                    $('#customer_price_type').val(1).change();
-                    $('#add_or_edit_text').text('Add Customer');
-                    $('#add_customer_modal').addClass('active');
-                    $('.pos__modal__overlay').fadeIn(300);
+        if(is_offline_system == '1'){
+            $.ajax({
+                url: base_url + "Master/checkAccess",
+                method: "GET",
+                async: false,
+                dataType: 'json',
+                data: { controller: "147", function: "add" },
+                success: function (response) {
+                    if (response == false) {
+                        Swal.fire({
+                            title: warning+" !",
+                            text: no_permission_for_this_module,
+                            showDenyButton: false,
+                            showCancelButton: false,
+                            confirmButtonText: ok,
+                        });
+                    } else {
+                        resetAddCustomerModalAfterAddOrClose();
+                        $('#customer_discount_modal').val("").change();
+                        $('#customer_id_modal').val("");
+                        $('#customer_price_type').val(1).change();
+                        $('#add_or_edit_text').text('Add Customer');
+                        $('#add_customer_modal').addClass('active');
+                        $('.pos__modal__overlay').fadeIn(300);
+                    }
                 }
-            }
-        });
+            });
+        }
+        
     });
 
     // Code optimize by Azhar ** Final **
@@ -2884,37 +4114,78 @@ $(function () {
 
     // Code optimize by Azhar ** Final **
     function getLastSale(date_c, customer_c, invoice_c, status) {
-        $.ajax({
-            url: base_url + "Sale/get_last_10_sales_ajax",
-            method: "GET",
-            data: { date_c: date_c, customer_c: customer_c, invoice_c: invoice_c, status: status },
-            success: function (response) {
-                let orders = JSON.parse(response);
-                let last_10_orders = '';
-                if (orders.length === 0) {
-                    last_10_orders += `<div class="op_center op_padding_10">There is no sale found</div>`;
-                } else {
-                    for (let key in orders) {
-                        last_10_orders += `<div class="single_last_ten_sale fix" id="last_ten_${orders[key].id}" data-selected="unselected">
-                            <div class="first_column column fix">${orders[key].sale_no}</div>
-                            <div class="second_column column fix">${orders[key].customer_name}</div>
-                            <div class="third_column column fix">${opDateFormat(orders[key].sale_date) + ' ' + orders[key].order_time}</div>
-                        </div>`;
+        if(is_offline_system == '1'){
+            $.ajax({
+                url: base_url + "Sale/get_last_10_sales_ajax",
+                method: "GET",
+                data: { date_c: date_c, customer_c: customer_c, invoice_c: invoice_c, status: status },
+                success: function (response) {
+                    let orders = JSON.parse(response);
+                    let last_10_orders = '';
+                    if (orders.length === 0) {
+                        last_10_orders += `<div class="op_center op_padding_10">There is no sale found</div>`;
+                    } else {
+                        for (let key in orders) {
+                            last_10_orders += `<div class="single_last_ten_sale fix" id="last_ten_${orders[key].id}" data-selected="unselected">
+                                <div class="first_column column fix">${orders[key].sale_no}</div>
+                                <div class="second_column column fix">${orders[key].customer_name}</div>
+                                <div class="third_column column fix">${opDateFormat(orders[key].sale_date) + ' ' + orders[key].order_time}</div>
+                            </div>`;
+                        }
                     }
+                    $(".last_ten_sales_holder .hold_list_holder .detail_holder ").empty();
+                    $(".last_ten_sales_holder .hold_list_holder .detail_holder ").prepend(last_10_orders);
                 }
-                $(".last_ten_sales_holder .hold_list_holder .detail_holder ").empty();
-                $(".last_ten_sales_holder .hold_list_holder .detail_holder ").prepend(last_10_orders);
-            }
-        });
+            });
+        }else{
+            const request = indexedDB.open("off_pos", 2);
+            request.onsuccess = function(event) {
+                const db = event.target.result;
+                // Create a transaction on the 'sales' object store
+                const transaction = db.transaction(["sales"], "readonly");
+                const objectStore = transaction.objectStore("sales");
+                // Use getAll to fetch all records
+                const getAllRequest = objectStore.getAll();
+                getAllRequest.onsuccess = function(event) {
+                    const allRecords = event.target.result; // Contains all the records in 'sales' store
+                    if (allRecords.length > 0) {
+                        let completedRequests = 0; // To track completed AJAX requests
+                        const totalRequests = allRecords.length;
+                        let last_10_orders = '';
+                        if(totalRequests == 0){
+                            last_10_orders += `<div class="op_center op_padding_10">There is no sale found</div>`;
+                        }
+                        allRecords.forEach(record => {
+                            last_10_orders += `<div class="single_last_ten_sale fix" id="last_ten_${record.id}" data-selected="unselected">
+                                <div class="first_column column fix">${record.sale_no}</div>
+                                <div class="second_column column fix">${record.customer_name}</div>
+                                <div class="third_column column fix">${record.sale_date + ' ' + record.sale_time}</div>
+                            </div>`;
+                        });
+                        $(".last_ten_sales_holder .hold_list_holder .detail_holder ").empty();
+                        $(".last_ten_sales_holder .hold_list_holder .detail_holder ").prepend(last_10_orders);
+                    }
+                };
+                getAllRequest.onerror = function(event) {
+                    console.log("Error fetching records:", event);
+                };
+            };
+            request.onerror = function(event) {
+                console.log("Error opening database:", event);
+            };
+        }
+        
     }
 
 
     // Code optimize by Azhar ** Final **
     $(document).on('click', '.search_sale', function () {
-        let date_c = $("#date_c").val();
-        let customer_c = $("#customer_c").val();
-        let invoice_c = $("#invoice_c").val();
-        getLastSale(date_c, customer_c, invoice_c, '');
+        if(is_offline_system == '1'){
+            let date_c = $("#date_c").val();
+            let customer_c = $("#customer_c").val();
+            let invoice_c = $("#invoice_c").val();
+            getLastSale(date_c, customer_c, invoice_c, ''); 
+        }
     });
 
     // Code optimize by Azhar ** Final **
@@ -2944,52 +4215,79 @@ $(function () {
 
 
     $(document).on('click', '#last_ten_sales_button', function () {
-        $.ajax({
-            url: base_url + "Master/checkAccess",
-            method: "GET",
-            async: false,
-            dataType: 'json',
-            data: { controller: "138", function: "list" },
-            success: function (response) {
-                if (response == false) {
-                    Swal.fire({
-                        title: warning+" !",
-                        text: no_permission_for_this_module,
-                        showDenyButton: false,
-                        showCancelButton: false,
-                        confirmButtonText: ok,
-                    });
-                } else {
-                    recentSaleModalDataClear();
-                    holdSaleModalDataClear();
-                    $("#show_last_ten_sales_modal").addClass("active");
-                    $(".pos__modal__overlay").fadeIn(200);
-                    $('.overlayForCalculator').css('display', 'none');
-                    $('#calculator_main').css('display', 'none');
-                    /**
-                     * Add Datepicker in form Search field
-                     */
-                    let op_current_date = new Date();
-                    $(".date_sale")
-                        .datepicker({
-                            autoclose: true,
-                            format: "yyyy-mm-dd",
-                            todayHighlight: true,
-                        })
-                        .datepicker("update", op_current_date);
-                    $(".date_sale").on("changeDate", function (event) {
-                        $("#date_c").val(event.format());
-                    });
-                    let date_c = $("#date_c").val();
-                    getLastSale(date_c, '', '', 'default');
+        if(is_offline_system ==  '1'){
+            $.ajax({
+                url: base_url + "Master/checkAccess",
+                method: "GET",
+                async: false,
+                dataType: 'json',
+                data: { controller: "138", function: "list" },
+                success: function (response) {
+                    if (response == false) {
+                        Swal.fire({
+                            title: warning+" !",
+                            text: no_permission_for_this_module,
+                            showDenyButton: false,
+                            showCancelButton: false,
+                            confirmButtonText: ok,
+                        });
+                    } else {
+                        recentSaleModalDataClear();
+                        holdSaleModalDataClear();
+                        $("#show_last_ten_sales_modal").addClass("active");
+                        $(".pos__modal__overlay").fadeIn(200);
+                        $('.overlayForCalculator').css('display', 'none');
+                        $('#calculator_main').css('display', 'none');
+                        /**
+                         * Add Datepicker in form Search field
+                         */
+                        let op_current_date = new Date();
+                        $(".date_sale")
+                            .datepicker({
+                                autoclose: true,
+                                format: "yyyy-mm-dd",
+                                todayHighlight: true,
+                            })
+                            .datepicker("update", op_current_date);
+                        $(".date_sale").on("changeDate", function (event) {
+                            $("#date_c").val(event.format());
+                        });
+                        let date_c = $("#date_c").val();
+                        getLastSale(date_c, '', '', 'default');
+                    }
                 }
-            }
-        });
+            });
+        }else{
+            recentSaleModalDataClear();
+            holdSaleModalDataClear();
+            $("#show_last_ten_sales_modal").addClass("active");
+            $(".pos__modal__overlay").fadeIn(200);
+            $('.overlayForCalculator').css('display', 'none');
+            $('#calculator_main').css('display', 'none');
+            /**
+             * Add Datepicker in form Search field
+             */
+            let op_current_date = new Date();
+            $(".date_sale")
+                .datepicker({
+                    autoclose: true,
+                    format: "yyyy-mm-dd",
+                    todayHighlight: true,
+                })
+                .datepicker("update", op_current_date);
+            $(".date_sale").on("changeDate", function (event) {
+                $("#date_c").val(event.format());
+            });
+            let date_c = $("#date_c").val();
+            getLastSale(date_c, '', '', 'default');
+        }
+        
     });
 
 
     // Code optimize by Azhar ** Final **
     $(document).on('click', '.last_ten_sales_button', function () {
+
         $.ajax({
             url: base_url + "Master/checkAccess",
             method: "GET",
@@ -3032,6 +4330,7 @@ $(function () {
             }
         });
     });
+
 
     // Code optimize by Azhar ** Final **
     function increaseFreeItemQty(type,qty_cart,s_item_id){
@@ -3044,17 +4343,18 @@ $(function () {
         let draw_table_for_order = ''
         let promo_item_name = ''
         let promo_item_id = ''
-        for (let i = 0; i < window.items.length; i++) {
-            if (items[i].item_id == Number(s_item_id)) {
-                is_promo = (items[i].is_promo);
-                promo_type = Number((items[i].promo_type));
-                item_id = (items[i].item_id);
-                promo_item_name = (items[i].promo_item_name);
-                promo_item_id = (items[i].promo_item_id);
-                promo_qty = (items[i].promo_qty);
-                promo_get_qty = (items[i].promo_get_qty);
-            }
+
+        let single_item = window.items.find(item => item.item_id == s_item_id);
+        if(single_item){
+            is_promo = single_item.is_promo;
+            promo_type = single_item.promo_type;
+            item_id = single_item.item_id;
+            promo_item_name = single_item.promo_item_name;
+            promo_item_id = single_item.promo_item_id;
+            promo_qty = single_item.promo_qty;
+            promo_get_qty = single_item.promo_get_qty;
         }
+        
         if(is_promo=="Yes" && promo_type==2){
             let counting_qty_cart = (parseInt((qty_cart/promo_qty)) * promo_get_qty);
             if(counting_qty_cart > 0){
@@ -3103,6 +4403,7 @@ $(function () {
         let item_id = $(this).attr('id').substr(20);
         let item_type = $(this).parent().parent().find('.item_type').text();
         let discount = $('#walk_in_customer').find(':selected').attr('discount');
+        let parent_id = $(this).parent().parent().parent().attr('data-variation-parent');
         let percentage_table = $(this).parent().parent().find('.forth_column .inline_dis_column').val();
         cartIncDecButtonEnableDisableByType(item_type, item_id);
         let item_obj = findItemByItemId(item_id);
@@ -3135,20 +4436,104 @@ $(function () {
         let unit_price = $(this).parent().parent().find('.second_column span').eq(0).text();
         let stock_checker = true;
         if(allow_less_sale=="No" && item_type != 'Service_Product'){
-            $.ajax({
-                url: base_url + "Authentication/checkQTY",
-                method: "POST",
-                async: false,
-                dataType: 'json',
-                data: { item_id: item_id },
-                success: function (response) {
-                    let return_stock = Number(response);
-                    if(return_stock < itemQty){
-                        stock_checker = false;
-                        toastr['error'](("Stock Not available!"), '');
+
+            if(is_offline_system == '1'){
+                $.ajax({
+                    url: base_url + "Authentication/checkQTY",
+                    method: "POST",
+                    async: false,
+                    dataType: 'json',
+                    data: { item_id: item_id },
+                    success: function (response) {
+                        let return_stock = Number(response);
+                        if(return_stock < itemQty){
+                            stock_checker = false;
+                            toastr['error'](("Stock Not available!"), '');
+                        }
                     }
-                }
-            });
+                });
+            }else {
+                // Open a connection to the IndexedDB database
+                let request = indexedDB.open('off_pos_2', 2);
+                request.onerror = function(event) {
+                    console.log("Error opening the database:", event.target.error ? event.target.error.message : "Unknown error");
+                };
+                request.onsuccess = function(event) {
+                    let db = event.target.result;
+                    // Start a transaction to read from the database
+                    let transaction = db.transaction(['items'], 'readonly');
+                    let objectStore = transaction.objectStore('items');
+                    // Use getAll() to read all data from the 'items' object store
+                    let getAllRequest = objectStore.getAll();
+                    getAllRequest.onsuccess = function(event) {
+                        let items = event.target.result;
+                        let product = items[0].find(function(item) {
+                            if(item_type == 'Variation_Product'){
+                                return item.id == parent_id;
+                            }else{
+                                return item.id == item_id;
+                            }
+                        });
+                        if(item_type == 'General_Product' && product.type == 'General_Product'){
+                            if((Number(product.stock_qty) - Number(product.out_qty)) < Number(itemQty)){
+                                stock_checker = false;
+                                toastr['error'](("Stock Not available!"), '');
+                            }
+                        }else if(item_type == 'Variation_Product' && product.type == 'Variation_Product'){
+                            product.variations = product.variations.map(function(variation) {
+                                if (variation.vId == item_id) {
+                                    if((Number(variation.stock_in) - Number(variation.stock_out)) < Number(itemQty)){
+                                        stock_checker = false;
+                                        toastr['error'](("Stock Not available!"), '');
+                                    }
+                                }
+                            }).filter(variation => variation.stock_out < variation.stock_in);
+                        }else if(item_type == 'Medicine_Product' && product.type == 'Medicine_Product'){
+                            let totalAvailableStock = 0;
+                            if (product.allexpiry) {
+                                product.allexpiry.forEach(function(expiryItem) {
+                                    let expiryDate = Object.keys(expiryItem)[0];
+                                    let quantity = expiryItem[expiryDate];
+                                    totalAvailableStock += Number(quantity);
+                                });
+                            }
+                            if (totalAvailableStock < Number(itemQty)) {
+                                stock_checker = false;
+                                toastr['error']("Stock Not available for medicine product!", '');
+                            }
+                        }
+
+                        // console.log(product);
+                        if(product){
+                            let imeiHtml = '';
+                            imeiHtml = `<option value="">Select ${item_type == 'IMEI_Product' ? 'IMEI' : 'Serial'}</option>`;
+                            if(product.allimei){
+                                product.allimei.map(function(imei_serial) {
+                                    imeiHtml += `<option value="${$.trim(imei_serial.single_imei_serial)}">${$.trim(imei_serial.single_imei_serial)}</option>`;
+                                });
+                            }
+                            $('#IMEI_Serial').html('');
+                            $('#IMEI_Serial').append(imeiHtml);
+                            $('.item-modal-top-header').show();
+                            $('.modal_qty_area').removeClass('item_modal_quantity_area_disabled');
+                        }
+                    };
+                    getAllRequest.onerror = function(event) {
+                        console.log("Error reading data:", event.target.error.message);
+                    };
+                };
+
+
+
+
+
+
+
+
+
+
+
+            }
         }
         if(stock_checker){
             let updated_total_price = (parseFloat(itemQty) * parseFloat(unit_price)).toFixed(op_precision);
@@ -3161,6 +4546,7 @@ $(function () {
         }
         increaseFreeItemQty(2, itemQty, item_id);
     });
+
 
     function cartIncDecButtonEnableDisableByType(item_type, item_id){
         if(item_type == 'IMEI_Product' || item_type == 'Serail_Product')
@@ -3353,17 +4739,17 @@ $(function () {
         $('.pos__modal__overlay').fadeIn();
         $('.finalize_modal_is_mul_currency').hide();
 
-        if(sms_enable_status == '1'){
+        if(sms_enable_status == '1' && is_offline_system == '1'){
             $('.sms_enable_status').prop('checked', true);
         }else{
             $('.sms_enable_status').prop('checked', false);
         }
-        if(smtp_enable_status == '1'){
+        if(smtp_enable_status == '1' && is_offline_system == '1'){
             $('.smtp_enable_status').prop('checked', true);
         }else{
             $('.smtp_enable_status').prop('checked', false);
         }
-        if(send_invoice_whatsapp == 'Enable'){
+        if(send_invoice_whatsapp == 'Enable' && is_offline_system == '1'){
             $('.send_invoice_whatsapp').prop('checked', true);
         }else{
             $('.send_invoice_whatsapp').prop('checked', false);
@@ -3377,6 +4763,11 @@ $(function () {
                 $('#finalize_given_amount_input').focus();
             }else{
                 $('#finalize_amount_input').focus();
+                setTimeout(function(){
+                    $('#finalize_given_amount_input').val('');
+                    $('#finalize_change_amount_input').val('');
+                    $('#finalize_amount_input').val('');
+                }, 200)
             }
         }else{
             let accType;
@@ -3393,6 +4784,7 @@ $(function () {
         }
         let customer_id = $('#walk_in_customer').val();
         let customer_name = $('#walk_in_customer').find(':selected').attr('data-customer-name');
+        let customer_phone_number = $('#walk_in_customer').find(':selected').attr('data-phone_number');
         let previous_due = $('#walk_in_customer').find(':selected').attr('data-previous_due');
         let select_employee_id = $('#select_employee_id').val();
         let sub_total = parseFloat($('#sub_total_show').text()).toFixed(op_precision);
@@ -3412,7 +4804,6 @@ $(function () {
         let rounding = $.trim($('#rounding').text());
         let old_sale_id = $('#old_sale_id').val();
         let total_items_in_cart = $('.order_holder .single_order').length;
-
 
         $("#finalize_previous_due").html(parseFloat(previous_due).toFixed(op_precision));
         $('.set_value_for').html(Number(customer_previous_due));
@@ -3486,8 +4877,9 @@ $(function () {
         } else {
             sub_total_discount_type = 'plain';
         }
-        if (customer_id == "") {
+        if (customer_id == null || customer_id == "") {
             toastr['error']((select_a_customer), '');
+            $('.pos__modal__overlay').fadeOut(300);
             return false;
         }
         let orderInfo = {
@@ -3495,6 +4887,7 @@ $(function () {
             charge_type: charge_type,
             random_code: getRandomCode(15),
             customer_id: customer_id,
+            customer_phone_number: customer_phone_number,
             select_employee_id: select_employee_id,
             total_items_in_cart: total_items_in_cart,
             sub_total: sub_total,
@@ -3516,10 +4909,13 @@ $(function () {
           
         if ($('.order_holder .single_order').length > 0) {
             $('.order_holder .single_order').each(function (i, obj) {
+            
                 let item_id = $(this).attr('id').substr(15);
+                let sale_unit_name = $(this).attr('data-sale-unit');
                 let freeItemLength = $(this).find('.free-item').length;
                 let is_promo = $(this).attr('is_promo');
                 let item_name = $(this).find('#item_name_table_' + item_id).text();
+                let expiry_date_maintain = $(this).find('#expiry_date_maintain_' + item_id).text();
                 let item_seller_id = $(this).find('#item_seller_table' + item_id).text();
                 let item_description = $(this).find('.item_modal_description_table_' + item_id).text();
                 let item_last_purchase_price = $(this).find('#item_last_purchase_price_table_' + item_id).text();
@@ -3539,7 +4935,7 @@ $(function () {
                 let item_price_with_discount = $(this).find('#item_total_price_table_' + item_id).text();
                 let item_details = $(this).find('.item_modal_description_table_' + item_id).text();
                 let item_discount_amount = (parseFloat(item_price_without_discount) - parseFloat(item_price_with_discount)).toFixed(op_precision);
-            
+                
                 // Initialize item object
                 let item = {
                     item_seller_id: item_seller_id,
@@ -3549,6 +4945,7 @@ $(function () {
                     item_vat: item_vat,
                     item_discount: item_discount,
                     expiry_imei_serial: expiry_imei_serial,
+                    expiry_date_maintain: expiry_date_maintain,
                     item_type: item_type,
                     discount_type: discount_type,
                     item_price_without_discount: item_price_without_discount,
@@ -3560,6 +4957,7 @@ $(function () {
                     is_promo_item: is_promo,
                     is_promo_item_exist: freeItemLength,
                     item_description: item_description,
+                    sale_unit_name: sale_unit_name,
                     combo_item: [] 
                 };
 
@@ -3589,6 +4987,7 @@ $(function () {
                         is_promo_item: "",
                         is_promo_item_exist: "",
                         item_description: "",
+                        sale_unit_name: "",
                     });
                 }
         
@@ -3599,11 +4998,13 @@ $(function () {
                         let combo_id = $(this).find('.first_column').attr('data-id');
                         let comboItemQty = $(`#combo_item_quantity_table_${combo_id}`).text();
                         let comboItemPrice = $(`#combo_item_price_table_${combo_id}`).text();
+                        let comboItemType = $(`#combo_item_type_table_${combo_id}`).text();
                         let comboItemSubtotal = $(`#free_item_total_price_table_${combo_id}`).text();
                         let comboItemSeller = $(`#combo_seller_table_${combo_id}`).text();
                         let comboItemShowInv = $(`#combo_inv_show_table_${combo_id}`).text();
                         orderInfo.items[itemIndex].combo_item.push({
                             combo_item_id: combo_id,
+                            combo_item_type: comboItemType,
                             combo_item_qty: comboItemQty,
                             combo_item_price: comboItemPrice,
                             combo_item_subtotal: comboItemSubtotal,
@@ -3670,103 +5071,204 @@ $(function () {
     $(document).on('click', '#last_ten_sales_edit_buttons', function () {
         if ($('.single_last_ten_sale[data-selected=selected]').length > 0) {
             let sale_id = $('.single_last_ten_sale[data-selected=selected]').attr('id').substr(9);
-            open(base_url +"Sale/edit_sale/" + bin2hex(sale_id),"_self");
+            if(is_offline_system == '1'){
+                open(base_url +"Sale/edit_sale/" + bin2hex(sale_id),"_self");
+            }else{
+                singleRecentSaleSetInCart(sale_id);
+            }
         } else {
             toastr['error']((please_select_an_order), '');
         }
     });
+
+    function singleRecentSaleSetInCart(sale_id){
+        let db;
+        const request = indexedDB.open("off_pos", 2);
+        request.onerror = function(event) {
+            console.error("Database error: " + event.target.error);
+        };
+        request.onsuccess = function(event) {
+            db = event.target.result;
+            const transaction = db.transaction(["sales"], "readonly");
+            const objectStore = transaction.objectStore("sales");
+            const getRequest = objectStore.getAll();
+            getRequest.onerror = function(event) {
+                console.log("Error fetching Rcent sale:", event.target.error);
+            };
+            getRequest.onsuccess = function(event) {
+                const recentSale = event.target.result;
+                if (recentSale) {
+                    let find_this_item = '';
+                    recentSale.forEach(record => {
+                        if(record.id == parseInt(sale_id)){
+                            find_this_item = record;
+                            $('#offline_edit_sale').val(sale_id);
+                            $('#offline_edit_sale_no').val(record.sale_no);
+                            return
+                        }
+                    });
+                    let single_item = JSON.parse(find_this_item.order);
+
+                    let itemCount = 0;
+                    let totalQty = 0;
+                    let discount_value = '';
+                    let draw_table_for_order  = '';
+                    let expiry_date_maintain ='';
+                    let expiry_imei_serial = '';
+
+                    // Leter
+                    let variation_parent = '';
+                    single_item.items.forEach(function(this_item){
+                        if((this_item.item_type == 'IMEI_Product' || this_item.item_type == 'Serial_Product'|| this_item.item_type == 'Medicine_Product') && this_item.expiry_imei_serial){
+                            expiry_imei_serial = `<span class="imei_serial_note" id="expiry_imei_serial">${checkItemShortType(this_item.item_type)}: <span class="expiry_imei_serial_${this_item.item_type}">${this_item.expiry_imei_serial}</span></span>`;
+                        }else{
+                            expiry_imei_serial = '';
+                        }
+                        draw_table_for_order += `<div data-sale-unit="${this_item.sale_unit_name}" data-variation-parent="${variation_parent}" class="single_order imei_serial_expiry_${this_item.expiry_imei_serial}" is_promo="${this_item.is_promo_item}" data-qty_default="" id="order_for_item_${this_item.item_id}" data-single-order-row-no="" data_cart_item_id="${this_item.item_id}">
+                            <div class="first_portion">
+                                <span id="item_seller_table${this_item.item_id}" class="d-none">${this_item.item_seller_id}</span>
+                                <span class="item_type d-none" id="item_type_table${this_item.item_id}">${this_item.item_type}</span>
+                                <span class="item_vat d-none" id="item_vat_percentage_table${this_item.item_id}">${this_item.item_vat}</span>
+                                <span class="item_discount d-none" id="item_discount_table${this_item.item_id}">${percentValueCalculateByPriceQtyDiscount(this_item.item_unit_price, this_item.item_quantity, this_item.item_discount)}</span>
+                                <span class="item_price_without_discount d-none" id="item_price_without_discount_${this_item.item_id}">${Number(this_item.item_unit_price) * Number(this_item.item_quantity)}</span>
+                                <div class="single_order_column first_column">
+                                    <iconify-icon icon="solar:pen-broken" class="op_cursor_pointer edit_item" width="22" id="edit_item_${this_item.item_id}"></iconify-icon>
+                                    <span id="item_name_table_${this_item.item_id}">${this_item.item_name}</span>
+                                </div>
+                                <div class="single_order_column second_column">
+                                    <span id="item_price_table_${this_item.item_id}">${this_item.is_promo_item == '' ? parseFloat(0).toFixed(op_precision) : this_item.item_unit_price}</span>
+                                </div>
+                                <div class="single_order_column third_column ${this_item.item_type == 'Combo_Product' ? 'combo_parent_inc_dec' : ''}">
+                                    <iconify-icon icon="uil:minus" class="decrease_item_table op_cursor_pointer" id="decrease_item_table_${this_item.item_id}" width="22"></iconify-icon>
+                                    <span class="cart_quantity" id="item_quantity_table_${this_item.item_id}">${this_item.item_quantity}</span> 
+                                    <iconify-icon icon="uil:plus" class="increase_item_table op_cursor_pointer" id="increase_item_table_${this_item.item_id}" width="22"></iconify-icon>
+                                </div>
+                                <div class="single_order_column forth_column ${this_item.item_type == 'Combo_Product' ? 'combo_parent_inc_dec' : ''}">
+                                    <input type="" name="" onfocus="select();" inline_dis_column="${this_item.item_id}" placeholder="Amt or %" class="special_textbox access_control inline_dis_column" id="percentage_table_${this_item.item_id}" value="${this_item.is_promo_item == '' ? Number(0) : this_item.item_discount}" >
+                                </div>
+                                <div class="single_order_column fifth_column">
+                                    <span id="item_total_price_table_${this_item.item_id}">${this_item.item_price_with_discount}</span> 
+                                    <iconify-icon icon="solar:trash-bin-minimalistic-broken" data-remove-order-row-no="" class="remove_this_item_from_cart" width="22"></iconify-icon>
+                                </div>
+                            </div>
+                            ${expiry_imei_serial}
+                            <span class="cart_item_modal_des item_modal_description_table_${this_item.item_id}">${this_item.item_description}</span>
+                        </div>`;
+                    });
+                    $(".order_holder").append('');
+                    $(".order_holder").append(draw_table_for_order);
+                    $('#show_charge_amount').text(single_item.delivery_charge);
+                    $('#show_last_ten_sales_modal').removeClass("active");
+                    $(".pos__modal__overlay").fadeOut(300);
+                    setTimeout(function(){
+                        $("#walk_in_customer").val(single_item.customer_id).trigger("change");
+                        cartItemCalculationInPOS();
+                    }, 200);
+
+                }
+            };
+        }; 
+    }
 
 
 
     //when change customer  ** Optimized Code By Azhar
     $(document).on('change', '#walk_in_customer', function (e) {
         e.preventDefault();
-        let discount = 0;
-        let customer_id = $(this).val();
-        let priceType = $('option:selected', this).attr('price_type');
-        let thisC = $(this);
-        $.ajax({
-            method: "GET",
-            dataType: 'json',
-            url: base_url+"Sale/findCustomerCreditLimit/"+customer_id,
-            success: function (response) {
-                $("#customer_credit_limit").val(Number(response.credit_limit.credit_limit).toFixed(op_precision));
-                $("#customer_previous_due").val(Number(response.due_amount).toFixed(op_precision));
-            }
-        });
-        if(edit_mode == ''){
-            let card_data = $('.order_holder').html();
-            if(card_data != ''){
-                let item_qty = 0;
-                let single_item_subtotal  = 0;
-                let singleItemDiscountSum = 0;
-                let whole_sale_price = 0;
-                let sale_price = 0;
-                let item_id;
-                let itemPrice = 0;
-                let item_type = '';
-                let item_obj;
-                $('.single_order').each(function(i,v){
-                    item_id = $(this).attr('id').substr(15);
-                    item_obj = findItemByItemId(item_id);
 
-                    whole_sale_price = item_obj.whole_sale_price;
-                    sale_price = item_obj.price;
-                    item_type = item_obj.item_type;
-
-                    if(whole_sale_price == '0' && priceType == '2'){
-                        toastr['error'](("Whole sale is setup for this customer, and whole set is not set up for this product"), '');
+        if(is_offline_system ==  '1'){
+            let discount = 0;
+            let customer_id = $(this).val();
+            let priceType = $('option:selected', this).attr('price_type');
+            let thisC = $(this);
+            if(customer_id){
+                $.ajax({
+                    method: "GET",
+                    dataType: 'json',
+                    url: base_url+"Sale/findCustomerCreditLimit/"+customer_id,
+                    success: function (response) {
+                        $("#customer_credit_limit").val(Number(response.credit_limit.credit_limit).toFixed(op_precision));
+                        $("#customer_previous_due").val(Number(response.due_amount).toFixed(op_precision));
                     }
-                    if(item_obj.is_promo == "Yes"){
-                        discount = item_obj.promo_discount != '' ? item_obj.promo_discount : 0;
-                        $(this).find('.forth_column .inline_dis_column').prop('readonly', true);
-                    }else{
-                        discount = $('option:selected', thisC).attr('discount');
-                        if(discount == 0 || discount == "" || discount == NaN || discount == undefined || discount == null || discount == 'null'){
-                            discount = 0;
-                        }else{
-                            discount = discount;
-                        }
-                        if(discount != 0){
-                            $(this).find('.forth_column .inline_dis_column').prop('readonly', true);
-                        }else{
-                            $(this).find('.forth_column .inline_dis_column').prop('readonly', false);
-                        }
-                    }
-                    item_qty = $(this).find('.third_column .cart_quantity').text();
-                    let old_sale_id = ($("#old_sale_id").val());
-                    let edit_sale_customer = Number($("#edit_sale_customer").val());
-                    if(old_sale_id && edit_sale_customer == customer_id){
-                        discount = $(this).find('.forth_column .inline_dis_column').attr("data-discount_for_edit");
-                    }
-                    $(this).find('.forth_column .inline_dis_column').val(discount);
-                    if(priceType == 1 && item_type != 'Service_Product'){
-                        $(this).find('.second_column span').eq(0).text(Number(sale_price).toFixed(op_precision));
-                        single_item_subtotal = singleSubtotalCalculateByPriceDiscount(sale_price, discount);
-                        itemPrice = sale_price;
-                    }else if(priceType == 2 && item_type != 'Service_Product'){
-                        $(this).find('.second_column span').eq(0).text(Number(whole_sale_price).toFixed(op_precision));
-                        single_item_subtotal = singleSubtotalCalculateByPriceDiscount(whole_sale_price, discount);
-                        itemPrice = whole_sale_price;
-                    }else{
-                        $(this).find('.second_column span').eq(0).text(Number(sale_price).toFixed(op_precision));
-                        single_item_subtotal = singleSubtotalCalculateByPriceDiscount(sale_price, discount);
-                        itemPrice = sale_price;
-                    }
-                    $(this).find('.fifth_column span').eq(0).text(Number(single_item_subtotal).toFixed(op_precision));
-                    $(this).find('.item_price_without_discount').text((Number(itemPrice) * Number(item_qty)).toFixed(op_precision));
-                    let mainPrice = $(this).find('.second_column span').eq(0).text();
-                    let cartQty = $(this).find('.third_column  .cart_quantity').text();
-                    let subTotal = $(this).find('.fifth_column span').eq(0).text();
-                    let singleItemDiscount = (Number(mainPrice) * Number(cartQty)) - Number(subTotal);
-                    singleItemDiscountSum += singleItemDiscount;
                 });
-                $('#all_items_discount').text(Number(singleItemDiscountSum).toFixed(op_precision));
-                cartItemCalculationInPOS();
                 if(edit_mode == ''){
-                    storageCartDataInLocal();
+                    let card_data = $('.order_holder').html();
+                    if(card_data != ''){
+                        let item_qty = 0;
+                        let single_item_subtotal  = 0;
+                        let singleItemDiscountSum = 0;
+                        let whole_sale_price = 0;
+                        let sale_price = 0;
+                        let item_id;
+                        let itemPrice = 0;
+                        let item_type = '';
+                        let item_obj;
+                        $('.single_order').each(function(i,v){
+                            item_id = $(this).attr('id').substr(15);
+                            item_obj = findItemByItemId(item_id);
+                            if (item_obj && item_obj.whole_sale_price) {
+                                whole_sale_price = item_obj.whole_sale_price;
+                            }else{
+                                whole_sale_price = 0;
+                            }
+                            sale_price = item_obj.price;
+                            item_type = item_obj.item_type;
+                            if(whole_sale_price == '0' && priceType == '2'){
+                                toastr['error'](("Whole sale is setup for this customer, and whole set is not set up for this product"), '');
+                            }
+                            if(item_obj.is_promo == "Yes"){
+                                discount = item_obj.promo_discount != '' ? item_obj.promo_discount : 0;
+                                $(this).find('.forth_column .inline_dis_column').prop('readonly', true);
+                            }else{
+                                discount = $('option:selected', thisC).attr('discount');
+                                if(discount == 0 || discount == "" || discount == NaN || discount == undefined || discount == null || discount == 'null'){
+                                    discount = 0;
+                                }else{
+                                    discount = discount;
+                                }
+                                if(discount != 0){
+                                    $(this).find('.forth_column .inline_dis_column').prop('readonly', true);
+                                }else{
+                                    $(this).find('.forth_column .inline_dis_column').prop('readonly', false);
+                                }
+                            }
+                            item_qty = $(this).find('.third_column .cart_quantity').text();
+                            let old_sale_id = ($("#old_sale_id").val());
+                            if(old_sale_id && edit_sale_customer == customer_id){
+                                discount = $(this).find('.forth_column .inline_dis_column').attr("data-discount_for_edit");
+                            }
+                            $(this).find('.forth_column .inline_dis_column').val(discount);
+                            if(priceType == 1 && item_type != 'Service_Product'){
+                                $(this).find('.second_column span').eq(0).text(Number(sale_price).toFixed(op_precision));
+                                single_item_subtotal = singleSubtotalCalculateByPriceDiscount(sale_price, discount);
+                                itemPrice = sale_price;
+                            }else if(priceType == 2 && item_type != 'Service_Product'){
+                                $(this).find('.second_column span').eq(0).text(Number(whole_sale_price).toFixed(op_precision));
+                                single_item_subtotal = singleSubtotalCalculateByPriceDiscount(whole_sale_price, discount);
+                                itemPrice = whole_sale_price;
+                            }else{
+                                $(this).find('.second_column span').eq(0).text(Number(sale_price).toFixed(op_precision));
+                                single_item_subtotal = singleSubtotalCalculateByPriceDiscount(sale_price, discount);
+                                itemPrice = sale_price;
+                            }
+                            $(this).find('.fifth_column span').eq(0).text(Number(single_item_subtotal).toFixed(op_precision));
+                            $(this).find('.item_price_without_discount').text((Number(itemPrice) * Number(item_qty)).toFixed(op_precision));
+                            let mainPrice = $(this).find('.second_column span').eq(0).text();
+                            let cartQty = $(this).find('.third_column  .cart_quantity').text();
+                            let subTotal = $(this).find('.fifth_column span').eq(0).text();
+                            let singleItemDiscount = (Number(mainPrice) * Number(cartQty)) - Number(subTotal);
+                            singleItemDiscountSum += singleItemDiscount;
+                        });
+                        $('#all_items_discount').text(Number(singleItemDiscountSum).toFixed(op_precision));
+                        cartItemCalculationInPOS();
+                        if(edit_mode == ''){
+                            storageCartDataInLocal();
+                        }
+                    }
                 }
             }
+        } else {
+
         }
     });
 
@@ -3777,10 +5279,23 @@ $(function () {
     });
 
 
+
+
+    // Code optimize by Azhar ** Need to more optimize
+    function getNextSaleNo(currentSaleNo) {
+        const prefix = currentSaleNo.match(/[A-Z]+/)[0];
+        const numberPart = parseInt(currentSaleNo.match(/\d+/)[0]);
+        const nextNumber = numberPart + 1;
+        const nextSaleNo = prefix + String(nextNumber).padStart(5, '0');
+        return nextSaleNo;
+    }
+
     // Code optimize by Azhar ** Need to more optimize
     $(document).on('click', '#finalize_order_button', function () {
+        let cThis = $(this);
         let customer_id = $("#walk_in_customer").val();
         let selected_customer_name = $('option:selected', '#walk_in_customer').attr('data-customer-name');
+        let customer_phone_number = $('option:selected', '#walk_in_customer').attr('data-phone_number');
         let charge_type = $("#charge_type").val();
         let send_invoice_email = $('input:checkbox[name=send_invoice_email]:checked').val();
         let send_invoice_sms = $('input:checkbox[name=send_invoice_sms]:checked').val();
@@ -3801,7 +5316,12 @@ $(function () {
         let stripe_email = $("#bank_stripe_email").val();
         let note = $("#note").val();
         let sub_total_discount_finalize = Number($("#sub_total_discount_finalize").val());
+        let print_format = $("#print_format").val();
+        let invoice_print = $("#invoice_print").val();
+        let old_sale_id = $("#offline_edit_sale").val();
+        let offline_edit_sale_no = $("#offline_edit_sale_no").val();
         let status = true;
+
 
         if (account_type == "Stripe") {
             if (stripePayementStatus == true) {
@@ -3889,65 +5409,264 @@ $(function () {
                     let account_note = $('#pay_amount_note_invoice_modal_input').val();
                     let finalize_previous_due = $('#customer_all_due').text();
                     let payment_method_type = $('#finalie_order_payment_method').val();
-                    let paid_amount = $('#paid_amt').val();            
+                    let paid_amount = $('#paid_amt').val();           
                     let finalize_total_due = $('#finalize_total_due').text();
                     let change_amount_div_ = $('#change_amount_div_').text();
                     let given_amount = $('#hidden_given_amount').val();
-                    $.ajax({
-                        url: base_url + "Sale/add_sale_by_ajax",
-                        method: "POST",
-                        dataType: 'json',
-                        data: {
-                            order: order_object,
-                            customer_name: selected_customer_name,
-                            sale_id: sale_id,
-                            csrf_offpos: csrf_value_,
-                            account_type : account_type,
-                            p_note : p_note,
-                            check_no : check_no,
-                            check_issue_date : check_issue_date,
-                            check_expiry_date : check_expiry_date,
-                            card_holder_name : card_holder_name,
-                            card_holding_number : card_holding_number,
-                            mobile_no : mobile_no,
-                            transaction_no : transaction_no,
-                            paypal_email : paypal_email,
-                            stripe_email : stripe_email,
-                            send_invoice_email : send_invoice_email,
-                            send_invoice_sms : send_invoice_sms,
-                            send_invoice_whatsapp : send_invoice_whatsapp,
-                            note : note,
-                            charge_type : charge_type,
-                            sub_total_discount_finalize : sub_total_discount_finalize,
-                            paymentAccountDetails: paymentAccountDetails,
-                            is_multi_currency: is_multi_currency,
-                            multi_currency: multi_currency,
-                            multi_currency_rate: multi_currency_rate,
-                            multi_currency_amount: multi_currency_amount,
-                            payment_object: payment_object,
-                            account_note: account_note,
-                            finalize_previous_due: finalize_previous_due,
-                            payment_method_type: payment_method_type,
-                            paid_amount: paid_amount,
-                            due_amount: finalize_total_due,
-                            given_amount: given_amount,
-                            change_amount: change_amount_div_,
-                        },
-                        success: function (response) {
-                            $('.order_table_holder .order_holder').empty();
-                            $('.loader1').slideUp('500');
-                            clearFooterCartCalculation();
-                            resetDefaultCustomer();
-                            getAllCustomers(1,0,1);
-                            printInvoice(response.sales_id);
-                            resetFinalizeModal();
-                            $("#last_sale_id").val(response.sales_id);
 
-                            if(response.is_new_item == 'Yes'){
-                                window.location.href = base_url+"Sale/POS";
-                            }
+                    $(cThis).attr('disabled', true);
+                    let sale_date = new Date().toLocaleDateString(); 
+                    let sale_time = new Date().toLocaleTimeString();
+                    if(is_offline_system == '0'){
+                        const currentSaleNo = $('#last_sale_no').val();
+                        let nextSaleNo = '';
+                        if(offline_edit_sale_no){
+                            nextSaleNo = offline_edit_sale_no;      
+                        }else{
+                            nextSaleNo = getNextSaleNo(currentSaleNo);
                         }
-                    });
+
+                        // ############ Index DB ############
+                        let db;
+                        const request = indexedDB.open("off_pos", 2);  // Changed from 1 to 2
+                        request.onupgradeneeded = function(event) {
+                            db = event.target.result;  // Use 'db' consistently
+                            if (!db.objectStoreNames.contains("sales")) {  // Check if store already exists
+                                db.createObjectStore("sales", { keyPath: "id", autoIncrement: true }); 
+                                console.log("Object store 'sales' created");
+                            }
+                        };
+
+                        request.onsuccess = function(event) {
+                            db = event.target.result;
+                            // Now that the database is opened, create a transaction and add data
+                            const transaction = db.transaction(["sales"], "readwrite");
+                            const objectStore = transaction.objectStore("sales");  
+                            let oData = {
+                                is_online: is_offline_system,
+                                order: order_object,
+                                customer_name: selected_customer_name,
+                                customer_phone_number: customer_phone_number,
+                                sale_id: sale_id,
+                                sale_no: nextSaleNo,
+                                csrf_offpos: csrf_value_,
+                                account_type: account_type,
+                                p_note: p_note,
+                                check_no: check_no,
+                                check_issue_date: check_issue_date,
+                                check_expiry_date: check_expiry_date,
+                                card_holder_name: card_holder_name,
+                                card_holding_number: card_holding_number,
+                                mobile_no: mobile_no,
+                                transaction_no: transaction_no,
+                                paypal_email: paypal_email,
+                                stripe_email: stripe_email,
+                                send_invoice_email: send_invoice_email,
+                                send_invoice_sms: send_invoice_sms,
+                                send_invoice_whatsapp: send_invoice_whatsapp,
+                                note: note,
+                                charge_type: charge_type,
+                                sub_total_discount_finalize: sub_total_discount_finalize,
+                                paymentAccountDetails: paymentAccountDetails,
+                                is_multi_currency: is_multi_currency,
+                                multi_currency: multi_currency,
+                                multi_currency_rate: multi_currency_rate,
+                                multi_currency_amount: multi_currency_amount,
+                                payment_object: payment_object,
+                                account_note: account_note,
+                                finalize_previous_due: finalize_previous_due,
+                                payment_method_type: payment_method_type,
+                                paid_amount: paid_amount,
+                                due_amount: finalize_total_due,
+                                given_amount: given_amount,
+                                change_amount: change_amount_div_,
+                                sale_date: sale_date,
+                                sale_time: sale_time,
+                                
+                            };
+
+                            // Add or update data based on old_sale_id
+                            let requestAdd;
+                            if(old_sale_id) {
+                                // If old_sale_id exists, update existing record
+                                oData.id = parseInt(old_sale_id); // Add id for updating
+                                requestAdd = objectStore.put(oData);
+                            } else {
+                                // If no old_sale_id, add new record
+                                requestAdd = objectStore.add(oData);
+                            }
+
+                            requestAdd.onsuccess = function(event) {
+                                console.log(old_sale_id ? "Data updated successfully" : "Data added successfully");
+                                $(cThis).attr('disabled', false);
+                                $('#last_sale_no').val('').val(nextSaleNo);
+                                if(invoice_print == 'web_browser'){
+                                    printOfflineInvoice(oData);
+                                }
+                            };
+
+                            requestAdd.onerror = function(event) {
+                                console.log("Error " + (old_sale_id ? "updating" : "adding") + " data:", event);
+                            };
+                        };
+
+                        request.onerror = function(event) {
+                            console.log("Error opening database:", event);
+                        };
+
+                        let parseSaleItem = JSON.parse(order_object);
+                        let needItemsInfoRemove = parseSaleItem.items.map(item => ({
+                            expiry_imei_serial: item.expiry_imei_serial,
+                            vp_item_id: item.vp_item_id,
+                            item_id: item.item_id,
+                            item_type: item.item_type,
+                            item_quantity: item.item_quantity
+                        }));
+
+                        // Open a connection to the IndexedDB database
+                        let request2 = indexedDB.open('off_pos_2', 2);
+                        request2.onerror = function(event) {
+                            console.log("Error opening the database:", event.target.error ? event.target.error.message : "Unknown error");
+                        };
+
+                        request2.onsuccess = function(event) {
+                            let db2 = event.target.result;
+                            // Start a transaction to read from the database
+                            let transaction2 = db2.transaction(['items'], 'readwrite');
+                            let objectStore2 = transaction2.objectStore('items');
+                            // Use getAll() to read all data from the 'items' object store
+                            let getAllRequest2 = objectStore2.getAll();
+                            getAllRequest2.onsuccess = function(event) {
+                                let items2 = event.target.result;
+                                let itemsArray = items2[0];
+                                needItemsInfoRemove.forEach(function(removeItem) {
+                                    let itemIndex = itemsArray.findIndex(item => {
+                                        if (item.type == 'Variation_Product' && removeItem.item_type == 'Variation_Product') {
+                                            return item.id == removeItem.vp_item_id;
+                                        } else {
+                                            return item.id == removeItem.item_id;
+                                        }
+                                    });
+                                    if (itemIndex !== -1) {
+                                        let item = itemsArray[itemIndex];
+                                        let oldOutQty = 0;
+
+                                        if(removeItem.item_type == 'General_Product' || removeItem.item_type == 'Installment_Product'){
+                                            oldOutQty = parseFloat(item.out_qty) || 0;
+                                            item.out_qty = oldOutQty + parseFloat(removeItem.item_quantity);
+                                        }else if (removeItem.item_type === 'IMEI_Product' || removeItem.item_type === 'Serial_Product') {
+                                            item.allimei = item.allimei.filter(function(val2) {
+                                                return val2.single_imei_serial !== removeItem.expiry_imei_serial;
+                                            });
+                                            oldOutQty = parseFloat(item.out_qty) || 0;
+                                            item.out_qty = oldOutQty + 1;
+                                        } else if(removeItem.item_type == 'Medicine_Product'){
+                                            item.allexpiry = item.allexpiry.map(function(val2) {
+                                                let date = Object.keys(val2)[0];
+                                                if (date == removeItem.expiry_imei_serial) {
+                                                    val2[date] -= removeItem.item_quantity;
+                                                }
+                                                return val2;
+                                            }).filter(val2 => Object.values(val2)[0] > 0);
+                                        } else if(removeItem.item_type == "Variation_Product"){
+                                            item.variations = item.variations.map(function(variation) {
+                                                if (variation.vId == removeItem.item_id) {
+                                                    variation.stock_out = (parseFloat(variation.stock_out) || 0) + parseFloat(removeItem.item_quantity);
+                                                }
+                                                return variation;
+                                            }).filter(variation => variation.stock_out < variation.stock_in);
+                                        }
+                                    } else {
+                                        console.log('Item Not Found')
+                                    }
+                                });
+
+                                // Update the entire array in IndexedDB
+                                let updateTransaction = db2.transaction(['items'], 'readwrite');
+                                let updateObjectStore = updateTransaction.objectStore('items');
+                                let updateRequest = updateObjectStore.put(itemsArray);
+                                updateRequest.onerror = function(event) {
+                                    console.error("Error updating items in IndexedDB:", event.target.error);
+                                };
+                                updateRequest.onsuccess = function(event) {
+                                    console.log("Items updated successfully in IndexedDB");
+                                };
+                            };
+                            getAllRequest2.onerror = function(event) {
+                                console.log("Error reading data:", event.target.error.message);
+                            };
+                        };
+
+                        $('.order_table_holder .order_holder').empty();
+                        $('.loader1').slideUp('500');
+                        clearFooterCartCalculation();
+                        resetDefaultCustomer();
+                        resetFinalizeModal();
+                        // ############ Index DB ############
+                    } else {
+                        $.ajax({
+                            url: base_url + "Sale/add_sale_by_ajax",
+                            method: "POST",
+                            dataType: 'json',
+                            data: {
+                                is_online: is_offline_system,
+                                order: order_object,
+                                customer_name: selected_customer_name,
+                                customer_phone_number: customer_phone_number,
+                                sale_id: sale_id,
+                                sale_no: '',
+                                csrf_offpos: csrf_value_,
+                                account_type : account_type,
+                                p_note : p_note,
+                                check_no : check_no,
+                                check_issue_date : check_issue_date,
+                                check_expiry_date : check_expiry_date,
+                                card_holder_name : card_holder_name,
+                                card_holding_number : card_holding_number,
+                                mobile_no : mobile_no,
+                                transaction_no : transaction_no,
+                                paypal_email : paypal_email,
+                                stripe_email : stripe_email,
+                                send_invoice_email : send_invoice_email,
+                                send_invoice_sms : send_invoice_sms,
+                                send_invoice_whatsapp : send_invoice_whatsapp,
+                                note : note,
+                                charge_type : charge_type,
+                                sub_total_discount_finalize : sub_total_discount_finalize,
+                                paymentAccountDetails: paymentAccountDetails,
+                                is_multi_currency: is_multi_currency,
+                                multi_currency: multi_currency,
+                                multi_currency_rate: multi_currency_rate,
+                                multi_currency_amount: multi_currency_amount,
+                                payment_object: payment_object,
+                                account_note: account_note,
+                                finalize_previous_due: finalize_previous_due,
+                                payment_method_type: payment_method_type,
+                                paid_amount: paid_amount,
+                                due_amount: finalize_total_due,
+                                given_amount: given_amount,
+                                change_amount: change_amount_div_,
+                                sale_date: sale_date,
+                                sale_time: sale_time,
+                            },
+                            success: function (response) {
+                                $('.order_table_holder .order_holder').empty();
+                                $('.loader1').slideUp('500');
+                                clearFooterCartCalculation();
+                                resetDefaultCustomer();
+                                getAllCustomers(default_customer, 0, '');
+                                printInvoice(response.sales_id);
+                                resetFinalizeModal();
+                                $(cThis).attr('disabled', false);
+                                $("#last_sale_id").val('').val(response.sales_id);
+    
+                                if(response.is_new_item == 'Yes'){
+                                    window.location.href = base_url+"Sale/POS";
+                                }
+                            }
+                        });
+                    }
+
                 }
             }else{
                 toastr['error']((`You cannot keep more than ${Number(customerCrLimit).toFixed(op_precision)} dues for this customer, Previous due ${Number(customer_previous_due).toFixed(op_precision)} Credit limit is  ${Number(customerCrLimit).toFixed(op_precision)}`));
@@ -3958,6 +5677,1372 @@ $(function () {
     });
 
 
+
+    
+
+    
+    let printTypeCss = '';
+    if(print_format == '56mm'){
+        printTypeCss = `#wrapper{max-width:480px;}.short_note{font-size:10px !important;font-style:italic;}
+        @media print{#wrapper{max-width:480px;}table tfoot{display:table-row-group;}.table{page-break-inside:auto;}.table tr{page-break-inside:avoid;page-break-after:auto}.print-btn{display:none;}}`;
+    }else if(print_format == '80mm'){
+        printTypeCss = `#wrapper{max-width:480px;}.short_note{font-size:10px!important;font-style:italic;}@media print{#wrapper{max-width:480px;}table tfoot{display:table-row-group;}.table{page-break-inside:auto;}.table tr{page-break-inside:avoid;page-break-after:auto}.print-btn{display:none;}}`;
+    }else if(print_format == 'A4 Print'){
+        printTypeCss = `#wrapper{max-width:790px;margin:0 auto;}.shop-name,.invoice-heading{font-size:22px;font-weight:900;}.bill-to,.common-heading{font-size:18px;font-weight:900;}@page{size:A4;margin:0;}@media print{@page{size:A4;margin:0;}#wrapper{width:793.92px;}table tfoot{display:table-row-group;}.table{page-break-inside:auto;}.table tr{page-break-inside:avoid;page-break-after:auto}.print-btn{display:none;}.main-footer{display:none!important;}.justify-content-between{justify-content:space-between!important;}}`;
+    }else if(print_format == 'Half A4 Print'){
+        printTypeCss = `#wrapper{max-width:561px;margin:0 auto;}.btn{border-radius:0;margin-bottom:5px;}.bootbox .modal-footer{border-top:0;text-align:center;}.shop-name,.invoice-heading{font-size:12px;font-weight:bold;}.bill-to,.common-heading{font-size:10px;font-weight:900;}h4{margin:5px 0;}.order_barcodes img{float:none !important;margin-top:5px;}p{font-size:10px;}table thead tr th{font-size:11px !important;padding-top:5px!important;padding-bottom:5px!important;text-align:left;}table tfoot tr th{font-size:11px !important;padding:4px 0px !important;}table tbody tr td{font-size:11px !important;padding:3px 3px !important;}.short_note{font-size:8px !important;}@page{size:A5;margin:0;}@media print{@page{size:A5;margin:0;}.no-print{display:none;}#wrapper{max-width:561px;min-width:250px;margin:0 auto;}.no-border{border:none !important;}.border-bottom{border-bottom:1px solid #ddd !important;}table tfoot{display:table-row-group;}.tbl{page-break-inside:auto;}.tbl tr{page-break-inside:avoid;page-break-after:auto;}.tbl td{border:1px solid #a2a2a2;font-size:14px;padding:3px 6px 2px !important;}tr.noBorder td{border:0 !important;}.tablePage{page-break-inside:auto;}img{-webkit-print-color-adjust:exact;}table thead tr th,table tbody tr td,table tfoot tr th{border-right:0;border-right:none;}}footer{width:100%;text-align:center;}@media print{.inv_black{-webkit-print-color-adjust:exact;background-color:#000 !important;color:#fff !important;font-weight:bold;color:#fff;font-size:22px;display:table;text-align:center;margin:0 auto;padding:3px 8px;margin-top:10px;border-radius:3px;}.margin-bottom-10{margin-bottom:10px;}footer{position:fixed;bottom:0;}.content-block,p{page-break-inside:avoid;}}.inv_black{-webkit-print-color-adjust:exact;background-color:#000;font-weight:bold;color:#fff;font-size:22px;display:table;text-align:center;margin:0 auto;padding:3px 8px;margin-top:10px;border-radius:3px;}.tbl{page-break-inside:auto;}.tbl tr{page-break-inside:avoid;page-break-after:auto;}.tbl td{border:1px solid #a2a2a2;font-size:14px;padding:3px 6px 2px !important;}tr.noBorder td{border:0 !important;}.tablePage{page-break-inside:auto;}.logo_header{overflow:hidden;display:inline-block;width:100%;}.op_width_60_p{width:60%;}.op_float_left{float:left;}`;
+    }else if(print_format == 'Letter Head'){
+        printTypeCss = `.page-header{position:fixed;top:0;width:100%;background:rgb(236,236,236)}.page-footer{position:fixed;bottom:0;width:100%;background:rgb(236,236,236)}.page{page-break-after:always}#wrapper{max-width:793.92px;margin:0 auto}.btn{border-radius:0;margin-bottom:5px}.bootbox .modal-footer{border-top:0;text-align:center}.shop-name,.invoice-heading{font-size:12px;font-weight:bold}.bill-to,.common-heading{font-size:10px;font-weight:900}h4{margin:5px 0}.order_barcodes img{float:none!important;margin-top:5px}p{font-size:10px}table thead tr th{font-size:11px!important;padding-top:5px!important;padding-bottom:5px!important;text-align:left}table tfoot tr th{font-size:11px!important;padding:4px 0px!important}table tbody tr td{font-size:11px!important;padding:3px 3px!important}.short_note{font-size:8px!important}@page{size:A4;margin:0}@media print{thead{display:table-header-group}tfoot{display:table-footer-group}button{display:none}body{margin:0}@page{size:A4;margin:0}.no-print{display:none}#wrapper{max-width:793.92px;margin:0 auto}.no-border{border:none!important}.border-bottom{border-bottom:1px solid #ddd!important}table tfoot{display:table-row-group}tr.noBorder td{border:0!important}.tablePage{page-break-inside:auto}img{-webkit-print-color-adjust:exact}table thead tr th,table tbody tr td,table tfoot tr th{border-right:0;border-right:none}}footer{width:100%;text-align:center}@media print{.inv_black{-webkit-print-color-adjust:exact;background-color:#000!important;color:#fff!important;font-weight:bold;color:#fff;font-size:22px;display:table;text-align:center;margin:0 auto;padding:3px 8px;margin-top:10px;border-radius:3px}.margin-bottom-10{margin-bottom:10px}footer{position:fixed;bottom:0}.content-block,p{page-break-inside:avoid}}.inv_black{-webkit-print-color-adjust:exact;background-color:#000;font-weight:bold;color:#fff;font-size:22px;display:table;text-align:center;margin:0 auto;padding:3px 8px;margin-top:10px;border-radius:3px}tr.noBorder td{border:0!important}.tablePage{page-break-inside:auto}.logo_header{overflow:hidden;display:inline-block;width:100%}.op_width_60_p{width:60%}.op_float_left{float:left}`;
+    }
+    
+
+
+    let styleCSS = `body{box-sizing:border-box;font-family:'Public Sans',sans-serif}*{margin:0px;padding:0px}p{padding:0px;margin:0px;font-family:'Public Sans',sans-serif}h1,h2,h3,h4,h5,h6{padding:0px;margin:0px;font-family:'Public Sans',sans-serif}table thead tr th{border:0;padding:10px 0px;text-align:left;font-size:14px}table tbody tr:nth-child(even){background-color:#8979790d}.tbl-footer-bg{background-color:rgb(0 0 0 / 27%)!important}table tfoot{border-top:2px solid rgb(94,94,94)!important;border-bottom:2px solid rgb(94,94,94)!important}table tfoot tr th{padding:8px 0px;text-align:left}table tbody tr td{padding:10px 5px;font-size:15px}table tbody tr th{padding:10px 5px}table{border-spacing:0px;border-radius:3px}.text-danger{color:#ff503d}.m-auto{margin:auto!important}.p-5{padding:5px!important}.p-10{padding:10px!important}.p-20{padding:20px!important}.p-30{padding:30px!important}.px-30{padding:0px 30px!important}.py-30{padding:30px 0px!important}.py-5{padding-top:5px!important;padding-bottom:5px!important}.px-5{padding-left:5px!important;padding-right:5px!important}.ps-3{padding-left:3px!important}.pr-3{padding-right:3px!important}.ps-2{padding-left:2px!important}.pr-2{padding-right:2px!important}.py-15{padding-top:15px!important;padding-bottom:15px!important}.my-10{margin-top:10px!important;margin-bottom:10px!important}.br-5{border-radius:5px!important}.d-flex{display:flex!important}.align-items-center{align-items:center!important}.justify-content-between{justify-content:space-between!important}.justify-content-center{justify-content:center!important}.justify-content-end{justify-content:end!important}.flex-wrap{flex-wrap:wrap}.pb-5{padding-bottom:5px!important}.pb-6{padding-bottom:6px!important}.pb-7{padding-bottom:7px!important}.pt-7{padding-top:7px!important}.f-w-500{font-weight:500!important}.f-w-600{font-weight:600!important}.text-center{text-align:center!important}.text-start{text-align:start!important}.mt-15{margin-top:15px!important}.py-10{padding-top:10px!important;padding-bottom:10px!important}.py-20{padding-top:20px!important;padding-bottom:20px!important}.w-1{width:1%!important}.w-2{width:2%!important}.w-3{width:3%!important}.w-4{width:4%!important}.w-5{width:5%!important}.w-6{width:6%!important}.w-7{width:7%!important}.w-8{width:8%!important}.w-9{width:9%!important}.w-10{width:10%!important}.w-11{width:11%!important}.w-12{width:12%!important}.w-13{width:13%!important}.w-14{width:14%!important}.w-15{width:15%!important}.w-16{width:16%!important}.w-17{width:17%!important}.w-18{width:18%!important}.w-19{width:19%!important}.w-20{width:20%!important}.w-21{width:21%!important}.w-22{width:22%!important}.w-23{width:23%!important}.w-24{width:24%!important}.w-25{width:25%!important}.w-26{width:26%!important}.w-27{width:27%!important}.w-28{width:28%!important}.w-29{width:29%!important}.w-30{width:30%!important}.w-31{width:31%!important}.w-32{width:32%!important}.w-33{width:33%!important}.w-34{width:34%!important}.w-35{width:35%!important}.w-36{width:36%!important}.w-37{width:37%!important}.w-38{width:38%!important}.w-39{width:39%!important}.w-40{width:40%!important}.w-41{width:41%!important}.w-42{width:42%!important}.w-43{width:43%!important}.w-44{width:44%!important}.w-45{width:45%!important}.w-46{width:46%!important}.w-47{width:47%!important}.w-48{width:48%!important}.w-49{width:49%!important}.w-50{width:50%!important}.w-51{width:51%!important}.w-52{width:52%!important}.w-53{width:53%!important}.w-54{width:54%!important}.w-55{width:55%!important}.w-56{width:56%!important}.w-57{width:57%!important}.w-58{width:58%!important}.w-59{width:59%!important}.w-60{width:60%!important}.w-61{width:61%!important}.w-62{width:62%!important}.w-63{width:63%!important}.w-64{width:64%!important}.w-65{width:65%!important}.w-66{width:66%!important}.w-67{width:67%!important}.w-68{width:68%!important}.w-69{width:69%!important}.w-70{width:70%!important}.w-71{width:71%!important}.w-72{width:72%!important}.w-73{width:73%!important}.w-74{width:74%!important}.w-75{width:75%!important}.w-76{width:76%!important}.w-77{width:77%!important}.w-78{width:78%!important}.w-79{width:79%!important}.w-80{width:80%!important}.w-81{width:81%!important}.w-82{width:82%!important}.w-83{width:83%!important}.w-84{width:84%!important}.w-85{width:85%!important}.w-86{width:86%!important}.w-87{width:87%!important}.w-88{width:88%!important}.w-89{width:89%!important}.w-90{width:90%!important}.w-91{width:91%!important}.w-92{width:92%!important}.w-93{width:93%!important}.w-94{width:94%!important}.w-95{width:95%!important}.w-96{width:96%!important}.w-97{width:97%!important}.w-98{width:98%!important}.w-99{width:99%!important}.w-100{width:100%!important}.mt-10{margin-top:10px!important}.mb-10{margin-bottom:10px!important}.mt-5{margin-top:5px!important}.mb-5{margin-bottom:5px!important}.mt-20{margin-top:20px!important}.color-white{color:white!important}.bg-00c53{background:#dfdede!important}.color-00c53{color:#dfdede!important}.br-3{border-radius:3px!important}.pt-30{padding-top:30px!important}.pt-10{padding-top:10px!important}.pt-2{padding-top:2px!important}.pb-2{padding-bottom:2px!important}.pb-3{padding-bottom:3px!important}.pt-3{padding-top:3px!important}.mt-2{margin-top:2px!important}.mb-2{margin-bottom:2px!important}.pt-20{padding-top:20px!important}.d-inline{display:inline!important}.b-t-1p-e4e5ea{border-top:1px solid #e4e5ea!important}.p-10{padding:10px!important}.text-rigth{text-align:right!important}.text-danger{color:#ff503d}.bg-240{background-color:rgb(247 247 247)!important}.bt-1-gray{border-top:1px solid gray!important}.bb-1-gray{border-bottom:1px solid gray!important}.bb-1-d5d5d5{border-bottom:1px solid #d5d5d5!important}.pl-5{padding-left:5px!important}.pl-10{padding-left:10px!important}.d-block{display:block!important}.pb-10{padding-bottom:10px!important}.p-15{padding:15px!important}.h-120px{height:120px!important}.m-h-120px-m-h-220px{min-height:120px;max-height:220px}.b-1s-240{border:1px solid rgb(240,240,240)!important}.d-grid{display:grid!important}.g-template-c-32-32-32{grid-template-columns:32% 32% 32%!important}.g-template-c-33-33-33{grid-template-columns:33% 33% 33%!important}.g-template-c-33-33-32{grid-template-columns:33% 33% 32%!important}.g-gap-1{grid-gap:1%}.g-gap-2{grid-gap:2%}.g-template-c-50-40{grid-template-columns:50% 40%!important}.g-template-c-48-48{grid-template-columns:48% 48%!important}.grid-gap-10{grid-gap:10%!important}.grid-gap-4{grid-gap:4%!important}.print-btn{background-color:#8b5cf6;color:white;border:0;padding:12px 25px;font-weight:600;font-size:15px;border-radius:5px;font-family:'Public Sans',sans-serif;cursor:pointer}.mt-40{margin-top:40px}.mt-50{margin-top:50px}.mt-60{margin-top:60px}.mt-70{margin-top:70px}.mt-80{margin-top:80px}.mt-90{margin-top:90px}.mt-100{margin-top:100px}.text-rigth{text-align:right!important}.h-100{height:100px}.w-75{width:75px}.mr-10{margin-right:10px}.float-left{float:left}.img-passport{width:160px!important;height:160px!important;border-radius:3px;object-fit:cover}.h-100px{height:100px!important}.h-150-px{height:150px!important}.font-16{font-size:16px!important}.font-18{font-size:18px!important}.font-20{font-size:20px!important}.font-22{font-size:22px!important}.font-width-700{font-weight:700!important}.d-none{display:none!important}.d-inline-block{display:inline-block!important}.mt-30-minus{margin-top:-30px!important}.mt-30{margin-top:30px!important}.pb-20{padding-bottom:20px!important}.font-size-10{font-size:10px}.font-size-11{font-size:11px}.font-size-12{font-size:12px}.font-size-13{font-size:13px}.font-size-14{font-size:14px}.font-size-15{font-size:15px}.font-size-18{font-size:18px}.font-size-20{font-size:20px}.font-size-20{font-size:20px}.font-size-22{font-size:22px}.wg-available{background:#cfefe4;color:#38ae7b;border-radius:3px;margin-left:5px;font-size:11px;padding:0px 3px;font-weight:600}.wg-expire{background:#f8e2d9;color:#dd6f41;border-radius:3px;margin-left:5px;font-size:11px;padding:0px 3px;font-weight:600}.tharmal_table table thead tr th{font-size:13px!important;border-top:1px dotted gray!important;border-bottom:1px dotted gray!important;padding:5px 0px}.tharmal_table table tbody tr td{font-size:13px!important}.tharmal_table table tfoot tr th{font-size:13px!important;border-top:1px dotted gray!important}.tharmal_table table tbody tr:nth-child(even){background-color:white}.tharmal_table table tbody tr td{padding:4px 5px}.text-right{text-align:right!important}.pr-5{padding-right:5px!important}.pr-10{padding-right:5px!important}.pl-5{padding-left:5px!important}.pr-5{padding-right:5px!important}.pr-10{padding-right:10px!important}.pt-5{padding-top:5px!important}.pb-5{padding-bottom:5px!important}.border-bottom-dotted-gray{border-bottom:1px dotted gray!important}.border-top-dotted-gray{border-top:1px dotted gray!important}.ps-5{padding-left:5px}.top_bottom_border_dotted{border-top:1px dotted;border-bottom:1px dotted}.bg-7c67eb{background:#7c67eb}.text-white{color:white}.p3{padding:3px}.bradius-3{border-radius:3px}.text-left{text-align:left}.padding-y-10{padding-top:10px;padding-bottom:10px}.padding-y-8{padding-top:8px;padding-bottom:8px}.padding-y-5{padding-top:5px;padding-bottom:5px}.short_note{font-size:12px;font-style:italic}.br-1{border-radius:1px}.br-2{border-radius:2px}.br-3{border-radius:3px}.br-4{border-radius:4px}.br-5{border-radius:5px}.success-status{background-color:#60f88947;color:#38c435;border-radius:4px;padding:4px 7px}.pending-status{background-color:#fdd9d9;color:#f3484c;border-radius:4px;padding:4px 7px}`;
+
+
+
+    
+    // Offline Sync Invoice Print
+    function printOfflineInvoice(data){
+        let invoice_print =``;
+        let invoice_logo =``;
+        let collect_tax_string =``;
+        let given_amount_html = ``;
+        let change_amount_html = ``;
+        let items_html = ``;
+        let item_note = '';
+        let delivery_charge_html = ``;
+        let sub_total_discount_html = ``;
+        let tax_html = ``;
+        let payment_html = ``;
+        let loyalty_string = ``;
+        let total_discount_amount = 0;
+        let total_qty = 0;
+        let item_count = 0;
+        let sub_total = 0;
+        let parsedData = JSON.parse(data.order);
+
+        if(print_format == '56mm' || print_format == '80mm'){
+            if(invoice_logo_session != ''){
+                invoice_logo = `<img src="${base_url}uploads/site_settings/${invoice_logo_session}">`;
+            }
+            if(collect_tax == 'Yes'){
+                collect_tax_string = `<p class="pb-7 f-w-900 rgb-71">${tax_title}: ${tax_registration_no}</p>`;
+            }
+            if(data.given_amount){
+                given_amount_html = `<div class="d-flex justify-content-center">
+                                            <p class="f-w-600 font-size-13">${given_amount_ln}: ${data.given_amount}</p>
+                                        </div>`;
+            }
+            if(data.change_amount){
+                change_amount_html = `<div class="d-flex justify-content-center">
+                                            <p class="f-w-600 font-size-13">${change_amount_ln}: ${data.change_amount}</p>
+                                        </div>`;
+            }
+            if(parsedData.delivery_charge > 0){
+                delivery_charge_html=`<div class="d-flex justify-content-between">
+                    <p class="f-w-600 font-size-13">${charge_ln} (${parsedData.charge_type == 'delivery' ? 'Delivery' : 'Service'})</p>
+                    <p class="font-size-13">${getAmtPCustom(parseFloat(parsedData.delivery_charge))}</p>
+                </div>`
+            }
+            if(parsedData.sub_total_discount_amount > 0){
+                sub_total_discount_html=`<div class="d-flex justify-content-between">
+                    <p class="f-w-600 font-size-13">${discount_ln}</p>
+                    <p class="font-size-13">${getAmtPCustom(parseFloat(parsedData.sub_total_discount_amount))}</p>
+                </div>`
+            }
+    
+            parsedData.items.forEach(function(item) {
+                item_count ++;
+                total_discount_amount += parseFloat(item.item_discount_amount);
+                total_qty += parseFloat(item.item_quantity);
+                sub_total += parseFloat(item.item_price_with_discount);
+                if((item.item_type == 'IMEI_Product' || item.item_type == 'Serial_Product' || item.item_type == 'Medicine_Product') && item.expiry_imei_serial){
+                    item_note=`<p class="short_note">${checkItemShortType(item.item_type)}: ${item.expiry_imei_serial}</p>`;
+                }else{
+                    item_note = '';
+                }
+                items_html +=`<tr>
+                                <td>${item_count}</td>
+                                <td>
+                                    ${item.item_name} <br>
+                                    ${item_note}
+                                </td>
+                                <td>${item.item_unit_price}</td>
+                                <td>${item.item_quantity} ${item.sale_unit_name}</td>
+                                <td>
+                                    ${item.item_discount} ${ item.item_discount ? '(' + item.item_discount_amount + ')' : ''}
+                                </td>
+                                <td class="text-right">${item.item_price_with_discount}</td>
+                            </tr>`;
+                            
+            });
+    
+    
+            if(parsedData.sale_vat_objects){
+                parsedData.sale_vat_objects.forEach(function(vat, index){
+                    tax_html += `<div class="d-flex justify-content-between border-bottom-dotted-gray ${index == 0 ? 'border-top-dotted-gray' : ''}">
+                        <p class="f-w-600 font-size-13">${vat.tax_field_type}</p>
+                        <p class="font-size-13">${vat.tax_field_amount}</p>
+                    </div>`;
+                });
+            }
+    
+            let paymentData = JSON.parse(data.payment_object);
+            paymentData.forEach(function(payment){
+                if(payment.payment_name == 'Loyalty Point'){
+                    loyalty_string = `(Usage: ${payment.usage_point })`;
+                }
+                payment_html +=`<div class="d-flex justify-content-between">
+                    <p class="f-w-600 font-size-13">
+                        ${payment.payment_name}
+                    </p>
+                    <p class="font-size-13">
+                        ${payment.amount}
+                    </p>
+                </div>
+                <div class="d-flex justify-content-center pt-5">
+                    <p class="font-size-13">${loyalty_string}</p>
+                </div>`;
+            });
+    
+            let outlet_email_html = ``;
+            if(outlet_email){
+                outlet_email_html = `<p class="f-w-500 color-71 font-size-13">${email_ln}: ${outlet_email}</p>`;
+            }
+            invoice_print+= `<!DOCTYPE html>
+                                <html lang="en">
+                                <head>
+                                    <meta charset="UTF-8">
+                                    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                    <title>${data.sale_no}</title>
+                                    <style>
+                                    ${styleCSS}
+                                    ${printTypeCss}
+                                    </style>
+                                </head>
+                                <body>
+                                    <div id="wrapper" class="m-auto border-2s-e4e5ea br-5 p-15">
+                                        <div class="d-flex justify-content-center">
+                                            ${invoice_logo}
+                                        </div>
+                                        <div class="text-center">
+                                            <h3 class="font-size-20">${business_name}</h3>
+                                            <h4 class="pb-7 font-size-15">${outlet_name}</h4>
+                                            <p class="f-w-500 color-71 font-size-13">${outlet_address}</p>
+                                            <p class="f-w-500 color-71 font-size-13">${phone_ln}: ${outlet_phone}</p>
+                                            ${outlet_email_html}
+                                            ${collect_tax_string}
+                                        </div>
+                                        <div class="text-center py-10">
+                                            <h3 class="font-size-20">${invoice_ln}</h3>
+                                        </div>
+                                        <div>
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <p class="f-w-500 color-71 font-size-13"><span class="f-w-600">${bill_to_ln}:</span> ${data.customer_name}</p>
+                                                    <p class="f-w-500 color-71 font-size-13 ${(data.customer_phone_number == '' || data.customer_phone_number == 'null') ? 'd-none' : ''}"><span class="f-w-600">${phone_ln}:</span> ${data.customer_phone_number}</p>
+                                                </div>
+                                                <div class="text-rigth">
+                                                    <p class="f-w-500 color-71 font-size-13"><span class="f-w-600">${invoice_no_ln}:</span> 
+                                                    ${data.sale_no}</p>
+                                                    <p class="f-w-500 color-71 font-size-13"> <span class="f-w-600">${date_ln}: ${parsedData.sale_date1}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tharmal_table">
+                                            <table class="table w-100 mt-20">
+                                                <thead class="br-3">
+                                                    <tr>
+                                                        <th class="w-5">${sn_ln}</th>
+                                                        <th class="w-30">${item_ln} - ${code_ln} - ${brand_ln}</th>
+                                                        <th class="w-20">${unit_price_ln}</th>
+                                                        <th class="w-10">${qty_ln}</th>
+                                                        <th class="w-15">${discount_ln}</th>
+                                                        <th class="w-20 text-right">${total_ln}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                ${items_html}
+                                                </tbody>
+                                                <tfoot>
+                                                    <th></th>
+                                                    <th colspan="2" class="text-right pr-10">${total_ln}</th>
+                                                    <th>${item_count}(${total_qty})</th>
+                                                    <th>${total_discount_amount}</th>
+                                                    <th class="text-right">${parseFloat(sub_total).toFixed(op_precision)}</th>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                        ${tax_html}
+                                        ${delivery_charge_html}
+                                        ${sub_total_discount_html}
+                                        <div class="d-flex justify-content-between border-bottom-dotted-gray">
+                                            <p class="font-size-13 f-w-600">${total_payable_ln}</p>
+                                            <p class="font-size-13">${getAmtPCustom(parseFloat(parsedData.total_payable))}</p>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <p class="f-w-600 font-size-13">${paid_amount_ln}</p>
+                                            <p class="font-size-13">${getAmtPCustom(data.paid_amount)}</p>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <p class="f-w-600 font-size-13">${due_amount_ln}</p>
+                                            <p class="font-size-13">${getAmtPCustom(parseFloat(data.due_amount))}</p>
+                                        </div>
+                                        <div class="d-flex justify-content-between border-bottom-dotted-gray border-top-dotted-gray">
+                                            <p class="f-w-600 font-size-13">${payment_method_ln}</p>
+                                        </div>
+                                        ${payment_html}
+                                        ${given_amount_html}
+                                        ${change_amount_html}
+                                        <div class="mt-30">
+                                            <p>${term_conditions}</p>
+                                        </div>
+                                        <div class="d-flex justify-content-center pt-30">
+                                            <div>
+                                                <p class="font-size-15">${invoice_footer}</p>
+                                            </div>
+                                        </div>
+    
+                                        <div class="d-flex justify-content-center pt-30">
+                                            <button onclick="window.print();" type="button" class="print-btn">Print</button>
+                                        </div>
+                                    </div>
+                                    <script src="${base_url}assets/bower_components/jquery/dist/jquery.min.js"></script>
+                                    <script src="${base_url}frequent_changing/js/onload_print.js"></script>
+                                </body>
+                            </html>`;
+                let popup = window.open("", "popup","width=100","height=600");
+                popup.document.write(invoice_print);
+                popup.document.close();
+                popup.focus();
+        }else if(print_format == 'A4 Print'){
+            if(invoice_logo_session != ''){
+                invoice_logo = `<img src="${base_url}uploads/site_settings/${invoice_logo_session}">`;
+            }
+            if(collect_tax == 'Yes'){
+                collect_tax_string = `<p class="pb-7 f-w-900 rgb-71">${tax_title}: ${tax_registration_no}</p>`;
+            }
+            if(data.given_amount){
+                given_amount_html = `<div class="d-flex justify-content-center">
+                                            <p class="f-w-600 font-size-13">${given_amount_ln}: ${data.given_amount}</p>
+                                        </div>`;
+            }
+            if(data.change_amount){
+                change_amount_html = `<div class="d-flex justify-content-center">
+                                            <p class="f-w-600 font-size-13">${change_amount_ln}: ${data.change_amount}</p>
+                                        </div>`;
+            }
+            if(parsedData.delivery_charge > 0){
+                delivery_charge_html=`<div class="d-flex justify-content-between pt-10">
+                    <p class="f-w-600">${charge_ln} (${parsedData.charge_type == 'delivery' ? 'Delivery' : 'Service'})</p>
+                    <p>${getAmtPCustom(parseFloat(parsedData.delivery_charge))}</p>
+                </div>`
+            }
+            if(parsedData.sub_total_discount_amount > 0){
+                sub_total_discount_html=`<div class="d-flex justify-content-between pt-10">
+                    <p class="f-w-600">${discount_ln}</p>
+                    <p>${getAmtPCustom(parseFloat(parsedData.sub_total_discount_amount))}</p>
+                </div>`
+            }
+            parsedData.items.forEach(function(item) {
+                item_count ++;
+                total_discount_amount += parseFloat(item.item_discount_amount);
+                total_qty += parseFloat(item.item_quantity);
+                sub_total += parseFloat(item.item_price_with_discount);
+                if((item.item_type == 'IMEI_Product' || item.item_type == 'Serial_Product' || item.item_type == 'Medicine_Product') && item.expiry_imei_serial){
+                    item_note=`<p class="short_note">${checkItemShortType(item.item_type)}: ${item.expiry_imei_serial}</p>`;
+                }
+                items_html +=`<tr>
+                                <td>${item_count}</td>
+                                <td>
+                                    ${item.item_name} <br>
+                                    ${item_note}
+                                </td>
+                                <td>${item.item_unit_price}</td>
+                                <td>${item.item_quantity} ${item.sale_unit_name}</td>
+                                <td>
+                                    ${item.item_discount} ${ item.item_discount ? '(' + item.item_discount_amount + ')' : ''}
+                                </td>
+                                <td class="text-right">${item.item_price_with_discount}</td>
+                            </tr>`;
+                            
+            });
+            if(parsedData.sale_vat_objects){
+                parsedData.sale_vat_objects.forEach(function(vat, index){
+                    tax_html += `<div class="d-flex justify-content-between pt-5 pb-5 border-bottom-dotted-gray ${index == 0 ? 'border-top-dotted-gray mt-10' : ''}">
+                        <p class="f-w-600">${vat.tax_field_type}</p>
+                        <p>${vat.tax_field_amount}</p>
+                    </div>`;
+                });
+            }
+            let paymentData = JSON.parse(data.payment_object);
+            paymentData.forEach(function(payment){
+                if(payment.payment_name == 'Loyalty Point'){
+                    loyalty_string = `(Usage: ${payment.usage_point })`;
+                }
+                payment_html +=`<div class="d-flex justify-content-between pb-5">
+                    <p class="f-w-600">
+                        ${payment.payment_name}
+                    </p>
+                    <p>
+                        ${payment.amount}
+                    </p>
+                </div>
+                <div class="d-flex justify-content-center pt-5">
+                    <p>${loyalty_string}</p>
+                </div>`;
+            });
+    
+            let outlet_email_html = ``;
+            if(outlet_email){
+                outlet_email_html = `<p class="pb-7 f-w-500 color-71">${email_ln}: ${outlet_email}</p>`;
+            }
+
+            invoice_print+= `<!DOCTYPE html>
+                                <html lang="en">
+                                <head>
+                                    <meta charset="UTF-8">
+                                    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                    <title>${data.sale_no}</title>
+                                    <style>
+                                    ${styleCSS}
+                                    ${printTypeCss}
+                                    </style>
+                                </head>
+                                <body>
+                                    <div id="wrapper" class="m-auto border-2s-e4e5ea br-5 p-30">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h3 class="pb-7 shop-name">${business_name}</h3>
+                                                <h4 class="pb-7 common-heading">${outlet_name}</h4>
+                                                <p class="pb-7 f-w-500 color-71">${outlet_address}</p>
+                                                <p class="pb-7 f-w-500 color-71">${phone_ln}: ${outlet_phone}</p>
+                                                ${outlet_email_html}
+                                                ${collect_tax_string}
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <div class="m-auto">
+                                                    ${invoice_logo}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="text-center py-10">
+                                            <h2 class="invoice-heading">${invoice_ln}</h2>
+                                        </div>
+                                        <div>
+                                            <p class="pb-7 color-71"><span class="f-w-600">${bill_to_ln}:</span> ${data.customer_name}</p>
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <p class="pb-7 color-71 ${(data.customer_phone_number == '' || data.customer_phone_number == 'null') ? 'd-none' : ''}"><span class="f-w-600">${phone_ln}:</span> ${data.customer_phone_number}</p>
+                                                </div>
+                                                <div class="text-rigth">
+                                                    <p class="pb-7"><span class="f-w-600">${invoice_no_ln}:</span> 
+                                                    ${data.sale_no}</p>
+                                                    <p class="pb-7 f-w-500 color-71"><span class="f-w-600">${date_ln}:</span> ${parsedData.sale_date1}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <table class="table w-100 mt-20">
+                                                <thead class="br-3 bg-00c53">
+                                                    <tr>
+                                                        <th class="w-5 ps-5">${sn_ln}</th>
+                                                        <th class="w-30">${item_ln} - ${code_ln} - ${brand_ln}</th>
+                                                        <th class="w-20">${unit_price_ln}</th>
+                                                        <th class="w-10">${qty_ln}</th>
+                                                        <th class="w-15">${discount_ln}</th>
+                                                        <th class="w-20 text-right pr-10">${total_ln}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                ${items_html}
+                                                </tbody>
+                                                <tfoot>
+                                                    <th></th>
+                                                    <th colspan="2" class="text-right pr-10">${total_ln}</th>
+                                                    <th>${item_count}(${total_qty})</th>
+                                                    <th>${total_discount_amount}</th>
+                                                    <th class="text-right">${parseFloat(sub_total).toFixed(op_precision)}</th>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+
+                                        <div class="d-grid g-template-c-50-40 grid-gap-10 pt-20">
+                                            <div>
+                                                <div class="pt-10">
+                                                    <h4 class="d-block pb-10">${note_lan}</h4>
+                                                    <div class="w-100 bg-240 h-120px p-15 b-1s-240 br-4">
+                                                        <p>
+                                                            ${data.note}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                ${tax_html}
+                                                ${delivery_charge_html}
+                                                ${sub_total_discount_html}
+
+                                                <div class="d-flex justify-content-between pt-10 mt-10 p-10 bg-00c53 br-4">
+                                                    <p class="f-w-600">${total_payable_ln}</p>
+                                                    <p>${getAmtPCustom(parseFloat(parsedData.total_payable))}</p>
+                                                </div>
+                                                <div class="d-flex justify-content-between pt-10">
+                                                    <p class="f-w-600">${paid_amount_ln}</p>
+                                                    <p>${getAmtPCustom(data.paid_amount)}</p>
+                                                </div>
+                                                <div class="d-flex justify-content-between pt-10">
+                                                    <p class="f-w-600">${due_amount_ln}</p>
+                                                    <p>${getAmtPCustom(parseFloat(data.due_amount))}</p>
+                                                </div>
+                                                <div class="my-10 d-flex justify-content-between pt-5 pb-5 border-bottom-dotted-gray border-top-dotted-gray">
+                                                    <p class="f-w-600">${payment_method_ln}</p>
+                                                </div>
+                                                ${payment_html}
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-end mt-80">
+                                            <div>
+                                                <p class="color-71 d-inline b-t-1p-e4e5ea pt-10">${authorized_signature_ln}</p>
+                                            </div>
+                                        </div>
+                                                                        
+                                        
+                                        <div class="mt-80">
+                                            <p>${term_conditions}</p>
+                                        </div>
+                                        <div class="d-flex justify-content-center pt-30">
+                                            <div>
+                                                <p class="font-size-15">${invoice_footer}</p>
+                                            </div>
+                                        </div>
+    
+                                        <div class="d-flex justify-content-center pt-30">
+                                            <button onclick="window.print();" type="button" class="print-btn">Print</button>
+                                        </div>
+                                    </div>
+                                    <script src="${base_url}assets/bower_components/jquery/dist/jquery.min.js"></script>
+                                    <script src="${base_url}frequent_changing/js/onload_print.js"></script>
+                                </body>
+                            </html>`;
+                let popup = window.open("", "popup","width=100","height=600");
+                popup.document.write(invoice_print);
+                popup.document.close();
+                popup.focus();
+        }else if(print_format == 'Half A4 Print'){
+
+            if(invoice_logo_session != ''){
+                invoice_logo = `<img src="${base_url}uploads/site_settings/${invoice_logo_session}">`;
+            }
+            if(collect_tax == 'Yes'){
+                collect_tax_string = `<p class="pb-3 f-w-900 rgb-71">${tax_title}: ${tax_registration_no}</p>`;
+            }
+            if(data.given_amount){
+                given_amount_html = `<div class="d-flex justify-content-center">
+                                            <p class="f-w-600 font-size-13">${given_amount_ln}: ${data.given_amount}</p>
+                                        </div>`;
+            }
+            if(data.change_amount){
+                change_amount_html = `<div class="d-flex justify-content-center">
+                                            <p class="f-w-600 font-size-13">${change_amount_ln}: ${data.change_amount}</p>
+                                        </div>`;
+            }
+            if(parsedData.delivery_charge > 0){
+                delivery_charge_html=`<div class="d-flex justify-content-between">
+                    <p class="f-w-600">${charge_ln} (${parsedData.charge_type == 'delivery' ? 'Delivery' : 'Service'})</p>
+                    <p>${getAmtPCustom(parseFloat(parsedData.delivery_charge))}</p>
+                </div>`
+            }
+            if(parsedData.sub_total_discount_amount > 0){
+                sub_total_discount_html=`<div class="d-flex justify-content-between">
+                    <p class="f-w-600">${discount_ln}</p>
+                    <p>${getAmtPCustom(parseFloat(parsedData.sub_total_discount_amount))}</p>
+                </div>`
+            }
+    
+            parsedData.items.forEach(function(item) {
+                item_count ++;
+                total_discount_amount += parseFloat(item.item_discount_amount);
+                total_qty += parseFloat(item.item_quantity);
+                sub_total += parseFloat(item.item_price_with_discount);
+                if((item.item_type == 'IMEI_Product' || item.item_type == 'Serial_Product' || item.item_type == 'Medicine_Product') && item.expiry_imei_serial){
+                    item_note=`<p class="short_note">${checkItemShortType(item.item_type)}: ${item.expiry_imei_serial}</p>`;
+                }
+                items_html +=`<tr>
+                                <td>${item_count}</td>
+                                <td>
+                                    ${item.item_name} <br>
+                                    ${item_note}
+                                </td>
+                                <td>${item.item_unit_price}</td>
+                                <td>${item.item_quantity} ${item.sale_unit_name}</td>
+                                <td>
+                                    ${item.item_discount} ${ item.item_discount ? '(' + item.item_discount_amount + ')' : ''}
+                                </td>
+                                <td class="text-right">${item.item_price_with_discount}</td>
+                            </tr>`;
+                            
+            });
+    
+    
+            if(parsedData.sale_vat_objects){
+                tax_html += `<div class="d-flex justify-content-between pt-2 pb-3 mt-2 mb-2 border-bottom-dotted-gray">
+                <div class="d-flex">`;
+                parsedData.sale_vat_objects.forEach(function(vat, index){
+                    tax_html += `<p class="f-w-600">${vat.tax_field_type}</p>
+                        <p>${vat.tax_field_amount} - </p>`;
+                });
+                tax_html += `</div></div>`;
+            }
+    
+            let paymentData = JSON.parse(data.payment_object);
+            payment_html +=`<div class="d-flex">`;
+            paymentData.forEach(function(payment){
+                if(payment.payment_name == 'Loyalty Point'){
+                    loyalty_string = `(Usage: ${payment.usage_point })`;
+                }
+                payment_html +=`<p class="f-w-600">
+                        ${payment.payment_name}
+                    </p>
+                    <p>
+                        ${payment.amount}
+                    </p>`;
+            });
+            payment_html +=`</div>`;
+
+            let outlet_email_html = ``;
+            if(outlet_email){
+                outlet_email_html = `<p class="pb-3 f-w-500 color-71">${email_ln}: ${outlet_email}</p>`;
+            }
+            invoice_print+= `<!DOCTYPE html>
+                                <html lang="en">
+                                <head>
+                                    <meta charset="UTF-8">
+                                    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                    <title>${data.sale_no}</title>
+                                    <style>
+                                    ${styleCSS}
+                                    ${printTypeCss}
+                                    </style>
+                                </head>
+                                <body>
+                                    <div id="wrapper" class="m-auto border-2s-e4e5ea br-5 p-30">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h3 class="pb-3 shop-name">${business_name}</h3>
+                                                <h4 class="pb-3 common-heading">${outlet_name}</h4>
+                                                <p class="pb-3 f-w-500 color-71">${outlet_address}</p>
+                                                <p class="pb-3 f-w-500 color-71">${phone_ln}: ${outlet_phone}</p>
+                                                ${outlet_email_html}
+                                                ${collect_tax_string}
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <div class="m-auto">
+                                                    ${invoice_logo}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="text-center py-10">
+                                            <h2 class="invoice-heading">${invoice_ln}</h2>
+                                        </div>
+                                        <div>
+                                            <p class="pb-7 color-71"><span class="f-w-600">${bill_to_ln}:</span> ${data.customer_name}</p>
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <p class="pb-7 color-71 ${(data.customer_phone_number == '' || data.customer_phone_number == 'null') ? 'd-none' : ''}"><span class="f-w-600">${phone_ln}:</span> ${data.customer_phone_number}</p>
+                                                </div>
+                                                <div class="text-rigth">
+                                                    <p class="pb-7"><span class="f-w-600">${invoice_no_ln}:</span> 
+                                                    ${data.sale_no}</p>
+                                                    <p class="pb-7 f-w-500 color-71"><span class="f-w-600">${date_ln}:</span> ${parsedData.sale_date1}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <table class="table w-100 mt-20">
+                                                <thead class="br-3 bg-00c53">
+                                                    <tr>
+                                                        <th class="w-5 ps-5">${sn_ln}</th>
+                                                        <th class="w-30">${item_ln} - ${code_ln} - ${brand_ln}</th>
+                                                        <th class="w-20">${unit_price_ln}</th>
+                                                        <th class="w-10">${qty_ln}</th>
+                                                        <th class="w-15">${discount_ln}</th>
+                                                        <th class="w-20 text-right pr-10">${total_ln}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                ${items_html}
+                                                </tbody>
+                                                <tfoot class="tbl-footer-bg bt-1-gray bb-1-gray">
+                                                    <th></th>
+                                                    <th colspan="2" class="text-right pr-10">${total_ln}</th>
+                                                    <th>${item_count}(${total_qty})</th>
+                                                    <th>${total_discount_amount}</th>
+                                                    <th class="text-right">${parseFloat(sub_total).toFixed(op_precision)}</th>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                            
+                                        <div>
+                                            ${tax_html}
+                                            ${delivery_charge_html}
+                                            ${sub_total_discount_html}
+
+                                            <div class="d-flex justify-content-between pt-2 pb-3 mt-2 mb-2 border-bottom-dotted-gray">
+                                                <p class="f-w-600">${total_payable_ln}</p>
+                                                <p>${getAmtPCustom(parseFloat(parsedData.total_payable))}</p>
+                                            </div>
+                                            <div class="d-flex justify-content-between pt-2 pb-3 mt-2 mb-2 border-bottom-dotted-gray">
+                                                <p class="f-w-600">${paid_amount_ln}</p>
+                                                <p>${getAmtPCustom(data.paid_amount)}</p>
+                                            </div>
+                                            <div class="d-flex justify-content-between pt-2 pb-3 mt-2 mb-2 border-bottom-dotted-gray">
+                                                <p class="f-w-600">${due_amount_ln}</p>
+                                                <p>${getAmtPCustom(parseFloat(data.due_amount))}</p>
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <p class="f-w-600">${payment_method_ln}</p>
+                                                ${payment_html}
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-end mt-80">
+                                            <div>
+                                                <p class="color-71 d-inline b-t-1p-e4e5ea pt-10">${authorized_signature_ln}</p>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-center pt-30">
+                                            <div>
+                                                <p class="font-size-15">${invoice_footer}</p>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-center pt-30">
+                                            <button onclick="window.print();" type="button" class="print-btn">Print</button>
+                                        </div>
+                                    </div>
+                                    <script src="${base_url}assets/bower_components/jquery/dist/jquery.min.js"></script>
+                                    <script src="${base_url}frequent_changing/js/onload_print.js"></script>
+                                </body>
+                            </html>`;
+                let popup = window.open("", "popup","width=100","height=600");
+                popup.document.write(invoice_print);
+                popup.document.close();
+                popup.focus();
+            
+        }else if(print_format == 'Letter Head'){
+            if(collect_tax == 'Yes'){
+                collect_tax_string = `<p class="pb-7 f-w-900 rgb-71">${tax_title}: ${tax_registration_no}</p>`;
+            }
+            if(data.given_amount){
+                given_amount_html = `<div class="d-flex justify-content-center">
+                                            <p class="f-w-600 font-size-13">${given_amount_ln}: ${data.given_amount}</p>
+                                        </div>`;
+            }
+            if(data.change_amount){
+                change_amount_html = `<div class="d-flex justify-content-center">
+                                            <p class="f-w-600 font-size-13">${change_amount_ln}: ${data.change_amount}</p>
+                                        </div>`;
+            }
+            if(parsedData.delivery_charge > 0){
+                delivery_charge_html=`<div class="d-flex justify-content-between pt-2 pb-3 mt-2 mb-2 border-bottom-dotted-gray">
+                    <p class="f-w-600">${charge_ln} (${parsedData.charge_type == 'delivery' ? 'Delivery' : 'Service'})</p>
+                    <p>${getAmtPCustom(parseFloat(parsedData.delivery_charge))}</p>
+                </div>`
+            }
+            if(parsedData.sub_total_discount_amount > 0){
+                sub_total_discount_html=`<div class="d-flex justify-content-between pt-2 pb-3 mt-2 mb-2 border-bottom-dotted-gray">
+                    <p class="f-w-600">${discount_ln}</p>
+                    <p>${getAmtPCustom(parseFloat(parsedData.sub_total_discount_amount))}</p>
+                </div>`
+            }
+    
+            parsedData.items.forEach(function(item) {
+                item_count ++;
+                total_discount_amount += parseFloat(item.item_discount_amount);
+                total_qty += parseFloat(item.item_quantity);
+                sub_total += parseFloat(item.item_price_with_discount);
+                if((item.item_type == 'IMEI_Product' || item.item_type == 'Serial_Product' || item.item_type == 'Medicine_Product') && item.expiry_imei_serial){
+                    item_note=`<p class="short_note">${checkItemShortType(item.item_type)}: ${item.expiry_imei_serial}</p>`;
+                }
+                items_html +=`<tr>
+                                <td>${item_count}</td>
+                                <td>
+                                    ${item.item_name} <br>
+                                    ${item_note}
+                                </td>
+                                <td>${item.item_unit_price}</td>
+                                <td>${item.item_quantity} ${item.sale_unit_name}</td>
+                                <td>
+                                    ${item.item_discount} ${ item.item_discount ? '(' + item.item_discount_amount + ')' : ''}
+                                </td>
+                                <td class="text-right">${item.item_price_with_discount}</td>
+                            </tr>`;
+                            
+            });
+    
+
+            if(parsedData.sale_vat_objects){
+                tax_html += `<div class="d-flex justify-content-between pt-2 pb-3 mt-2 mb-2 border-bottom-dotted-gray">
+                <p class="f-w-600">${tax_ln}</p>
+                <div class="d-flex">`;
+                parsedData.sale_vat_objects.forEach(function(vat, index){
+                    tax_html += `
+                            <p class="f-w-600">${vat.tax_field_type}</p>
+                            <p>${vat.tax_field_amount},</p>
+                        `;
+                });
+                tax_html += `</div></div>`;
+            }
+
+
+            let paymentData = JSON.parse(data.payment_object);
+            payment_html +=`<div class="d-flex">`;
+            paymentData.forEach(function(payment){
+                if(payment.payment_name == 'Loyalty Point'){
+                    loyalty_string = `(Usage: ${payment.usage_point })`;
+                }
+                payment_html +=`
+                    <p class="f-w-600  pr-3">
+                        ${payment.payment_name}:
+                    </p>
+                    <p>
+                        ${payment.amount}
+                    </p>`;
+            });
+            payment_html +=`</div>`;
+    
+            let outlet_email_html = ``;
+            if(outlet_email){
+                outlet_email_html = `<p class="pb-7 f-w-500 color-71">${email_ln}: ${outlet_email}</p>`;
+            }
+            invoice_print+= `<!DOCTYPE html>
+                                <html lang="en">
+                                <head>
+                                    <meta charset="UTF-8">
+                                    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                    <title>${data.sale_no}</title>
+                                    <style>
+                                    ${styleCSS}
+                                    ${printTypeCss}
+                                    </style>
+                                </head>
+                                <body>
+
+                                    <div class="page-header" style="height: ${letter_head_gap};">
+                                    </div>
+                                    <div class="page-footer" style="height: ${letter_footer_gap};">
+                                    </div>
+
+
+                                    <table class="w-100">
+                                        <thead>
+                                            <tr>
+                                                <td>
+                                                    <div class="page-header-space" style="height: ${letter_head_gap};"></div>
+                                                </td>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                <div id="wrapper" class="m-auto border-2s-e4e5ea br-5 br-5 px-30 py-15">
+                                                    <div>
+                                                        <p class="pb-3 color-71">
+                                                            <span class="f-w-600">${bill_to_ln}:</span> ${data.customer_name}
+                                                        </p>
+                                                        <p class="pb-3 color-71 ${(data.customer_phone_number == '' || data.customer_phone_number == 'null') ? 'd-none' : ''}"><span class="f-w-600">${phone_ln}:</span> ${data.customer_phone_number}</p>
+                                                        <div class="d-flex justify-content-between">
+                                                            <div>
+                                                            </div>
+                                                            <div class="text-rigth">
+                                                                <p class="pb-3">
+                                                                    <span class="f-w-600">${invoice_no_ln}:</span>
+                                                                    ${data.sale_no}
+                                                                </p>
+                                                                <p class="pb-3 f-w-500 color-71"> 
+                                                                    <span class="f-w-600">${date_ln}:</span> 
+                                                                    ${parsedData.sale_date1}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <table class="table w-100">
+                                                            <thead class="br-3 bg-00c53">
+                                                                <tr>
+                                                                    <th class="w-5 ps-5">${sn_ln}</th>
+                                                                    <th class="w-30">${item_ln} - ${code_ln} - ${brand_ln}</th>
+                                                                    <th class="w-20">${unit_price_ln}</th>
+                                                                    <th class="w-10">${qty_ln}</th>
+                                                                    <th class="w-15">${discount_ln}</th>
+                                                                    <th class="w-20 text-right pr-10">${total_ln}</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            ${items_html}
+                                                            </tbody>
+                                                            <tfoot class="tbl-footer-bg bt-1-gray bb-1-gray">
+                                                                <tr>
+                                                                    <th></th>
+                                                                    <th class="pr-10 text-right" colspan="2">${total_ln}</th>
+                                                                    <th>${item_count}(${total_qty})</th>
+                                                                    <th>${total_discount_amount}</th>
+                                                                    <th class="text-right pr-10">${parseFloat(sub_total).toFixed(op_precision)}</th>
+                                                                </tr>
+                                                            </tfoot>
+                                                        </table>
+                                                    </div>
+
+                                                  
+                                                    <div class="d-flex justify-content-between pt-2 pb-3 mt-2 mb-2 border-bottom-dotted-gray">
+                                                        <p class="f-w-600">${sub_total_ln}</p>
+                                                        <p>${parsedData.sub_total}</p>
+                                                    </div>
+                                                    ${tax_html}
+                                                    ${delivery_charge_html}
+                                                    ${sub_total_discount_html}
+                                                    <div>
+                                                        <div class="d-flex justify-content-between pt-2 pb-3 mt-2 mb-2 border-bottom-dotted-gray">
+                                                            <p class="f-w-600">${total_payable_ln}</p>
+                                                            <p>${getAmtPCustom(parseFloat(parsedData.total_payable))}</p>
+                                                        </div>
+                                                        
+                                                        <div class="d-flex justify-content-between pt-2 pb-3 mt-2 mb-2 border-bottom-dotted-gray">
+                                                            <p class="f-w-600">${paid_amount_ln}</p>
+                                                            <p>${getAmtPCustom(data.paid_amount)}</p>
+                                                        </div>
+                                                        <div class="d-flex justify-content-between pt-2 pb-3 mt-2 mb-2 border-bottom-dotted-gray">
+                                                            <p class="f-w-600">${due_amount_ln}</p>
+                                                            <p>${getAmtPCustom(parseFloat(data.due_amount))}</p>
+                                                        </div>
+                                                        <div class=" pt-2 pb-3 mt-2 mb-2">
+                                                            <div class="d-flex justify-content-between">
+                                                                <p class="f-w-600">${payment_method_ln}</p>
+                                                                ${payment_html}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex justify-content-center pt-30">
+                                                        <button onclick="window.print();" type="button" class="print-btn no-print">Print</button>
+                                                    </div>
+                                                </div>  
+                                                </td>
+                                            </tr>
+                                        </tbody>
+
+                                        <tfoot>
+                                            <tr>
+                                                <td>
+                                                    <div class="page-footer-space" style="height: ${letter_head_gap};"></div>
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                    <script src="${base_url}assets/bower_components/jquery/dist/jquery.min.js"></script>
+                                    <script src="${base_url}frequent_changing/js/onload_print.js"></script>
+                                </body>
+                            </html>`;
+                let popup = window.open("", "popup","width=100","height=600");
+                popup.document.write(invoice_print);
+                popup.document.close();
+                popup.focus();
+        }
+        
+        
+    }
+    // Offline synce Challan Print
+    function printOfflineChallan(data){
+        let invoice_print =``;
+        let invoice_logo =``;
+        let collect_tax_string =``;
+        let given_amount_html = ``;
+        let change_amount_html = ``;
+        let items_html = ``;
+        let item_note = '';
+        let delivery_charge_html = ``;
+        let sub_total_discount_html = ``;
+        let tax_html = ``;
+        let payment_html = ``;
+        let loyalty_string = ``;
+        let total_discount_amount = 0;
+        let total_qty = 0;
+        let item_count = 0;
+        let sub_total = 0;
+        let parsedData = JSON.parse(data.order);
+        
+
+        if(invoice_logo_session != ''){
+            invoice_logo = `<img src="${base_url}uploads/site_settings/${invoice_logo_session}">`;
+        }
+        if(collect_tax == 'Yes'){
+            collect_tax_string = `<p class="pb-7 f-w-900 rgb-71">${tax_title}: ${tax_registration_no}</p>`;
+        }
+        if(data.given_amount){
+            given_amount_html = `<div class="d-flex justify-content-center">
+                                        <p class="f-w-600 font-size-13">${given_amount_ln}: ${data.given_amount}</p>
+                                    </div>`;
+        }
+        if(data.change_amount){
+            change_amount_html = `<div class="d-flex justify-content-center">
+                                        <p class="f-w-600 font-size-13">${change_amount_ln}: ${data.change_amount}</p>
+                                    </div>`;
+        }
+        if(parsedData.delivery_charge > 0){
+            delivery_charge_html=`<div class="d-flex justify-content-between pt-10">
+                <p class="f-w-600">${charge_ln} (${parsedData.charge_type == 'delivery' ? 'Delivery' : 'Service'})</p>
+                <p>${getAmtPCustom(parseFloat(parsedData.delivery_charge))}</p>
+            </div>`
+        }
+        if(parsedData.sub_total_discount_amount > 0){
+            sub_total_discount_html=`<div class="d-flex justify-content-between pt-10">
+                <p class="f-w-600">${discount_ln}</p>
+                <p>${getAmtPCustom(parseFloat(parsedData.sub_total_discount_amount))}</p>
+            </div>`
+        }
+
+        parsedData.items.forEach(function(item) {
+            item_count ++;
+            total_discount_amount += parseFloat(item.item_discount_amount);
+            total_qty += parseFloat(item.item_quantity);
+            sub_total += parseFloat(item.item_price_with_discount);
+            if((item.item_type == 'IMEI_Product' || item.item_type == 'Serial_Product' || item.item_type == 'Medicine_Product') && item.expiry_imei_serial){
+                item_note=`<p class="short_note">${checkItemShortType(item.item_type)}: ${item.expiry_imei_serial}</p>`;
+            }
+            items_html +=`<tr>
+                            <td>${item_count}</td>
+                            <td>
+                                ${item.item_name} <br>
+                                ${item_note}
+                            </td>
+                            <td>${item.item_unit_price}</td>
+                            <td>${item.item_quantity} ${item.sale_unit_name}</td>
+                            <td>
+                                ${item.item_discount} ${ item.item_discount ? '(' + item.item_discount_amount + ')' : ''}
+                            </td>
+                            <td class="text-right">${item.item_price_with_discount}</td>
+                        </tr>`;
+                        
+        });
+
+
+        if(parsedData.sale_vat_objects){
+            parsedData.sale_vat_objects.forEach(function(vat, index){
+                tax_html += `<div class="d-flex justify-content-between pt-5 pb-5 border-bottom-dotted-gray ${index == 0 ? 'border-top-dotted-gray mt-10' : ''}">
+                    <p class="f-w-600">${vat.tax_field_type}</p>
+                    <p>${vat.tax_field_amount}</p>
+                </div>`;
+            });
+        }
+
+        let paymentData = JSON.parse(data.payment_object);
+        paymentData.forEach(function(payment){
+            if(payment.payment_name == 'Loyalty Point'){
+                loyalty_string = `(Usage: ${payment.usage_point })`;
+            }
+            payment_html +=`<div class="d-flex justify-content-between pb-5">
+                <p class="f-w-600">
+                    ${payment.payment_name}
+                </p>
+                <p>
+                    ${payment.amount}
+                </p>
+            </div>
+            <div class="d-flex justify-content-center pt-5">
+                <p>${loyalty_string}</p>
+            </div>`;
+        });
+
+        let outlet_email_html = ``;
+        if(outlet_email){
+            outlet_email_html = `<p class="pb-7 f-w-500 color-71">${email_ln}: ${outlet_email}</p>`;
+        }
+        invoice_print+= `<!DOCTYPE html>
+                            <html lang="en">
+                            <head>
+                                <meta charset="UTF-8">
+                                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                <title>${data.sale_no}</title>
+                                ${styleCSS}
+                            </head>
+                            <body>
+                                <div id="wrapper" class="m-auto border-2s-e4e5ea br-5 p-30">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <h3 class="pb-7 shop-name">${business_name}</h3>
+                                            <h4 class="pb-7 common-heading">${outlet_name}</h4>
+                                            <p class="pb-7 f-w-500 color-71">${outlet_address}</p>
+                                            <p class="pb-7 f-w-500 color-71">${phone_ln}: ${outlet_phone}</p>
+                                            ${outlet_email_html}
+                                            ${collect_tax_string}
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <div class="m-auto">
+                                                ${invoice_logo}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="text-center py-10">
+                                        <h2 class="invoice-heading">${challan_ln}</h2>
+                                    </div>
+                                    <div>
+                                        <p class="pb-7 color-71"><span class="f-w-600">${bill_to_ln}:</span> ${data.customer_name}</p>
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <p class="pb-7 color-71 ${(data.customer_phone_number == '' || data.customer_phone_number == 'null') ? 'd-none' : ''}"><span class="f-w-600">${phone_ln}:</span> ${data.customer_phone_number}</p>
+                                            </div>
+                                            <div class="text-rigth">
+                                                <p class="pb-7"><span class="f-w-600">${invoice_no_ln}:</span> 
+                                                ${data.sale_no}</p>
+                                                <p class="pb-7 f-w-500 color-71"><span class="f-w-600">${date_ln}:</span> ${parsedData.sale_date1}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <table class="table w-100 mt-20">
+                                            <thead class="br-3 bg-00c53">
+                                                <tr>
+                                                    <th class="w-5 ps-5">${sn_ln}</th>
+                                                    <th class="w-30">${item_ln} - ${code_ln} - ${brand_ln}</th>
+                                                    <th class="w-20">${unit_price_ln}</th>
+                                                    <th class="w-10">${qty_ln}</th>
+                                                    <th class="w-15">${discount_ln}</th>
+                                                    <th class="w-20 text-right pr-10">${total_ln}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            ${items_html}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    
+                                    
+                                    <div class="d-flex justify-content-end mt-80">
+                                        <div>
+                                            <p class="color-71 d-inline b-t-1p-e4e5ea pt-10">${authorized_signature_ln}</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-center pt-30">
+                                        <button onclick="window.print();" type="button" class="print-btn">Print</button>
+                                    </div>
+                                </div>
+                                <script src="${base_url}assets/bower_components/jquery/dist/jquery.min.js"></script>
+                                <script src="${base_url}frequent_changing/js/onload_print.js"></script>
+                            </body>
+                        </html>`;
+            let popup = window.open("", "popup","width=100","height=600");
+            popup.document.write(invoice_print);
+            popup.document.close();
+            popup.focus();
+        
+        
+    }
+
+
+    
+    // ############ Index DB ############
+    $(document).on('click', '.online_sync', function(){
+        if(is_offline_system == '1'){
+            offlineSalePushIntoServer();
+            offlineHoldSalePushIntoServer();
+        }else{
+            toastr["warning"]("You are offline, this option will not work at the moment.", "Warning"); 
+        }
+    });
+    function offlineSalePushIntoServer() {
+        if(is_offline_system == '1'){
+            const request = indexedDB.open("off_pos", 2);
+            request.onsuccess = function(event) {
+                const db = event.target.result;
+                // Create a transaction on the 'sales' object store
+                const transaction = db.transaction(["sales"], "readonly");
+                const objectStore = transaction.objectStore("sales");
+                // Use getAll to fetch all records
+                const getAllRequest = objectStore.getAll();
+                getAllRequest.onsuccess = function(event) {
+                    const allRecords = event.target.result; // Contains all the records in 'sales' store
+                    if (allRecords.length > 0) {
+                        let completedRequests = 0; // To track completed AJAX requests
+                        const totalRequests = allRecords.length;
+                        allRecords.forEach(record => {
+                            $.ajax({
+                                type: "POST",
+                                url: base_url + "Sale/add_sale_by_ajax",
+                                data: record,
+                                async: false,
+                                success: function(response) {
+                                    completedRequests++;
+                                    // If all AJAX requests are done, clear the 'sales' object store
+                                    if (completedRequests === totalRequests) {
+                                        clearSalesData(db);
+                                    }
+                                },
+                                error: function(xhr, status, error) {
+                                    console.log("Error sending AJAX request:", error);
+                                }
+                            });
+                        });
+                    }
+                };
+                getAllRequest.onerror = function(event) {
+                    console.log("Error fetching records:", event);
+                };
+            };
+            request.onerror = function(event) {
+                console.log("Error opening database:", event);
+            };
+        } else {
+            toastr['error'](('Internet connection is not stable!'), 'Error');
+        }
+        
+    }
+    function offlineHoldSalePushIntoServer(){
+        if(is_offline_system == '1'){
+            const request = indexedDB.open("off_pos_3", 3);
+            request.onsuccess = function(event) {
+                const db = event.target.result;
+                // Create a transaction on the 'sales' object store
+                const transaction = db.transaction(["draft_sales"], "readonly");
+                const objectStore = transaction.objectStore("draft_sales");
+                // Use getAll to fetch all records
+                const getAllRequest = objectStore.getAll();
+                getAllRequest.onsuccess = function(event) {
+                    const allRecords = event.target.result; // Contains all the records in 'sales' store
+                    if (allRecords.length > 0) {
+                        let completedRequests = 0; // To track completed AJAX requests
+                        const totalRequests = allRecords.length;
+                        allRecords.forEach(record => {
+                            $.ajax({
+                                url: base_url + "Sale/add_hold_by_ajax",
+                                method: "POST",
+                                data: {
+                                    order: JSON.stringify(record.order),
+                                    hold_number: '',
+                                    csrf_offpos: '', 
+                                },
+                                dataType: 'json',
+                                async: false,
+                                success: function(response) {
+                                    completedRequests++;
+                                    // If all AJAX requests are done, clear the 'sales' object store
+                                    if (completedRequests === totalRequests) {
+                                        clearHoldSalesData(db);
+                                    }
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error("Error sending AJAX request:", error);
+                                    console.log("XHR status:", status);
+                                    console.log("XHR response text:", xhr.responseText);
+                                }
+                            });
+                        });
+                    }
+                };
+                getAllRequest.onerror = function(event) {
+                    console.log("Error fetching records:", event);
+                };
+            };
+            request.onerror = function(event) {
+                console.log("Error opening database:", event);
+            };
+        } else {
+            toastr['error'](('Internet connection is not stable!'), 'Error');
+        }
+    }
+
+    function clearSalesData(db) {
+        const transaction = db.transaction(["sales"], "readwrite");
+        const objectStore = transaction.objectStore("sales");
+        // Clear all records in the 'sales' object store
+        const clearRequest = objectStore.clear();
+        clearRequest.onsuccess = function(event) {
+            console.log("All sales data deleted successfully.");
+        };
+        clearRequest.onerror = function(event) {
+            console.log("Error clearing sales data:", event);
+        };
+    }
+    function clearHoldSalesData(db) {
+        const transaction = db.transaction(["draft_sales"], "readwrite");
+        const objectStore = transaction.objectStore("draft_sales");
+        // Clear all records in the 'draft_sales' object store
+        const clearRequest = objectStore.clear();
+        clearRequest.onsuccess = function(event) {
+            console.log("All draft sales data deleted successfully.");
+        };
+        clearRequest.onerror = function(event) {
+            console.log("Error clearing draft sales data:", event);
+        };
+    }
+
+    function setItemStockInIndexDB(){
+        clearItemData();
+        $.ajax({
+            type: "POST",
+            url: base_url+"Sale/setItemStockInIndexDB",
+            dataType: "json",
+            success: function (response) {
+                let db;
+                const request = indexedDB.open("off_pos_2", 2);  // Changed from 1 to 2
+                request.onupgradeneeded = function(event) {
+                    db = event.target.result;  // Use 'db' consistently
+                    if (!db.objectStoreNames.contains("items")) {  // Check if store already exists
+                        db.createObjectStore("items", { keyPath: "id", autoIncrement: true }); 
+                        console.log("Object store 'items' created");
+                    }
+                };
+                request.onsuccess = function(event) {
+                    db = event.target.result;
+                    // Now that the database is opened, create a transaction and add data
+                    const transaction = db.transaction(["items"], "readwrite");
+                    const objectStore = transaction.objectStore("items");  
+                    let item_prepare = [];
+                    let singleItem;
+
+                    let allimeiArray;
+                    let allimeiObjects;
+
+                    let allexpiryArray;
+                    let allexpiryObjects;
+
+                    let allVariationArray;
+                    let product = '';
+                    
+                    $.each(response.data, function (ind, val) {
+                        let variationProducts = [];
+                        if(val.allimei){
+                            allimeiArray = val.allimei.split('||');
+                            allimeiObjects = allimeiArray.map(function(imei_serial) {
+                                return { single_imei_serial: imei_serial };
+                            });
+                        }
+                        if(val.allexpiry){
+                            allexpiryArray = val.allexpiry.split('||');
+                            allexpiryObjects = allexpiryArray.map(function(expiry) {
+                                let [date, stock] = expiry.split('|');  
+                                return { [date]: parseInt(stock) };
+                            });
+                        }
+                        if(val.variations){
+                            // Step 1: Split the data by '||' to get each product variation
+                            allVariationArray = val.variations.split('||');
+                            // Step 3: Map over each variation to create the product objects
+                            allVariationArray.forEach(function(variation) {
+                                // Split the variation by '|' to get the individual pieces of data
+                                let productArray = variation.split('|');
+                                // Create a product object with the key-value pairs
+                                product = {
+                                    vId: productArray[0],            // Product id 
+                                    name: productArray[1],            // Product name 
+                                    code: productArray[2],            // Product code 
+                                    lowStock: productArray[3],        // Low stock 
+                                    lastThreePAvg: productArray[4],   // Last Three Purchase Avg
+                                    stock_in: productArray[5],        // Current Stock
+                                    stock_out: productArray[6]        // Stock Out
+                                };
+                                // Add the product object to the variationProducts array
+                                variationProducts.push(product);
+                            });
+                        }
+                        singleItem = {
+                            id: val.id,
+                            name: val.name,
+                            type: val.type,
+                            code: val.code,
+                            expiry_date_maintain: val.expiry_date_maintain,
+                            conversion_rate: val.conversion_rate,
+                            sale_unit: val.sale_unit,
+                            allimei: allimeiObjects,
+                            stock_qty: val.stock_qty,
+                            out_qty: val.out_qty,
+                            variations: variationProducts,
+                            sale_unit: val.sale_unit,
+                            allexpiry: allexpiryObjects,
+                            parent_id: val.parent_id,
+                        }
+                        item_prepare.push(singleItem);
+                    });
+                    // Add the data to the 'sales' object store
+                    const requestAdd = objectStore.add(item_prepare);
+                    requestAdd.onsuccess = function(event) {
+                        console.log("Data added to 'items' successfully");
+                    };
+                    requestAdd.onerror = function(event) {
+                        console.log("Error adding items data ':", event);
+                    };
+                };
+                request.onerror = function(event) {
+                    console.log("Error opening database:", event);
+                };
+            }
+        });
+    }
+
+    setTimeout(function() {
+        setItemStockInIndexDB();
+    }, 700);
+
+    function clearItemData() {
+        const request = indexedDB.open("off_pos_2", 2);
+        request.onsuccess = function(event) {
+            const db = event.target.result;
+            // Create a transaction with 'readwrite' access
+            const transaction = db.transaction(["items"], "readwrite");
+            const objectStore = transaction.objectStore("items");
+            // Clear all records in the 'items' object store
+            const clearRequest = objectStore.clear();
+            clearRequest.onsuccess = function(event) {
+                console.log("All items data deleted successfully.");
+            };
+            clearRequest.onerror = function(event) {
+                console.log("Error clearing items data:", event);
+            };
+        };
+        request.onerror = function(event) {
+            console.log("Error opening database:", event);
+        };
+    }
+
+
+
+    function createOrOpenIndexedDB() {
+        const databases = [
+            { name: 'off_pos_dev', version: 1, objectStore: 'sales' }, //OHG change off_pos -> off_pos_dev
+            { name: 'off_pos_dev_2', version: 2, objectStore: 'items' }, //OHG change off_pos2 -> off_pos_dev2
+            { name: 'off_pos_dev_3', version: 3, objectStore: 'draft_sales' } //OHG change off_pos3 -> off_pos_dev3
+        ];
+        databases.forEach(db => {
+            const request = indexedDB.open(db.name, db.version);
+            request.onerror = function(event) {
+                console.error(`Error opening database ${db.name}:`, event.target.error);
+            };
+            request.onsuccess = function(event) {
+                console.log(`Database ${db.name} opened successfully`);
+            };
+            request.onupgradeneeded = function(event) {
+                const database = event.target.result;
+                if (!database.objectStoreNames.contains(db.objectStore)) {
+                    database.createObjectStore(db.objectStore, { keyPath: 'id', autoIncrement: true });
+                    console.log(`Object store ${db.objectStore} created in ${db.name}`);
+                }
+            };
+        });
+    }
+    // Call the function to create or open the databases
+    createOrOpenIndexedDB();
+    // ############ Index DB ############
+
+
+
+
     // Code optimize by Azhar ** Final **
     $(document).on('click', '#cancel_set_qty_alert_sms_setting', function () {
         $('#show_qty_sms_setting_modal').slideUp('500');
@@ -3965,7 +7050,6 @@ $(function () {
 
     // Code optimize by Azhar ** Final **
     function getAllCustomers(customer_id='',customer_previous_due_modal='',if_ignore){
-        let edit_customer = Number($('#edit_sale_customer').val());
         $.ajax({
             url: base_url + "Sale/getAllCustomers",
             method: "GET",
@@ -3973,12 +7057,12 @@ $(function () {
                 let option_customers = '';
                 option_customers += `<option value="">${select} ${customer}</option>`;
                 $.each(response.data, function (i, v) { 
-                    option_customers += `<option id="cid_${v.id}" data-same_or_diff_state="${v.same_or_diff_state}" discount="${v.discount}" price_type="${v.price_type}" data-previous_due="${v.opening_balance}"  value="${v.id}" data-customer-name="${v.name}" ${v.id == edit_customer ? 'selected' : ''} > ${v.name} ${v.phone != null ? '(' + v.phone + ')' : ''}</option>`;
+                    option_customers += `<option id="cid_${v.id}" data-same_or_diff_state="${v.same_or_diff_state}" discount="${v.discount}" price_type="${v.price_type}" data-previous_due="${v.opening_balance}" data-phone_number="${v.phone}"  value="${v.id}" data-customer-name="${v.name}" ${v.id == edit_sale_customer ? 'selected' : ''} > ${v.name} ${v.phone != null ? '(' + v.phone + ')' : ''}</option>`;
                 });
                 $('#walk_in_customer').html(option_customers);
-                if(edit_customer){ 
-                    if(customer_id && (customer_id == edit_customer)){
-                        $('#walk_in_customer').val(edit_customer).change();
+                if(edit_sale_customer){ 
+                    if(customer_id && (customer_id == edit_sale_customer)){
+                        $('#walk_in_customer').val(edit_sale_customer).change();
                     }else{
                         $('#walk_in_customer').val(customer_id).change();
                     }
@@ -3994,7 +7078,11 @@ $(function () {
             }
         });
     }
-    getAllCustomers(1,0,1);
+    if(edit_mode == ''){
+        getAllCustomers(default_customer, 0, '');
+    }else{
+        getAllCustomers(edit_sale_customer, 0, '');
+    }
 
 
     
@@ -4094,10 +7182,20 @@ $(function () {
                                 csrf_offpos: csrf_value_
                             },
                             success: function (response) {
-                                if (response > 0) {
-                                    $('.loader1').slideUp('500');
-                                    getAllCustomers(Number(response), opening_balance, '');
+                                if(response.status == 'success'){
+                                    getAllCustomers(Number(response.customer_id), opening_balance, '');
                                     customerModalFieldRest();
+                                    $('.loader1').slideUp('500');
+                                }else if(response.status == 'error'){
+                                    $.each(response.errors, function (ind, val) { 
+                                        if(ind == 'phone' && val != ''){
+                                            $("#phone_err_msg").html(`The Phone Number should be unique.`);
+                                            $(".phone_err_msg_contnr").show(200).delay(6000).hide(200, function () {});
+                                        }else if(ind == 'email' && val != ''){
+                                            $("#email_err_msg").html(`${val}`);
+                                            $(".email_err_msg_contnr").show(200).delay(6000).hide(200, function () {});
+                                        }
+                                    });
                                 }
                             }
                         });
@@ -4178,10 +7276,10 @@ $(function () {
         //get discount actual amount on item price
         let actual_modal_discount_amount = getParticularItemDiscountAmount(discount_on_modal, item_total_price_without_discount);
         //set blank if discount amount is more than item total price without discount
-        if (parseFloat(actual_modal_discount_amount) > parseFloat(item_total_price_without_discount)) {
-            $('#modal_discount').val('');
-            actual_modal_discount_amount = parseFloat(0).toFixed(op_precision);
-        }
+        // if (parseFloat(actual_modal_discount_amount) > parseFloat(item_total_price_without_discount)) {
+        //     $('#modal_discount').val('');
+        //     actual_modal_discount_amount = parseFloat(0).toFixed(op_precision);
+        // }
         //set actual discount amouto hidden modal element
         $('#modal_discount_amount').html(parseFloat(actual_modal_discount_amount).toFixed(op_precision));
         //get item price after discount
@@ -4198,38 +7296,23 @@ $(function () {
     // Code optimize by Azhar ** Final **
     function showAllItems(brand_id='',sorting='') {
         $('.specific_category_items_holder').hide();
-        setTimeout(function () {
-            let foundItems = searchItemAndConstructGallery('',sorting,'');
-            let searched_category_items_to_show = `<div id="searched_item_found" class="specific_category_items_holder"><div class="single-inner-div ${grocery_experience == 'ON' ? 'grocery_single_on' : 'grocery_single_off'}">`;
-            if(grocery_experience == 'ON'){
-                let brand_id_tmp = Number(brand_id);
-                for (let key in foundItems) {
-                    if(foundItems[key].item_type != '0'){
-                        let tax_information = (IsJsonString(foundItems[key].tax_information)) ? JSON.parse(foundItems[key].tax_information) : '';
-                        if (foundItems.hasOwnProperty(key)) {
-                            if (brand_id_tmp) {
-                                if (brand_id_tmp == foundItems[key].brand_id) {
-                                    searched_category_items_to_show += `
-                                        <div item-type="${foundItems[key].item_type}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" is_promo="${foundItems[key].is_promo}" class="single_item grocery_medicine_el   all_brand brand_${foundItems[key].brand_id} ${product_display == 'Image View' ? '' : 'bg-box-view'} d-flex align-items-center" id="item_${foundItems[key].item_id}">
-                                            <p class="item_name mt-0" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name} (${foundItems[key].item_code}) ${foundItems[key].brand_name ? foundItems[key].brand_name : ''}
-                                            
-                                            ${foundItems[key].generic_name ? '<br> <small class="generic_small">Generic Name: '+foundItems[key].generic_name+'</small>' : ''}
-                                            </p>
-                                            <p class="d-none generic_name generic_name_gm ${$.trim(foundItems[key].generic_name) ? '' : 'd-none'}" data-tippy-content="${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}">Generic Name: ${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}</p>
-
-                                            <p class="item_price item_price_gm">Sale Price: <span id="price_${foundItems[key].item_id}">${parseFloat(foundItems[key].price).toFixed(op_precision)}</span></p>
-
-                                            <span class="item_vat_percentage d-none">${JSON.stringify(tax_information)}</span>
-                                        </div>`;
-                                }
-                            } else {
+        // setTimeout(function () {
+        let foundItems = searchItemAndConstructGallery('',sorting,'');
+        let searched_category_items_to_show = `<div id="searched_item_found" class="specific_category_items_holder"><div class="single-inner-div ${grocery_experience == 'Medicine' || grocery_experience == 'Grocery' ? 'grocery_single_on' : 'grocery_single_off'}">`;
+        if(grocery_experience == 'Medicine' || grocery_experience == 'Grocery'){
+            let brand_id_tmp = Number(brand_id);
+            for (let key in foundItems) {
+                if(foundItems[key].item_type != '0'){
+                    let tax_information = (IsJsonString(foundItems[key].tax_information)) ? JSON.parse(foundItems[key].tax_information) : '';
+                    if (foundItems.hasOwnProperty(key)) {
+                        if (brand_id_tmp) {
+                            if (brand_id_tmp == foundItems[key].brand_id) {
                                 searched_category_items_to_show += `
-                                    <div item-type="${foundItems[key].item_type}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" is_promo="${foundItems[key].is_promo}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" class="single_item grocery_medicine_el   all_brand brand_${foundItems[key].brand_id} ${product_display == 'Image View' ? '' : 'bg-box-view'} d-flex align-items-center" id="item_${foundItems[key].item_id}">
-                                        <p class="item_name mt-0" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name} (${foundItems[key].item_code}) ${foundItems[key].brand_name ? foundItems[key].brand_name : ''} 
+                                    <div item-type="${foundItems[key].item_type}" expiry_date_maintain="${foundItems[key].expiry_date_maintain}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" is_promo="${foundItems[key].is_promo}" class="single_item grocery_medicine_el   all_brand brand_${foundItems[key].brand_id} ${product_display == 'Image View' ? '' : 'bg-box-view'} d-flex align-items-center" id="item_${foundItems[key].item_id}">
+                                        <p class="item_name mt-0" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name} (${foundItems[key].item_code}) ${grocery_experience != 'Medicine' ? foundItems[key].brand_name : foundItems[key].supplier_name}
                                         
                                         ${foundItems[key].generic_name ? '<br> <small class="generic_small">Generic Name: '+foundItems[key].generic_name+'</small>' : ''}
                                         </p>
-
                                         <p class="d-none generic_name generic_name_gm ${$.trim(foundItems[key].generic_name) ? '' : 'd-none'}" data-tippy-content="${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}">Generic Name: ${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}</p>
 
                                         <p class="item_price item_price_gm">Sale Price: <span id="price_${foundItems[key].item_id}">${parseFloat(foundItems[key].price).toFixed(op_precision)}</span></p>
@@ -4237,33 +7320,36 @@ $(function () {
                                         <span class="item_vat_percentage d-none">${JSON.stringify(tax_information)}</span>
                                     </div>`;
                             }
+                        } else {
+                            searched_category_items_to_show += `
+                                <div item-type="${foundItems[key].item_type}" expiry_date_maintain="${foundItems[key].expiry_date_maintain}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" is_promo="${foundItems[key].is_promo}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" class="single_item grocery_medicine_el   all_brand brand_${foundItems[key].brand_id} ${product_display == 'Image View' ? '' : 'bg-box-view'} d-flex align-items-center" id="item_${foundItems[key].item_id}">
+                                    <p class="item_name mt-0" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name} (${foundItems[key].item_code}) ${grocery_experience != 'Medicine' ? foundItems[key].brand_name : foundItems[key].supplier_name} 
+                                    
+                                    ${foundItems[key].generic_name ? '<br> <small class="generic_small">Generic Name: '+foundItems[key].generic_name+'</small>' : ''}
+                                    </p>
+
+                                    <p class="d-none generic_name generic_name_gm ${$.trim(foundItems[key].generic_name) ? '' : 'd-none'}" data-tippy-content="${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}">Generic Name: ${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}</p>
+
+                                    <p class="item_price item_price_gm">Sale Price: <span id="price_${foundItems[key].item_id}">${parseFloat(foundItems[key].price).toFixed(op_precision)}</span></p>
+
+                                    <span class="item_vat_percentage d-none">${JSON.stringify(tax_information)}</span>
+                                </div>`;
                         }
                     }
                 }
-            }else{
-                let brand_id_tmp = Number(brand_id);
-                for (let key in foundItems) {
-                    if(foundItems[key].item_type != '0'){
-                        let tax_information = (IsJsonString(foundItems[key].tax_information)) ? JSON.parse(foundItems[key].tax_information) : '';
-                        if (foundItems.hasOwnProperty(key)) {
-                            if (brand_id_tmp) {
-                                if (brand_id_tmp == foundItems[key].brand_id) {
-                                    searched_category_items_to_show += `
-                                        <div item-type="${foundItems[key].item_type}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" is_promo="${foundItems[key].is_promo}" class="single_item  all_brand brand_${foundItems[key].brand_id} ${product_display == 'Image View' ? '' : 'bg-box-view'}" id="item_${foundItems[key].item_id}">
-                                            <div class="single-item-img ${product_display == 'Image View' ? 'd-block' : 'd-none'}">
-                                                <img src="${foundItems[key].image}" alt="">
-                                            </div>
-                                            <p class="item_name" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name}${foundItems[key].brand_name} (${foundItems[key].item_code})</p>
-                                            <p class="generic_name ${$.trim(foundItems[key].generic_name) ? '' : 'd-none'}" data-tippy-content="${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}">${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}</p>
-                                            <p class="item_price">SP: <span id="price_${foundItems[key].item_id}">${parseFloat(foundItems[key].price).toFixed(op_precision)}</span></p>
-                                            <span class="item_vat_percentage d-none">${JSON.stringify(tax_information)}</span>
-                                        </div>`;
-                                }
-                            } else {
+            }
+        }else{
+            let brand_id_tmp = Number(brand_id);
+            for (let key in foundItems) {
+                if(foundItems[key].item_type != '0'){
+                    let tax_information = (IsJsonString(foundItems[key].tax_information)) ? JSON.parse(foundItems[key].tax_information) : '';
+                    if (foundItems.hasOwnProperty(key)) {
+                        if (brand_id_tmp) {
+                            if (brand_id_tmp == foundItems[key].brand_id) {
                                 searched_category_items_to_show += `
-                                    <div item-type="${foundItems[key].item_type}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" is_promo="${foundItems[key].is_promo}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" class="single_item  all_brand brand_${foundItems[key].brand_id} ${product_display == 'Image View' ? '' : 'bg-box-view'}" id="item_${foundItems[key].item_id}">
-                                        <div class="single-item-img ${product_display == 'Image View' ? 'd-block' : 'd-none'}">
-                                            <img src="${foundItems[key].image}" alt="">
+                                    <div item-type="${foundItems[key].item_type}" expiry_date_maintain="${foundItems[key].expiry_date_maintain}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" is_promo="${foundItems[key].is_promo}" class="single_item  all_brand brand_${foundItems[key].brand_id} ${product_display == 'Image View' ? '' : 'bg-box-view'}" id="item_${foundItems[key].item_id}">
+                                        <div class="single-item-img">
+                                            <img src="${foundItems[key].image}" alt="" class="${product_display == 'Image View' ? 'd-block' : 'd-none'}">
                                         </div>
                                         <p class="item_name" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name}${foundItems[key].brand_name} (${foundItems[key].item_code})</p>
                                         <p class="generic_name ${$.trim(foundItems[key].generic_name) ? '' : 'd-none'}" data-tippy-content="${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}">${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}</p>
@@ -4271,18 +7357,30 @@ $(function () {
                                         <span class="item_vat_percentage d-none">${JSON.stringify(tax_information)}</span>
                                     </div>`;
                             }
+                        } else {
+                            searched_category_items_to_show += `
+                                <div item-type="${foundItems[key].item_type}" expiry_date_maintain="${foundItems[key].expiry_date_maintain}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" is_promo="${foundItems[key].is_promo}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" class="single_item  all_brand brand_${foundItems[key].brand_id} ${product_display == 'Image View' ? '' : 'bg-box-view'}" id="item_${foundItems[key].item_id}">
+                                    <div class="single-item-img">
+                                        <img src="${foundItems[key].image}" alt="" class="${product_display == 'Image View' ? 'd-block' : 'd-none'}">
+                                    </div>
+                                    <p class="item_name" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name}${foundItems[key].brand_name} (${foundItems[key].item_code})</p>
+                                    <p class="generic_name ${$.trim(foundItems[key].generic_name) ? '' : 'd-none'}" data-tippy-content="${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}">${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}</p>
+                                    <p class="item_price">SP: <span id="price_${foundItems[key].item_id}">${parseFloat(foundItems[key].price).toFixed(op_precision)}</span></p>
+                                    <span class="item_vat_percentage d-none">${JSON.stringify(tax_information)}</span>
+                                </div>`;
                         }
                     }
                 }
             }
-            searched_category_items_to_show += `<div></div>`;
-            $("#searched_item_found").remove();
-            $('.specific_category_items_holder').hide('1000');
-            $(".category_items").prepend(searched_category_items_to_show);
-        }, 100);
+        }
+        searched_category_items_to_show += `<div></div>`;
+        $("#searched_item_found").remove();
+        $('.specific_category_items_holder').hide('1000');
+        $(".category_items").prepend(searched_category_items_to_show);
+        // }, 1000);
     }
     //initialize item list
-    showAllItems('','');
+    // showAllItems('','');
 
     $(document).on('click', '.sorting_item', function(){
         let sort_id = $(this).attr('data-sort_id');
@@ -4291,7 +7389,7 @@ $(function () {
         $(this).addClass('sort_active');
         $('.sorting_item').removeClass('sort_active');
         $("#search").val('');
-        $("#alternative_item_render").empty();
+        $('#alternative_item_render').html(`<h6>${Alternative_Medicine_will_shown_here} <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>`);
         showAllItems('',sort_id);
     });
 
@@ -4300,8 +7398,8 @@ $(function () {
         $('.specific_category_items_holder').hide();
         setTimeout(function () {
             let foundItems = searchItemAndConstructGallery('','','');
-            let searched_category_items_to_show = `<div id="searched_item_found" class="specific_category_items_holder d-block"><div class="single-inner-div ${grocery_experience == 'ON' ? 'grocery_single_on' : 'grocery_single_off'}">`;
-            if(grocery_experience == 'ON'){
+            let searched_category_items_to_show = `<div id="searched_item_found" class="specific_category_items_holder d-block"><div class="single-inner-div ${grocery_experience == 'Medicine' || grocery_experience == 'Grocery' ? 'grocery_single_on' : 'grocery_single_off'}">`;
+            if(grocery_experience == 'Medicine' || grocery_experience == 'Grocery'){
                 let cat_id_tmp = Number(cat_id);
                 for (let key in foundItems) {
                     if(foundItems[key].item_type != '0'){
@@ -4309,8 +7407,8 @@ $(function () {
                             if (cat_id_tmp) {
                                 if (cat_id_tmp == foundItems[key].cat_id) {
                                     searched_category_items_to_show += `
-                                        <div is_promo="${foundItems[key].is_promo}" item-type="${foundItems[key].item_type}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" class="single_item grocery_medicine_el   all_brand brand_${foundItems[key].cat_id} ${product_display == 'Image View' ? '' : 'bg-box-view'} d-flex align-items-center" id="item_${foundItems[key].item_id}">
-                                            <p class="item_name mt-0" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name} (${foundItems[key].item_code}) ${foundItems[key].brand_name ? foundItems[key].brand_name : ''}
+                                        <div is_promo="${foundItems[key].is_promo}" item-type="${foundItems[key].item_type}" expiry_date_maintain="${foundItems[key].expiry_date_maintain}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" class="single_item grocery_medicine_el   all_brand brand_${foundItems[key].cat_id} ${product_display == 'Image View' ? '' : 'bg-box-view'} d-flex align-items-center" id="item_${foundItems[key].item_id}">
+                                            <p class="item_name mt-0" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name} (${foundItems[key].item_code}) ${grocery_experience != 'Medicine' ? foundItems[key].brand_name : foundItems[key].supplier_name}
                                         
                                             ${foundItems[key].generic_name ? '<br> <small class="generic_small">Generic Name: '+foundItems[key].generic_name+'</small>' : ''}
                                             </p>
@@ -4322,9 +7420,9 @@ $(function () {
                                 }
                             } else {
                                 searched_category_items_to_show += `
-                                    <div is_promo="${foundItems[key].is_promo}" item-type="${foundItems[key].item_type}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" class="single_item grocery_medicine_el   all_brand brand_${foundItems[key].cat_id} ${product_display == 'Image View' ? '' : 'bg-box-view'} d-flex align-items-center" id="item_${foundItems[key].item_id}">
+                                    <div is_promo="${foundItems[key].is_promo}" item-type="${foundItems[key].item_type}" expiry_date_maintain="${foundItems[key].expiry_date_maintain}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" class="single_item grocery_medicine_el   all_brand brand_${foundItems[key].cat_id} ${product_display == 'Image View' ? '' : 'bg-box-view'} d-flex align-items-center" id="item_${foundItems[key].item_id}">
 
-                                        <p class="item_name mt-0" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name} (${foundItems[key].item_code}) ${foundItems[key].brand_name ? foundItems[key].brand_name : ''}
+                                        <p class="item_name mt-0" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name} (${foundItems[key].item_code}) ${grocery_experience != 'Medicine' ? foundItems[key].brand_name : foundItems[key].supplier_name}
                                         
                                         ${foundItems[key].generic_name ? '<br> <small class="generic_small">Generic Name: '+foundItems[key].generic_name+'</small>' : ''}
                                         </p>
@@ -4347,9 +7445,9 @@ $(function () {
                             if (cat_id_tmp) {
                                 if (cat_id_tmp == foundItems[key].cat_id) {
                                     searched_category_items_to_show += `
-                                        <div is_promo="${foundItems[key].is_promo}" item-type="${foundItems[key].item_type}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" class="single_item  all_brand brand_${foundItems[key].cat_id} ${product_display == 'Image View' ? '' : 'bg-box-view'}" id="item_${foundItems[key].item_id}">
-                                            <div class="single-item-img ${product_display == 'Image View' ? 'd-block' : 'd-none'}">
-                                                <img src="${foundItems[key].image}" alt="">
+                                        <div is_promo="${foundItems[key].is_promo}" item-type="${foundItems[key].item_type}" expiry_date_maintain="${foundItems[key].expiry_date_maintain}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" class="single_item  all_brand brand_${foundItems[key].cat_id} ${product_display == 'Image View' ? '' : 'bg-box-view'}" id="item_${foundItems[key].item_id}">
+                                            <div class="single-item-img">
+                                                <img src="${foundItems[key].image}" alt="" class="${product_display == 'Image View' ? 'd-block' : 'd-none'}">
                                             </div>
                                             <p class="item_name" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name}${foundItems[key].brand_name} (${foundItems[key].item_code})</p>
                                             <p class="generic_name ${$.trim(foundItems[key].generic_name) ? '' : 'd-none'}" data-tippy-content="${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}">${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}</p>
@@ -4359,9 +7457,9 @@ $(function () {
                                 }
                             } else {
                                 searched_category_items_to_show += `
-                                    <div is_promo="${foundItems[key].is_promo}" item-type="${foundItems[key].item_type}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" class="single_item  all_brand brand_${foundItems[key].cat_id} ${product_display == 'Image View' ? '' : 'bg-box-view'}" id="item_${foundItems[key].item_id}">
-                                        <div class="single-item-img ${product_display == 'Image View' ? 'd-block' : 'd-none'}">
-                                            <img src="${foundItems[key].image}" alt="">
+                                    <div is_promo="${foundItems[key].is_promo}" item-type="${foundItems[key].item_type}" expiry_date_maintain="${foundItems[key].expiry_date_maintain}" plain-id="${foundItems[key].item_id}" data-last_purchase_price="${foundItems[key].last_purchase_price}" data-whole_sale_price="${foundItems[key].whole_sale_price}" data-sale_price="${foundItems[key].price}" class="single_item  all_brand brand_${foundItems[key].cat_id} ${product_display == 'Image View' ? '' : 'bg-box-view'}" id="item_${foundItems[key].item_id}">
+                                        <div class="single-item-img">
+                                            <img src="${foundItems[key].image}" alt="" class="${product_display == 'Image View' ? 'd-block' : 'd-none'}">
                                         </div>
                                         <p class="item_name" data-tippy-content="${foundItems[key].item_name}(${foundItems[key].item_code})">${foundItems[key].item_name}${foundItems[key].brand_name} (${foundItems[key].item_code})</p>
                                         <p class="generic_name ${$.trim(foundItems[key].generic_name) ? '' : 'd-none'}" data-tippy-content="${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}">${$.trim(foundItems[key].generic_name) ? $.trim(foundItems[key].generic_name) : ''}</p>
@@ -4382,16 +7480,18 @@ $(function () {
 
     // Code optimize by Azhar ** Final **
     $(document).on('click', '.promo_filter', function(){
-        $('#show_all_promo').addClass('active');
-        $(".pos__modal__overlay").fadeIn(200);
-        $.ajax({
-            url: base_url + "get_prom_details",
-            method: "POST",
-            dataType:'json',
-            success: function (response) {
-                $(".promo_modal_body").html(response);
-            }
-        });
+        if(is_offline_system == '1'){
+            $('#show_all_promo').addClass('active');
+            $(".pos__modal__overlay").fadeIn(200);
+            $.ajax({
+                url: base_url + "get_prom_details",
+                method: "POST",
+                dataType:'json',
+                success: function (response) {
+                    $(".promo_modal_body").html(response);
+                }
+            });
+        }
     });
 
 
@@ -4443,6 +7543,7 @@ $(function () {
             $(this).parent().parent().find('.item_discount').text(actual_discount_amount);
 
             discounted_item_price = (parseFloat(this_item_original_price) - parseFloat(actual_discount_amount)).toFixed(op_precision);
+            
             $(this).parent().parent().find('.fifth_column span').html(discounted_item_price);
 
             this_item_discount_amount = (parseFloat($(this).parent().parent().find('.item_discount').html())).toFixed(op_precision);
@@ -4451,10 +7552,10 @@ $(function () {
             all_item_total_price = parseFloat($(this).text()).toFixed(op_precision);
             sub_total_sum += parseFloat(all_item_total_price);
 
-            total_items_in_cart_with_quantity = parseFloat($(this).parent().parent().find('.third_column span').eq(0).text());
+            total_items_in_cart_with_quantity += parseFloat($(this).parent().parent().find('.third_column span').eq(0).text());
 
         });
-
+    
 
         $('#total_item_discount').html(total_discount_sum);
 
@@ -4478,7 +7579,6 @@ $(function () {
 
         //get subtotal discount amount
         let sub_total_discount_amount = ($('#sub_total_discount').val() != "") ? $('#sub_total_discount').val() : 0;
-
         //check wether value is valid or not
         removeLastTwoDigitWithPercentage(sub_total_discount_amount, $('#sub_total_discount'));
         sub_total_discount_amount = getSubTotalDiscountAmount(sub_total_discount_amount, sub_total_amount);
@@ -4548,9 +7648,7 @@ $(function () {
         if (total_vat_amount == "NaN" || tax_type==2) {
             total_vat_amount = 0;
         }
-
-        let total_payable = (parseFloat(discounted_sub_total_amount) - parseFloat(sub_total_discount_tmp) + parseFloat(total_vat_amount) + parseFloat(delivery_charge_amount)).toFixed(op_precision);
-
+        let total_payable = (parseFloat(discounted_sub_total_amount) + parseFloat(total_vat_amount) + parseFloat(delivery_charge_amount)).toFixed(op_precision);
         //set total payable amount to view and set rounding value.
         let pos_total_payable_type = $('#pos_total_payable_type').val();
         let total_payable_round;
@@ -4565,7 +7663,13 @@ $(function () {
             total_payable_round = customDecimalRound(parseFloat(total_payable), pos_total_payable_type, op_precision);
             decimal_round = total_payable - total_payable_round;
         }
-        $('#total_payable').html((parseFloat(total_payable_round)).toFixed(op_precision));
+        let delivery_charge = $('#show_charge_amount').text();
+        if(delivery_charge){
+            delivery_charge = parseFloat(delivery_charge);
+        }else{
+            delivery_charge = 0;
+        }
+        $('#total_payable').html((parseFloat(total_payable_round + delivery_charge)).toFixed(op_precision));
         $('#rounding').text(parseFloat(decimal_round).toFixed(op_precision));
 
 
@@ -4841,10 +7945,9 @@ $(function () {
                             check_exist = true;
                         }
                     });
-                    if(check_exist==true){
-                        let already_added = $("#already_added").val();
-                        toastr['error']((already_added), '');
-                    }else{
+                    if(check_exist != true){
+                        // toastr['error']((already_added), '');
+                    // }else{
                         if(is_quick == 'Yes'){
                             $("#add_payment").click();
                         }
@@ -4976,25 +8079,12 @@ $(function () {
         } else if (account_type == "Paypal" && account_type != undefined) {
             $("#show_account_type").html(`
                 <div class="form-group">
-                    <label>Swip Card</label>
-                    <input type="text" name="swip_card" class="form-control" placeholder="Swip card here  then security code manually" id="swip_card">
-                </div>
-                <div class="form-group">
                     <label>Credit Card No</label>
                     <input type="text" name="credit_card_no" class="form-control" placeholder="Credit Card No" id="credit_card_no">
                 </div>
                 <div class="form-group">
                     <label>Holder Name</label>
                     <input type="text" name="holder_name" class="form-control" placeholder="Holder Name" id="holder_name">
-                </div>
-                <div class="form-group">
-                    <label>Card Type</label>
-                    <select name="card_type" id="card_type" class="form-control select2">
-                        <option value="Visa">Visa</option>
-                        <option value="Master Card">Master Card</option>
-                        <option value="Amex">Amex</option>
-                        <option value="Discover">Discover</option>
-                    </select>
                 </div>
                 <div class="form-group">
                     <label>Month</label>
@@ -5016,25 +8106,12 @@ $(function () {
         } else if (account_type == "Stripe" && account_type != undefined) {
             $("#show_account_type").html(`
                 <div class="form-group">
-                    <label>Swip Card</label>
-                    <input type="text" name="swip_card" class="form-control" placeholder="Swip card here  then security code manually" id="swip_card">
-                </div>
-                <div class="form-group">
                     <label>Credit Card No</label>
                     <input type="text" name="credit_card_no" class="form-control" placeholder="Credit Card No" id="credit_card_no">
                 </div>
                 <div class="form-group">
                     <label>Holder Name</label>
                     <input type="text" name="holder_name" class="form-control" placeholder="Holder Name" id="holder_name">
-                </div>
-                <div class="form-group">
-                    <label>Card Type</label>
-                    <select name="card_type" id="card_type" class="form-control select2">
-                        <option value="Visa">Visa</option>
-                        <option value="Master Card">Master Card</option>
-                        <option value="Amex">Amex</option>
-                        <option value="Discover">Discover</option>
-                    </select>
                 </div>
                 <div class="form-group">
                     <label>Month</label>
@@ -5271,6 +8348,17 @@ $(function () {
         let paymentTypeArr = [];
         let account_type = $('.list-for-payment-type .active').attr('data-type_value');
 
+        let  payment_exist_check = 'No';
+        $('.payment_list_counter .payment-type-name').each(function(){
+            if($(this).text() == $('.payment_element .active').text()){
+                payment_exist_check == 'Yes';
+            }
+        });
+        if(payment_exist_check == 'Yes'){
+            return false;
+        }
+
+
         if(account_type == 'Cash' && account_type != undefined){
             account_note = $('#p_note').val();
             if(account_note != ''){
@@ -5401,7 +8489,8 @@ $(function () {
             paymentTypeArr.push(payment_cvc);
         }else{
         }
-        let finalize_amount_input = Number($("#finalize_amount_input").val());
+
+        let finalize_amount_input = parseFloat($("#finalize_amount_input").val());
         let usage_point = finalize_amount_input;
         let status = false;
         let check_exist = false;
@@ -5410,13 +8499,12 @@ $(function () {
         let payment_text = '' ;
         let payment_name = $("#payment_preview").text() ;
         let payment_acc_type = $("#payment_preview").attr('data-account_type') ;
-        $(".set_payment").each(function (i, obj) {
-            let this_txt = $(this).text();
+        $(".set_payment").each(function () {
             if($(this).hasClass('active')){
                 status = true;
                 payment_id = Number($(this).attr('data-id'));
                 acc_type = $(this).attr('data-type_value');
-                payment_text = this_txt;
+                payment_text = $(this).text();
             }
         });
         $("#finalize_given_amount_input").css("border","1px solid #bcbdbe");
@@ -5431,9 +8519,9 @@ $(function () {
             let loyalty_point_is_not_available = $("#loyalty_point_is_not_available").val();
             toastr['error']((finalize_amount_input+" "+loyalty_point_is_not_available), '');
         }else{
-            $(".payment_list_counter").each(function (i, obj) {
-                let dataAccType = Number($(this).attr('data-account_type'));
-                if(acc_type===dataAccType){
+            $(".payment_list_counter").each(function () {
+                let dataAccName = $(this).attr('data-payment_name');
+                if(payment_text == dataAccName){
                     check_exist = true;
                 }
             });
@@ -5441,9 +8529,11 @@ $(function () {
                 payment_name = payment_name+"(Usage "+finalize_amount_input+")";
                 finalize_amount_input = (loyalty_rate * finalize_amount_input);
             }
+       
+
             let tmp_amount_checker = finalize_amount_input;
-            if(payment_text=="Cash"){
-                tmp_amount_checker = Number($("#finalize_given_amount_input").val());
+            if(payment_text == "Cash"){
+                tmp_amount_checker = parseFloat($("#finalize_given_amount_input").val());
             }
             if(tmp_amount_checker){
                 if(status==true){
@@ -5458,7 +8548,6 @@ $(function () {
                         <input type="hidden" class="paymentAccountDetails" name="sale_payment_info[]" value="${paymentTypeArr}" />
                     </li>`;
                     if(check_exist==true){
-                        let already_added = $("#already_added").val();
                         toastr['error']((already_added), '');
                     }else{
                         $(".set_payment").each(function (i, obj) {
@@ -5473,7 +8562,7 @@ $(function () {
                                     if(finalize_total_payable<finalize_given_amount_input){
                                         $(".set_no_access").addClass('no_access');
                                     }
-                                    if(Number($("#finalize_change_amount_input").val())){
+                                    if(parseFloat($("#finalize_change_amount_input").val())){
                                         $(".change_amount_div").show();
                                         $("#change_amount_div_").text(Number($("#finalize_change_amount_input").val()).toFixed(op_precision));
                                         $(".finalize-changes-amt-mobile").text(`${Number($("#finalize_change_amount_input").val()).toFixed(op_precision)}`);
@@ -5489,6 +8578,7 @@ $(function () {
                                 }
                             }
                         });
+                        
                         $(".empty_title").hide();
                         $("#payment_list_div").append(html);
                         $("#finalize_amount_input").val('');
@@ -5712,44 +8802,140 @@ $(function () {
 
     // Code optimize by Azhar ** Final **
     $(document).on('click', '#hold_sale', function () {
-        if ($('.order_holder .single_order').length > 0) {
-            $.ajax({
-                url: base_url + "Sale/get_new_hold_number_ajax",
-                method: "GET",
-                success: function (response) {
-                    $("#generate_sale_hold_modal").addClass("active");
-                    $(".pos__modal__overlay").fadeIn(200);
-                    $('#hold_generate_input').val(response);
-                }
-            });
-        } else {
-            toastr['error']((cart_empty), '');
+        if(is_offline_system == '1'){
+            if ($('.order_holder .single_order').length > 0) {
+                $.ajax({
+                    url: base_url + "Sale/get_new_hold_number_ajax",
+                    method: "GET",
+                    success: function (response) {
+                        $("#generate_sale_hold_modal").addClass("active");
+                        $(".pos__modal__overlay").fadeIn(200);
+                        $('#hold_generate_input').val(response);
+                    }
+                });
+            } else {
+                toastr['error']((cart_empty), '');
+            }
+        }else{
+            if ($('.order_holder .single_order').length > 0) {
+                // Open a connection to the IndexedDB database
+                let request = indexedDB.open('off_pos_3', 3);
+            
+                request.onupgradeneeded = function(event) {
+                    let db = event.target.result;
+                    // Create the 'draft_sale' object store if it doesn't exist
+                    if (!db.objectStoreNames.contains('draft_sales')) {
+                        db.createObjectStore('draft_sales', { keyPath: 'id', autoIncrement: true });
+                    }
+                };
+            
+                request.onsuccess = function(event) {
+                    let db = event.target.result;
+                    // Check if the 'draft_sale' object store exists
+                    if (!db.objectStoreNames.contains('draft_sales')) {
+                        console.error("Object store 'draft_sales' not found");
+                        $("#generate_sale_hold_modal").addClass("active");
+                        $(".pos__modal__overlay").fadeIn(200);
+                        $('#hold_generate_input').val(1);
+                        return;
+                    }
+                    let transaction = db.transaction(['draft_sales'], 'readonly');
+                    let objectStore = transaction.objectStore('draft_sales');
+                    let countRequest = objectStore.count();
+                    countRequest.onsuccess = function() {
+                        let count = countRequest.result;
+                        let newHoldNumber = count + 1;
+                        $("#generate_sale_hold_modal").addClass("active");
+                        $(".pos__modal__overlay").fadeIn(200);
+                        $('#hold_generate_input').val(newHoldNumber);
+                    };
+                    countRequest.onerror = function(event) {
+                        console.error("Count error: " + event.target.error);
+                    };
+                };
+                request.onerror = function(event) {
+                    console.error("Database error: " + event.target.error);
+                };
+                request.onerror = function(event) {
+                    console.error("Database error: " + event.target.error);
+                };
+            } else {
+                toastr['error']((cart_empty), '');
+            }
         }
     });
 
 
     // Code optimize by Azhar ** Final **
     function add_hold_by_ajax(order_object, hold_number) {
-        $.ajax({
-            url: base_url + "Sale/add_hold_by_ajax",
-            method: "POST",
-            data: {
-                order: order_object,
-                hold_number: hold_number,
-                csrf_offpos: csrf_value_
-            },
-            success: function (response) {
-                $("#generate_sale_hold_modal").removeClass('active');
-                $('.order_holder').empty();
-                $('#hold_generate_input').val(Number(0));
-                $('#table_button').attr('disabled', false);
-                $('.main_top').find('button').css('background-color', '#F3F3F3');
-                clearFooterCartCalculation();
-                resetDefaultCustomer();
-            }
-        });
+        if(is_offline_system == '1'){
+            $.ajax({
+                url: base_url + "Sale/add_hold_by_ajax",
+                method: "POST",
+                data: {
+                    order: order_object,
+                    hold_number: hold_number,
+                    csrf_offpos: csrf_value_
+                },
+                success: function (response) {
+                    $("#generate_sale_hold_modal").removeClass('active');
+                    $('.order_holder').empty();
+                    $('#hold_generate_input').val(Number(0));
+                    $('#table_button').attr('disabled', false);
+                    $('.main_top').find('button').css('background-color', '#F3F3F3');
+                    clearFooterCartCalculation();
+                    resetDefaultCustomer();
+                    resetFinalizeModal();
+                }
+            });
+        }else{
+            let db;
+            const request = indexedDB.open("off_pos_3", 3);  
+            request.onupgradeneeded = function(event) {
+                db = event.target.result; 
+                if (!db.objectStoreNames.contains("draft_sales")) {  // Check if store already exists
+                    db.createObjectStore("draft_sales", { keyPath: "id", autoIncrement: true }); 
+                    console.log("Object store 'draft_sales' created");
+                }
+            };
+            request.onsuccess = function(event) {
+                db = event.target.result;
+                // Check if the object store exists before creating a transaction
+                if (db.objectStoreNames.contains("draft_sales")) {
+                    const transaction = db.transaction(["draft_sales"], "readwrite");
+                    const objectStore = transaction.objectStore("draft_sales");  
+                    // Add the data to the 'draft_sales' object store
+                    const requestAdd = objectStore.add({
+                        order: JSON.parse(order_object),
+                        holdNumber: hold_number
+                    });
+                    requestAdd.onsuccess = function(event) {
+                        console.log("Data added to 'Draft Sale' successfully");
+                    };
+                    requestAdd.onerror = function(event) {
+                        console.log("Error adding data to 'Draft Sales':", event);
+                    };
+                } else {
+                    console.error("Object store 'draft_sales' not found");
+                    // Optionally, you could create the object store here if it doesn't exist
+                    // db.createObjectStore("draft_sales", { keyPath: "id", autoIncrement: true });
+                }
+            };
+            request.onerror = function(event) {
+                console.log("Error opening database:", event);
+            };
+            $("#generate_sale_hold_modal").removeClass('active');
+            $('.order_holder').empty();
+            $('#hold_generate_input').val(Number(0));
+            $('#table_button').attr('disabled', false);
+            $('.main_top').find('button').css('background-color', '#F3F3F3');
+            clearFooterCartCalculation();
+            resetDefaultCustomer();
+            resetFinalizeModal();
+        }
+        
     }
-
+    
 
     // Code optimize by Azhar ** Final **
     $(document).on('click', '#hold_cart_info', function () {
@@ -5770,6 +8956,8 @@ $(function () {
         let total_discount_amount = parseFloat($('#all_items_discount').text()).toFixed(op_precision);
         let delivery_charge = ($('#delivery_charge').val() != "") ? parseFloat($('#delivery_charge').val()).toFixed(op_precision) : parseFloat(0).toFixed(op_precision);
         let customer_id = $('#walk_in_customer').val();
+        let customer_name = $('option:selected', '#walk_in_customer').attr('data-customer-name');
+        let customer_phone_number = $('option:selected', '#walk_in_customer').attr('data-phone_number');
         let select_employee_id = $('#select_employee_id').val();
         let sub_total_discount_value = $('#sub_total_discount').val();
         let delivery_partner = $.trim($('#delivery_partner_info').attr('data-partner-id'));
@@ -5795,8 +8983,14 @@ $(function () {
         } else {
             sub_total_discount_type = 'plain';
         }
+        const sale_date = new Date().toLocaleDateString(); 
+        const sale_time = new Date().toLocaleTimeString();
         let orderInfo = {
+            "sale_date": sale_date,
+            "sale_time": sale_time,
             "customer_id": customer_id,
+            "customer_name": customer_name,
+            "customer_phone_number": customer_phone_number,
             "select_employee_id": select_employee_id,
             "total_items_in_cart": total_items_in_cart,
             "sub_total": sub_total,
@@ -5842,27 +9036,81 @@ $(function () {
             let item_price_with_discount = $(this).find('#item_total_price_table_' + item_id).text();
             let menu_note = $(this).find('.item_modal_description_table_' + item_id).text();
             let item_discount_amount = (parseFloat(item_price_without_discount) - parseFloat(item_price_with_discount)).toFixed(op_precision);
-            orderInfo.items.push({
-                "item_type": item_type_check,
-                "item_seller_id": item_seller_id,
-                "item_id": item_id,
-                "item_name": item_name,
-                "menu_taxes": menu_taxes,
-                "item_discount": item_discount,
-                "expiry_imei_serial": expiry_imei_serial,
-                "discount_type": discount_type,
-                "item_price_without_discount": item_price_without_discount,
-                "item_unit_price": item_unit_price,
-                "item_quantity": item_quantity,
-                "item_price_with_discount": item_price_with_discount,
-                "item_discount_amount": item_discount_amount,
-                "menu_note": menu_note,
-                "is_promo_item": is_promo,
-                "promo_item_id": freeItemId,
-                "promo_item_name": freeItemName,
-                "promo_item_buy_qty": freeItemBuyQty,
-                "promo_item_get_qty": freeItemGetQty
-            });
+            let item_description = '';
+
+
+            let item = {
+                menu_note: menu_note,
+                menu_taxes: menu_taxes,
+                item_seller_id: item_seller_id,
+                item_id: item_id,
+                item_name: item_name,
+                item_discount: item_discount,
+                expiry_imei_serial: expiry_imei_serial,
+                item_type: item_type_check,
+                discount_type: discount_type,
+                item_price_without_discount: item_price_without_discount,
+                item_unit_price: item_unit_price,
+                item_quantity: item_quantity,
+                item_price_with_discount: item_price_with_discount,
+                item_discount_amount: item_discount_amount,
+                is_promo_item: is_promo,
+                is_promo_item_exist: freeItemLength,
+                promo_item_object: '',
+                combo_item: [] 
+            };
+
+            orderInfo.items.push(item);
+            let itemIndex = orderInfo.items.length - 1; 
+
+            if (freeItemLength > 0) {
+                let freeItemName = $(`#free_item_name_table_${item_id}`).text();
+                let freeItemQty = $(`#free_item_quantity_table_${item_id}`).text();
+                let freeItemId = $(this).find('.free-item').attr('data-free-item-id');
+                orderInfo.items.push({
+                    item_seller_id: item_seller_id,
+                    item_id: freeItemId,
+                    item_name: freeItemName,
+                    item_last_purchase_price: "",
+                    item_vat: "",
+                    item_discount: "",
+                    expiry_imei_serial: "",
+                    item_type: "",
+                    discount_type: "",
+                    item_price_without_discount: "",
+                    item_unit_price: "",
+                    item_quantity: freeItemQty,
+                    item_price_with_discount: "",
+                    item_discount_amount: "",
+                    item_details: "",
+                    is_promo_item: "",
+                    is_promo_item_exist: "",
+                    item_description: "",
+                });
+            }
+    
+            // Combo Selector
+            let combo_cart_item = $(this).find(`.combo_cart_item`).length;
+            if (combo_cart_item > 0) {
+                $(this).find(`.combo_cart_item`).each(function() {
+                    let combo_id = $(this).find('.first_column').attr('data-id');
+                    let comboItemQty = $(`#combo_item_quantity_table_${combo_id}`).text();
+                    let comboItemPrice = $(`#combo_item_price_table_${combo_id}`).text();
+                    let comboItemType = $(`#combo_item_type_table_${combo_id}`).text();
+                    let comboItemSubtotal = $(`#free_item_total_price_table_${combo_id}`).text();
+                    let comboItemSeller = $(`#combo_seller_table_${combo_id}`).text();
+                    let comboItemShowInv = $(`#combo_inv_show_table_${combo_id}`).text();
+                    orderInfo.items[itemIndex].combo_item.push({
+                        combo_item_id: combo_id,
+                        combo_item_type: comboItemType,
+                        combo_item_qty: comboItemQty,
+                        combo_item_price: comboItemPrice,
+                        combo_item_subtotal: comboItemSubtotal,
+                        combo_item_seller: comboItemSeller,
+                        show_in_invoice: comboItemShowInv,
+                    });
+                });
+            }
         });
         let orderObject = JSON.stringify(orderInfo);
         add_hold_by_ajax(orderObject, hold_number);
@@ -5879,24 +9127,62 @@ $(function () {
 
     // Code optimize by Azhar ** Final **
     function getAllHoldSales() {
-        $.ajax({
-            url: base_url + "Sale/get_all_holds_ajax",
-            method: "GET",
-            success: function (response) {
-                let orders = JSON.parse(response);
-                let held_orders = '';
-                for (let key in orders) {
-                    let customer_name = (orders[key].customer_name == null || orders[key].customer_name == "") ? "&nbsp;" : orders[key].customer_name;
-                    held_orders += `<div class="single_hold_sale fix" id="hold_${orders[key].id}" data-selected="unselected">
-                        <div class="first_column column fix">${orders[key].hold_no}</div>
-                        <div class="second_column column fix">${customer_name}</div>
-                        <div class="third_column column fix">${opDateFormat(orders[key].sale_date) + ' ' + orders[key].sale_time} </div>
-                    </div>`;
+        if(is_offline_system == '1'){
+            $.ajax({
+                url: base_url + "Sale/get_all_holds_ajax",
+                method: "GET",
+                success: function (response) {
+                    let orders = JSON.parse(response);
+                    let held_orders = '';
+                    let customer_name = '';
+                    let customer_phone = '';
+                    for (let key in orders) {
+                        customer_name = (orders[key].customer_name == null || orders[key].customer_name == "") ? "&nbsp;" : orders[key].customer_name;
+                        customer_phone = (orders[key].customer_phone == null || orders[key].customer_phone == "") ? "&nbsp;" : orders[key].customer_phone;
+                        held_orders += `<div class="single_hold_sale fix" id="hold_${orders[key].id}" data-selected="unselected">
+                            <div class="first_column column fix">${orders[key].hold_no}</div>
+                            <div class="second_column column fix">${customer_name} ${customer_phone ? '(' + customer_phone + ')' : ''}</div>
+                            <div class="third_column column fix">${opDateFormat(orders[key].sale_date) + ' ' + orders[key].sale_time} </div>
+                        </div>`;
+                    }
+                    $(".hold_list_holder .detail_holder ").empty();
+                    $(".hold_list_holder .detail_holder ").prepend(held_orders);
                 }
-                $(".hold_list_holder .detail_holder ").empty();
-                $(".hold_list_holder .detail_holder ").prepend(held_orders);
-            }
-        });
+            });
+        }else{
+            let db;
+            const request = indexedDB.open("off_pos_3", 3);
+            request.onerror = function(event) {
+                console.error("Database error: " + event.target.error);
+            };
+            request.onsuccess = function(event) {
+                db = event.target.result;
+                const transaction = db.transaction(["draft_sales"], "readonly");
+                const objectStore = transaction.objectStore("draft_sales");
+                const getAllRequest = objectStore.getAll();
+                getAllRequest.onerror = function(event) {
+                    console.log("Error fetching draft sales:", event.target.error);
+                };
+                getAllRequest.onsuccess = function(event) {
+                    const orders = event.target.result;
+                    let held_orders = '';
+                    let order = '';
+                    let customer_phone = '';
+                    for (let key in orders) {
+                        order = orders[key];
+                        customer_phone = (order.order.customer_phone_number == null || order.order.customer_phone_number == 'null' || order.order.customer_phone_number == "") ? '' : order.order.customer_phone_number;
+
+                        held_orders += `<div class="single_hold_sale fix" id="hold_${order.id}" data-selected="unselected">
+                            <div class="first_column column fix">${order.holdNumber}</div>
+                            <div class="second_column column fix">${order.order.customer_name} ${customer_phone != '' ? '(' + customer_phone + ')' : ''}</div>
+                            <div class="third_column column fix">${opDateFormat(order.order.sale_date) + ' ' + order.order.sale_time}</div>
+                        </div>`;
+                    }
+                    $(".hold_list_holder .detail_holder").empty();
+                    $(".hold_list_holder .detail_holder").prepend(held_orders);
+                };
+            };
+        } 
     }
  
     // Code optimize by Azhar ** Final **
@@ -5948,146 +9234,389 @@ $(function () {
 
     // Code optimize by Azhar ** Final **
     function getDetailsOfParticularHold(hold_id) {
-        let row_number = $('#modal_item_row').html();
-        $.ajax({
-            url: base_url + "Sale/get_single_hold_info_by_ajax",
-            method: "POST",
-            data: {
-                hold_id: hold_id,
-                csrf_offpos: csrf_value_
-            },
-            success: function (response) {
-                response = JSON.parse(response);
-                hold_id = response.id;
-                let draw_table_for_order = '';
-                let itemQty = 0;
-                let totalItem = 0;
-                let item_object;
-                let key;
-                let readonlyAttr = '';
-                let expiry_imei_serial = '';
-                let promotionHtml = '';
-                for (key in response.items) {
-                    item_object = response.items[key];
-                    itemQty += Number(item_object.qty);
-                    totalItem++;
-                    
-                    if(item_object.item_type == 'IMEI_Product' || item_object.item_type == 'Serial_Product'|| item_object.item_type == 'Medicine_Product'){
-                        expiry_imei_serial = `<span class="imei_serial_note" id="expiry_imei_serial">${checkItemShortType(item_object.item_type)}: <span class="expiry_imei_serial_${item_object.food_menu_id}">${item_object.expiry_imei_serial}</span></span>`;
-                    }else{
-                        expiry_imei_serial = '';
-                    }
-                    if(item_object.is_promo_item == 'Yes'){
-                        let jsonObj = jQuery.parseJSON(item_object.promo_item_object);
-                        let itemPromoNo = parseInt(Number(item_object.qty) / Number(jsonObj.promo_item_buy_qty)) * parseInt(jsonObj.promo_item_get_qty);
-                        readonlyAttr = 'readonly';
-                        if(itemPromoNo > 0){
-                            promotionHtml =`<div class="free-item free_item_div_${item_object.food_menu_id}" data-free-item-id="${jsonObj.promo_item_id}" data-get_fm_id="${item_object.food_menu_id}" data-is_free="Yes">
-                                <div data-id="${item_object.food_menu_id}" class="customer_panel single_order_column first_column">
-                                    <iconify-icon icon="solar:pen-broken" width="22" data-parent_id=""></iconify-icon>
-                                    <span id="free_item_name_table_${item_object.food_menu_id}">${jsonObj.promo_item_name}</span>
-                                    <span class="d-none" id="free_item_buy_table_${item_object.food_menu_id}">${jsonObj.promo_item_buy_qty}</span>
-                                    <span class="d-none" id="free_item_get_table_${item_object.food_menu_id}">${jsonObj.promo_item_get_qty}</span>
+        if(is_offline_system == '1'){
+            let row_number = $('#modal_item_row').html();
+            $.ajax({
+                url: base_url + "Sale/get_single_hold_info_by_ajax",
+                method: "POST",
+                async: false,
+                data: {
+                    hold_id: hold_id,
+                    csrf_offpos: csrf_value_
+                },
+                success: function (response) {
+                    response = JSON.parse(response);
+                    hold_id = response.id;
+                    let draw_table_for_order = '';
+                    let itemQty = 0;
+                    let totalItem = 0;
+                    let item_object;
+                    let key;
+                    let readonlyAttr = '';
+                    let expiry_imei_serial = '';
+                    let promotionHtml = '';
+                    for (key in response.items) {
+                        item_object = response.items[key];
+                        let comboHtml = '';
+                        let item_unit_price = 0;
+                        if(item_object.item_type == 'Combo_Product'){
+                            item_unit_price = item_object.menu_price_with_discount;
+
+                            $.ajax({
+                                type: "POST",
+                                url: base_url+"Sale/getAllHoldComboItems",
+                                async: false,
+                                data: {
+                                    hold_item_id: item_object.id
+                                },
+                                dataType: "JSON",
+                                success: function (response) {
+                                    
+                                    let comboName = 0;
+                                    let comboQty = 0;
+                                    let comboUnitPrice = 0;
+                                    let combSubTotal = 0;
+                                    let combChildId = '';
+                                    let comboType = '';
+                                    let combParentId = '';
+                                    let combSellerId = '';
+                                    let combIFSale = '';
+                                    let combItemShownInInvoice = '';
+
+                                    $.each(response.data, function (ind, val) { 
+                                        comboName = val.item_name;
+                                        comboType = val.combo_item_type;
+                                        comboQty = val.combo_item_qty;
+                                        comboUnitPrice = val.combo_item_price;
+                                        combSubTotal = parseFloat(parseFloat(comboUnitPrice) * parseFloat(comboQty)).toFixed(op_precision);
+                                        combChildId = val.combo_item_id;
+                                        combParentId = item_object.food_menu_id;
+                                        combSellerId = val.combo_item_seller_id;
+                                        combIFSale = true;
+                                        combItemShownInInvoice = val.show_in_invoice == 'Yes' ? true : false;
+
+                                        if(combIFSale){
+                                            comboHtml +=`<div class="${ind == 0 ? 'mt_6' : ''} combo_cart_item combo_item_div_${combChildId}"  data-is_combo="Yes">
+                                                <div data-id="${combChildId}" class="customer_panel single_order_column first_column">
+                                                    <iconify-icon icon="solar:pen-broken" class="op_cursor_pointer" width="22" data-parent_id=""></iconify-icon>
+                                                    <span id="combo_item_name_table_${combChildId}">${comboName}</span>
+                                                    <span id="combo_item_type_table_${combChildId}">${comboType}</span>
+                                                    <span class="d-none" id="combo_seller_table_${combChildId}">${combSellerId}</span>
+                                                    <span class="d-none" id="combo_inv_show_table_${combChildId}">${combItemShownInInvoice ? 'Yes' : 'No'}</span>
+                                                    <span class="d-none" id="combo_ifsale_table_${combChildId}">${combIFSale ? 'Yes' : 'No'}</span>
+                                                </div>
+                                                <div class="single_order_column second_column text-center"> 
+                                                    <span id="combo_item_price_table_${combChildId}">${parseFloat(comboUnitPrice).toFixed(op_precision)}</span>
+                                                </div>
+                                                <div class="single_order_column third_column">
+                                                    <iconify-icon icon="uil:minus" class="alert_combo_item_increase op_cursor_pointer decrease_item_table" id="combo_decrease_item_table_${combChildId}" width="22"></iconify-icon>
+                                                    <span class="4_cp_qty_${combChildId} qty_item_custom cart_quantity" id="combo_item_quantity_table_${combChildId}">${parseFloat(comboQty)}</span> 
+                                                    <iconify-icon icon="bitcoin-icons:plus-outline" class="alert_combo_item_increase op_cursor_pointer" id="increase_item_table_${combChildId}" width="22"></iconify-icon>
+                                                </div>
+                                                <div class="single_order_column forth_column">
+                                                    <input type="" name="" onfocus="select();" placeholder="Amt or %" class="discount_cart_input" value="0" disabled>
+                                                </div>
+                                                <div class="single_order_column fifth_column text-right"> 
+                                                    <span id="combo_item_total_price_table_${combChildId}">${parseFloat(combSubTotal).toFixed(op_precision)}</span>
+                                                    <iconify-icon icon="solar:trash-bin-minimalistic-broken" data-id="${combChildId}" class="combo-item-remove removeCartItemCombo"></iconify-icon>
+                                                </div>
+                                            </div>`;
+                                        }
+                                    });
+                                }
+                            });
+                            
+                        }else {
+                            item_unit_price = item_object.menu_unit_price;
+                        }
+
+            
+
+
+                        itemQty += Number(item_object.qty);
+                        totalItem++;
+                        
+                        if(item_object.item_type == 'IMEI_Product' || item_object.item_type == 'Serial_Product'|| item_object.item_type == 'Medicine_Product'){
+                            expiry_imei_serial = `<span class="imei_serial_note" id="expiry_imei_serial">${checkItemShortType(item_object.item_type)}: <span class="expiry_imei_serial_${item_object.food_menu_id}">${item_object.expiry_imei_serial}</span></span>`;
+                        }else{
+                            expiry_imei_serial = '';
+                        }
+                        if(item_object.is_promo_item == 'Yes'){
+                            if(item_object.promo_item_object){
+                                let jsonObj = jQuery.parseJSON(item_object.promo_item_object);
+                                let itemPromoNo = parseInt(Number(item_object.qty) / Number(jsonObj.promo_item_buy_qty)) * parseInt(jsonObj.promo_item_get_qty);
+                                readonlyAttr = 'readonly';
+                                if(itemPromoNo > 0){
+                                    promotionHtml =`<div class="free-item free_item_div_${item_object.food_menu_id}" data-free-item-id="${jsonObj.promo_item_id}" data-get_fm_id="${item_object.food_menu_id}" data-is_free="Yes">
+                                        <div data-id="${item_object.food_menu_id}" class="customer_panel single_order_column first_column">
+                                            <iconify-icon icon="solar:pen-broken" width="22" data-parent_id=""></iconify-icon>
+                                            <span id="free_item_name_table_${item_object.food_menu_id}">${jsonObj.promo_item_name}</span>
+                                            <span class="d-none" id="free_item_buy_table_${item_object.food_menu_id}">${jsonObj.promo_item_buy_qty}</span>
+                                            <span class="d-none" id="free_item_get_table_${item_object.food_menu_id}">${jsonObj.promo_item_get_qty}</span>
+                                        </div>
+                                        <div class="single_order_column second_column text-center"> 
+                                            <span id="free_item_price_table_${item_object.food_menu_id}">${Number(0).toFixed(op_precision)}</span>
+                                        </div>
+                                        <div class="single_order_column third_column">
+                                            <iconify-icon icon="uil:minus" class="alert_free_item_increase op_cursor_pointer decrease_item_table" id="free_decrease_item_table_${item_object.food_menu_id}" width="22"></iconify-icon>
+                                            <span class="4_cp_qty_${item_object.food_menu_id} qty_item_custom cart_quantity" id="free_item_quantity_table_${item_object.food_menu_id}">${jsonObj.promo_item_get_qty}</span> 
+                                            <iconify-icon icon="uil:plus" class="increase_item_table"></iconify-icon>
+                                        </div>
+                                        <div class="single_order_column forth_column">
+                                            <input type="" name="" onfocus="select();" placeholder="Amt or %" class="discount_cart_input" value="${Number(0)}" disabled>
+                                        </div>
+                                        <div class="single_order_column fifth_column text-right"> 
+                                            <span id="free_item_total_price_table_${item_object.food_menu_id}">${Number(0).toFixed(op_precision)}</span>
+                                            <iconify-icon icon="solar:trash-bin-minimalistic-broken" data-id="${item_object.food_menu_id}" class="free-item-remove removeCartItemFree"></iconify-icon>
+                                        </div>
+                                    </div>`;
+                                }
+                            }
+                        }else{
+                            promotionHtml = ''
+                        }
+
+
+                        draw_table_for_order +=`<div data-variation-parent="${item_object.parent_id}" class="single_order" is_promo="${item_object.is_promo_item}" data-qty_default="1" data-sale-unit="${item_object.unit_name}" id="order_for_item_${item_object.food_menu_id}" data-single-order-row-no="" data_cart_item_id="${item_object.food_menu_id}">
+                            <div class="first_portion">
+                                <span class="d-none" id="item_seller_table${item_object.food_menu_id}">${item_object.item_seller_id}</span>
+                                <span class="item_type d-none" id="item_type_table${item_object.food_menu_id}">${item_object.item_type}</span>
+                                <span class="item_vat d-none" id="item_vat_percentage_table${item_object.food_menu_id}">${item_object.menu_taxes ? item_object.menu_taxes : ''}</span>
+                                <span class="item_discount d-none" id="item_discount_table${item_object.food_menu_id}">${item_object.discount_amount}</span>
+                                <span class="item_price_without_discount d-none" id="item_price_without_discount_${item_object.food_menu_id}">${parseFloat(item_unit_price).toFixed(op_precision)}</span>
+                                <div class="single_order_column first_column">
+                                    <iconify-icon icon="solar:pen-broken" class="op_cursor_pointer edit_item" id="edit_item_${item_object.food_menu_id}" width="22"></iconify-icon>
+                                    <span id="item_name_table_${item_object.food_menu_id}">${ (item_object.parent_name ? item_object.parent_name + ' ' : '') + item_object.item_name +'('+ item_object.code +')'}</span>
                                 </div>
-                                <div class="single_order_column second_column text-center"> 
-                                    <span id="free_item_price_table_${item_object.food_menu_id}">${Number(0).toFixed(op_precision)}</span>
+                                <div class="single_order_column second_column">
+                                    <span id="item_price_table_${item_object.food_menu_id}">${parseFloat(item_unit_price).toFixed(op_precision)}</span>
                                 </div>
                                 <div class="single_order_column third_column">
-                                    <iconify-icon icon="uil:minus" class="alert_free_item_increase op_cursor_pointer decrease_item_table" id="free_decrease_item_table_${item_object.food_menu_id}" width="22"></iconify-icon>
-                                    <span class="4_cp_qty_${item_object.food_menu_id} qty_item_custom cart_quantity" id="free_item_quantity_table_${item_object.food_menu_id}">${jsonObj.promo_item_get_qty}</span> 
-                                    <iconify-icon icon="uil:plus" class="increase_item_table"></iconify-icon>
+                                    <iconify-icon icon="uil:minus" class="decrease_item_table op_cursor_pointer" id="decrease_item_table_${item_object.food_menu_id}" width="22"></iconify-icon>
+                                    <span class="cart_quantity" id="item_quantity_table_${item_object.food_menu_id}">${item_object.qty}</span> 
+                                    <iconify-icon icon="uil:plus" class="increase_item_table op_cursor_pointer" id="increase_item_table_${item_object.food_menu_id}" width="22"></iconify-icon>
                                 </div>
                                 <div class="single_order_column forth_column">
-                                    <input type="" name="" onfocus="select();" placeholder="Amt or %" class="discount_cart_input" value="${Number(0)}" disabled>
+                                    <input type="text" name="" onfocus="select();" placeholder="Amt or %" inline_dis_column="${item_object.food_menu_id}" class="special_textbox access_control inline_dis_column" id="percentage_table_${item_object.food_menu_id}" value="${item_object.menu_discount_value}">
                                 </div>
-                                <div class="single_order_column fifth_column text-right"> 
-                                    <span id="free_item_total_price_table_${item_object.food_menu_id}">${Number(0).toFixed(op_precision)}</span>
-                                    <iconify-icon icon="solar:trash-bin-minimalistic-broken" data-id="${item_object.food_menu_id}" class="free-item-remove removeCartItemFree"></iconify-icon>
+                                <div class="single_order_column fifth_column">
+                                    <span id="item_total_price_table_${item_object.food_menu_id}">${parseFloat(item_object.menu_price_with_discount).toFixed(op_precision)}</span> 
+                                    <iconify-icon icon="solar:trash-bin-minimalistic-broken" data-remove-order-row-no="0" class="remove_this_item_from_cart" width="22"></iconify-icon>
                                 </div>
-                            </div>`;
+                            </div>
+                            ${expiry_imei_serial}
+                            ${comboHtml}
+                            <span class="cart_item_modal_des item_modal_description_table_${item_object.food_menu_id}">${item_object.menu_note}</span>
+                            ${promotionHtml}
+                        </div>`;
+                    }
+                    
+                    $(".order_holder").prepend(draw_table_for_order);
+                    $("#total_items_in_cart").text(response.total_items);
+                    $("#sub_total_show").text(Number(response.sub_total).toFixed(op_precision));
+                    $("#show_charge_amount").text(Number(response.delivery_charge).toFixed(op_precision));
+                    $("#sub_total").text(Number(response.sub_total).toFixed(op_precision));
+                    $("#show_vat_modal").text(Number(response.vat).toFixed(op_precision));
+                    $("#show_discount_amount").text(Number(response.sub_total_discount_amount).toFixed(op_precision));
+                    $("#total_item_discount").text(Number(response.total_item_discount_amount).toFixed(op_precision));
+                    $("#discounted_sub_total_amount").text(Number(response.sub_total_discount_amount).toFixed(op_precision));
+                    $("#sub_total_discount").val(Number(response.sub_total_discount_value));
+                    $("#sub_total_discount_amount").text(response.sub_total_with_discount);
+                    $("#all_items_discount").text(Number(response.total_discount_amount).toFixed(op_precision));
+                    $("#delivery_charge").val(Number(response.delivery_charge));
+                    $("#total_payable").text(Number(response.total_payable).toFixed(op_precision));
+                    $('#total_items_in_cart_without_quantity').html(totalItem);
+                    $('#total_items_in_cart_with_quantity').html(itemQty);
+                    $('#delivery_partner_info').attr('data-partner-id',response.delivery_partner_id);
+                    $('#delivery_partner_info').text(response.partner_name);
+                    $('#rounding').text(response.rounding);
+                    // Clear holdsale and recent sale modal data
+                    holdSaleModalDataClear();
+                    recentSaleModalDataClear();
+                    $('#show_sale_hold_modal').removeClass('active');
+                    $(".pos__modal__overlay").fadeOut(300);
+                    if (response.customer_id == "" || response.customer_id == 0 || response.customer_id == null) {
+                        // Function to change the selected option based on data-customer-name attribute
+                        function selectCustomerByName(customerName) {
+                            $('#walk_in_customer option').each(function() {
+                                if ($(this).data('customer-name') == customerName) {
+                                    $(this).prop('selected', true);
+                                    $('#walk_in_customer').trigger('change'); // Trigger change event if needed
+                                    return false; // Break the loop once the option is found and selected
+                                }
+                            });
                         }
-                    }else{
-                        promotionHtml = ''
+                        // Call the function to select "Walk-in Customer"
+                        selectCustomerByName('Walk-in Customer');
+                    } else {
+                        $("#walk_in_customer").val(response.customer_id).trigger("change");
                     }
-                    draw_table_for_order +=`<div data-variation-parent="${item_object.parent_id}" class="single_order" is_promo="${item_object.is_promo_item}" data-qty_default="1" data-sale-unit="${item_object.unit_name}" id="order_for_item_${item_object.food_menu_id}" data-single-order-row-no="" data_cart_item_id="${item_object.food_menu_id}">
-                        <div class="first_portion">
-                            <span class="d-none" id="item_seller_table${item_object.food_menu_id}">${item_object.item_seller_id}</span>
-                            <span class="item_type d-none" id="item_type_table${item_object.food_menu_id}">${item_object.item_type}</span>
-                            <span class="item_vat d-none" id="item_vat_percentage_table${item_object.food_menu_id}">${item_object.menu_taxes ? item_object.menu_taxes : ''}</span>
-                            <span class="item_discount d-none" id="item_discount_table${item_object.food_menu_id}">${item_object.discount_amount}</span>
-                            <span class="item_price_without_discount d-none" id="item_price_without_discount_${item_object.food_menu_id}">${item_object.menu_unit_price}</span>
-                            <div class="single_order_column first_column">
-                                <iconify-icon icon="solar:pen-broken" class="op_cursor_pointer edit_item" id="edit_item_${item_object.food_menu_id}" width="22"></iconify-icon>
-                                <span id="item_name_table_${item_object.food_menu_id}">${ (item_object.parent_name ? item_object.parent_name + ' ' : '') + item_object.item_name +'('+ item_object.code +')'}</span>
-                            </div>
-                            <div class="single_order_column second_column">
-                                <span id="item_price_table_${item_object.food_menu_id}">${item_object.menu_unit_price}</span>
-                            </div>
-                            <div class="single_order_column third_column">
-                                <iconify-icon icon="uil:minus" class="decrease_item_table op_cursor_pointer" id="decrease_item_table_${item_object.food_menu_id}" width="22"></iconify-icon>
-                                <span class="cart_quantity" id="item_quantity_table_${item_object.food_menu_id}">${item_object.qty}</span> 
-                                <iconify-icon icon="uil:plus" class="increase_item_table op_cursor_pointer" id="increase_item_table_${item_object.food_menu_id}" width="22"></iconify-icon>
-                            </div>
-                            <div class="single_order_column forth_column">
-                                <input type="text" name="" onfocus="select();" placeholder="Amt or %" inline_dis_column="${item_object.food_menu_id}" class="special_textbox access_control inline_dis_column" id="percentage_table_${item_object.food_menu_id}" value="${item_object.menu_discount_value}">
-                            </div>
-                            <div class="single_order_column fifth_column">
-                                <span id="item_total_price_table_${item_object.food_menu_id}">${Number(item_object.menu_price_with_discount).toFixed(op_precision)}</span> 
-                                <iconify-icon icon="solar:trash-bin-minimalistic-broken" data-remove-order-row-no="0" class="remove_this_item_from_cart" width="22"></iconify-icon>
-                            </div>
-                        </div>
-                        ${expiry_imei_serial}
-                        <span class="cart_item_modal_des item_modal_description_table_${item_object.food_menu_id}">${item_object.menu_note}</span>
-                        ${promotionHtml}
-                    </div>`;
+                    if (response.employee_id == "" || response.employee_id == 0 || response.employee_id == null) {
+                    } else {
+                        $("#select_employee_id").val(response.employee_id).trigger("change");
+                    }
                 }
+            });
+        }else{
+            let request = indexedDB.open('off_pos_3', 3);
+            request.onerror = function(event) {
+                console.error("Database error: " + event.target.error);
+            };
+            request.onsuccess = function(event) {
+                let db = event.target.result;
+                let transaction = db.transaction(['draft_sales'], 'readonly');
+                let objectStore = transaction.objectStore('draft_sales');
+                let getRequest = objectStore.get(parseInt(hold_id));
                 
-                $(".order_holder").prepend(draw_table_for_order);
-                $("#total_items_in_cart").text(response.total_items);
-                $("#sub_total_show").text(Number(response.sub_total).toFixed(op_precision));
-                $("#show_charge_amount").text(Number(response.delivery_charge).toFixed(op_precision));
-                $("#sub_total").text(Number(response.sub_total).toFixed(op_precision));
-                $("#show_vat_modal").text(Number(response.vat).toFixed(op_precision));
-                $("#show_discount_amount").text(Number(response.sub_total_discount_amount).toFixed(op_precision));
-                $("#total_item_discount").text(Number(response.total_item_discount_amount).toFixed(op_precision));
-                $("#discounted_sub_total_amount").text(Number(response.sub_total_discount_amount).toFixed(op_precision));
-                $("#sub_total_discount").val(Number(response.sub_total_discount_value));
-                $("#sub_total_discount_amount").text(response.sub_total_with_discount);
-                $("#all_items_discount").text(Number(response.total_discount_amount).toFixed(op_precision));
-                $("#delivery_charge").val(Number(response.delivery_charge));
-                $("#total_payable").text(Number(response.total_payable).toFixed(op_precision));
-                $('#total_items_in_cart_without_quantity').html(totalItem);
-                $('#total_items_in_cart_with_quantity').html(itemQty);
-                $('#delivery_partner_info').attr('data-partner-id',response.delivery_partner_id);
-                $('#delivery_partner_info').text(response.partner_name);
-                $('#rounding').text(response.rounding);
-                // Clear holdsale and recent sale modal data
-                holdSaleModalDataClear();
-                recentSaleModalDataClear();
-                $('#show_sale_hold_modal').removeClass('active');
-                $(".pos__modal__overlay").fadeOut(300);
-                if (response.customer_id == "" || response.customer_id == 0 || response.customer_id == null) {
-                    // Function to change the selected option based on data-customer-name attribute
-                    function selectCustomerByName(customerName) {
-                        $('#walk_in_customer option').each(function() {
-                            if ($(this).data('customer-name') === customerName) {
-                                $(this).prop('selected', true);
-                                $('#walk_in_customer').trigger('change'); // Trigger change event if needed
-                                return false; // Break the loop once the option is found and selected
+                getRequest.onerror = function(event) {
+                    console.error("Error fetching data: " + event.target.error);
+                };
+                
+                getRequest.onsuccess = function(event) {
+                    let data = event.target.result;
+                    if (data && data.order) {
+                        let orderInfo = data.order;
+                        // Clear existing orders
+                        $(".order_holder").empty();
+                        // Populate order holder with retrieved data
+                        let draw_table_for_order = '';
+                        let totalItem = 0;
+                        let itemQty = 0;
+                        let expiry_imei_serial = '';
+                        let comboHtml = '';
+                        let promotionHtml = '';
+                        let readonlyAttr = '';
+                        if (orderInfo.items && Array.isArray(orderInfo.items)) {
+                            let row_key = 0;
+                            
+                            for (let key in orderInfo.items) {
+                                row_key++
+
+
+                                let single_item = orderInfo.items[key];
+                                totalItem++;
+                                itemQty += parseFloat(single_item.item_quantity);
+                                if(single_item.item_type == 'IMEI_Product' || single_item.item_type == 'Serial_Product'|| single_item.item_type == 'Medicine_Product'){
+                                    expiry_imei_serial = `<span class="imei_serial_note" id="expiry_imei_serial">${checkItemShortType(single_item.item_type)}: <span class="expiry_imei_serial_${single_item.item_id}">${single_item.expiry_imei_serial}</span></span>`;
+                                }else{
+                                    expiry_imei_serial = '';
+                                }
+
+
+                                if(single_item.is_promo_item == 'Yes'){
+                                    if(single_item.promo_item_object){
+                                        let jsonObj = jQuery.parseJSON(single_item.promo_item_object);
+                                        let itemPromoNo = parseInt(Number(single_item.item_quantity) / Number(jsonObj.promo_item_buy_qty)) * parseInt(jsonObj.promo_item_get_qty);
+                                        readonlyAttr = 'readonly';
+                                        if(itemPromoNo > 0){
+                                            promotionHtml =`<div class="free-item free_item_div_${single_item.item_id}" data-free-item-id="${jsonObj.promo_item_id}" data-get_fm_id="${single_item.item_id}" data-is_free="Yes">
+                                                <div data-id="${single_item.item_id}" class="customer_panel single_order_column first_column">
+                                                    <iconify-icon icon="solar:pen-broken" width="22" data-parent_id=""></iconify-icon>
+                                                    <span id="free_item_name_table_${single_item.item_id}">${jsonObj.promo_item_name}</span>
+                                                    <span class="d-none" id="free_item_buy_table_${single_item.item_id}">${jsonObj.promo_item_buy_qty}</span>
+                                                    <span class="d-none" id="free_item_get_table_${single_item.item_id}">${jsonObj.promo_item_get_qty}</span>
+                                                </div>
+                                                <div class="single_order_column second_column text-center"> 
+                                                    <span id="free_item_price_table_${single_item.item_id}">${Number(0).toFixed(op_precision)}</span>
+                                                </div>
+                                                <div class="single_order_column third_column">
+                                                    <iconify-icon icon="uil:minus" class="alert_free_item_increase op_cursor_pointer decrease_item_table" id="free_decrease_item_table_${single_item.item_id}" width="22"></iconify-icon>
+                                                    <span class="4_cp_qty_${single_item.item_id} qty_item_custom cart_quantity" id="free_item_quantity_table_${single_item.item_id}">${jsonObj.promo_item_get_qty}</span> 
+                                                    <iconify-icon icon="uil:plus" class="increase_item_table"></iconify-icon>
+                                                </div>
+                                                <div class="single_order_column forth_column">
+                                                    <input type="" name="" onfocus="select();" placeholder="Amt or %" class="discount_cart_input" value="${Number(0)}" disabled>
+                                                </div>
+                                                <div class="single_order_column fifth_column text-right"> 
+                                                    <span id="free_item_total_price_table_${single_item.item_id}">${Number(0).toFixed(op_precision)}</span>
+                                                    <iconify-icon icon="solar:trash-bin-minimalistic-broken" data-id="${single_item.item_id}" class="free-item-remove removeCartItemFree"></iconify-icon>
+                                                </div>
+                                            </div>`;
+                                        }
+                                    }
+                                }else{
+                                    promotionHtml = ''
+                                }
+
+
+                                draw_table_for_order +=`<div data-variation-parent="" class="single_order" is_promo="" data-qty_default="1" data-sale-unit="" id="order_for_item_${single_item.item_id}" data-single-order-row-no="${row_key}" data_cart_item_id="${single_item.item_id}">
+                                    <div class="first_portion">
+                                        <span class="d-none" id="item_seller_table${single_item.item_id}"></span>
+                                        <span class="item_type d-none" id="item_type_table${single_item.item_id}">${single_item.item_type}</span>
+                                        <span class="item_vat d-none" id="item_vat_percentage_table${single_item.item_id}">${single_item.menu_taxes ? single_item.menu_taxes : ''}</span>
+                                        <span class="item_discount d-none" id="item_discount_table${single_item.item_id}">${single_item.item_discount_amount}</span>
+                                        <span class="item_price_without_discount d-none" id="item_price_without_discount_${single_item.item_id}">${parseFloat(single_item.item_price_without_discount).toFixed(op_precision)}</span>
+                                        <div class="single_order_column first_column">
+                                            <iconify-icon icon="solar:pen-broken" class="op_cursor_pointer edit_item" id="edit_item_${single_item.item_id}" width="22"></iconify-icon>
+                                            <span id="item_name_table_${single_item.item_id}">${single_item.item_name}</span>
+                                        </div>
+                                        <div class="single_order_column second_column">
+                                            <span id="item_price_table_${single_item.item_id}">${parseFloat(single_item.item_unit_price).toFixed(op_precision)}</span>
+                                        </div>
+                                        <div class="single_order_column third_column">
+                                            <iconify-icon icon="uil:minus" class="decrease_item_table op_cursor_pointer" id="decrease_item_table_${single_item.item_id}" width="22"></iconify-icon>
+                                            <span class="cart_quantity" id="item_quantity_table_${single_item.item_id}">${single_item.item_quantity}</span> 
+                                            <iconify-icon icon="uil:plus" class="increase_item_table op_cursor_pointer" id="increase_item_table_${single_item.item_id}" width="22"></iconify-icon>
+                                        </div>
+                                        <div class="single_order_column forth_column">
+                                            <input type="text" name="" onfocus="select();" placeholder="Amt or %" inline_dis_column="${single_item.item_id}" class="special_textbox access_control inline_dis_column" id="percentage_table_${single_item.item_id}" value="${single_item.item_discount}">
+                                        </div>
+                                        <div class="single_order_column fifth_column">
+                                            <span id="item_total_price_table_${single_item.item_id}">${parseFloat(single_item.item_price_with_discount).toFixed(op_precision)}</span> 
+                                            <iconify-icon icon="solar:trash-bin-minimalistic-broken" data-remove-order-row-no="${row_key}" class="remove_this_item_from_cart" width="22"></iconify-icon>
+                                        </div>
+                                    </div>
+                                    ${expiry_imei_serial}
+                                    ${comboHtml}
+                                    <span class="cart_item_modal_des item_modal_description_table_${single_item.item_id}">${single_item.menu_note}</span>
+                                    ${promotionHtml}
+                                </div>`;
+
+
+
                             }
-                        });
+                            $(".order_holder").prepend(draw_table_for_order);
+                            // Update cart summary
+                            $("#total_items_in_cart").text(orderInfo.total_items_in_cart);
+                            $("#sub_total_show").text(Number(orderInfo.sub_total).toFixed(op_precision));
+                            $("#show_charge_amount").text(Number(orderInfo.delivery_charge).toFixed(op_precision));
+                            $("#sub_total").text(Number(orderInfo.sub_total).toFixed(op_precision));
+                            $("#show_vat_modal").text(Number(orderInfo.total_vat).toFixed(op_precision));
+                            $("#show_discount_amount").text(Number(orderInfo.sub_total_discount_amount).toFixed(op_precision));
+                            $("#total_item_discount").text(Number(orderInfo.total_item_discount_amount).toFixed(op_precision));
+                            $("#discounted_sub_total_amount").text(Number(orderInfo.sub_total_discount_amount).toFixed(op_precision));
+                            $("#sub_total_discount").val(Number(orderInfo.sub_total_discount_value));
+                            $("#sub_total_discount_amount").text(orderInfo.sub_total_with_discount);
+                            $("#all_items_discount").text(Number(orderInfo.total_discount_amount).toFixed(op_precision));
+                            $("#delivery_charge").val(Number(orderInfo.delivery_charge));
+                            $("#total_payable").text(Number(orderInfo.total_payable).toFixed(op_precision));
+                            $('#total_items_in_cart_without_quantity').html(totalItem);
+                            $('#total_items_in_cart_with_quantity').html(itemQty);
+                            $('#delivery_partner_info').attr('data-partner-id', orderInfo.delivery_partner);
+                            $('#rounding').text(orderInfo.rounding);
+                            // Set customer and employee
+                            if (orderInfo.customer_id) {
+                                $("#walk_in_customer").val(orderInfo.customer_id).trigger("change");
+                            } else {
+                                selectCustomerByName('Walk-in Customer');
+                            }
+                            if (orderInfo.select_employee_id) {
+                                $("#select_employee_id").val(orderInfo.select_employee_id).trigger("change");
+                            }
+                            // Clear modals
+                            holdSaleModalDataClear();
+                            recentSaleModalDataClear();
+                            $('#show_sale_hold_modal').removeClass('active');
+                            $(".pos__modal__overlay").fadeOut(300);
+                        } else {
+                            console.error("Invalid or missing items array in orderInfo");
+                        }
+                    } else {
+                        console.log("No data found for the given hold number");
                     }
-                    // Call the function to select "Walk-in Customer"
-                    selectCustomerByName('Walk-in Customer');
-                } else {
-                    $("#walk_in_customer").val(response.customer_id).trigger("change");
-                }
-                if (response.employee_id == "" || response.employee_id == 0 || response.employee_id == null) {
-                } else {
-                    $("#select_employee_id").val(response.employee_id).trigger("change");
-                }
-            }
-        });
+                };
+            };
+        }
     }
 
 
@@ -6230,51 +9759,12 @@ $(function () {
 
     // Code optimize by Azhar ** Final **
     function findItemByItemId(item_id) {
-        let single_item;
-        let i;
-        for (i = 0; i < window.items.length; i++) {
-            if (items[i].item_id == item_id) {
-                single_item = items[i];
-                return single_item;
-            }
-        }
-        return null;
-    }
-
-
-    // Code optimize by Azhar ** Final **
-    function findItemTypeByItemCode(item_code) {
-        let single_item;
-        let i;
-        for (i = 0; i < window.items.length; i++) {
-            if (items[i].item_code == item_code) {
-                single_item = items[i].item_type;
-                return single_item;
-            }
-        }
-        return null;
-    }
-    function findItemByItemCode(item_code) {
-        let single_item;
-        let i;
-        for (i = 0; i < window.items.length; i++) {
-            if (items[i].item_code == item_code) {
-                single_item = items[i].item_id;
-                return single_item;
-            }
-        }
-        return null;
+        let single_item = window.items.find(item => item.item_id == item_id);
+        return single_item;
     }
     function findItemInfoByItemCode(item_code) {
-        let single_item;
-        let i;
-        for (i = 0; i < window.items.length; i++) {
-            if (items[i].item_code == item_code) {
-                single_item = items[i];
-                return single_item;
-            }
-        }
-        return null;
+        let single_item = window.items.find(item => item.item_code == item_code);
+        return single_item;
     }
 
     $(document).on("click", ".add_dummy_data", function(e) {
@@ -6282,7 +9772,6 @@ $(function () {
         let linkURL = this.href;
         warnBeforeRedirectDummyData(linkURL);
     });
-
     function warnBeforeRedirectDummyData(linkURL) {
         Swal.fire({
             title: warning + "!",
@@ -6310,14 +9799,13 @@ $(function () {
         }
         let change_amount = (parseFloat(this_value) - parseFloat(finalize_total_payable));
         change_amount = change_amount && change_amount > 0 ? change_amount : 0;
-
         if (isNaN(change_amount)) {
             change_amount = 0;
         }
         if(this_value == ''){
             $("#finalize_change_amount_input").val(0);
         }else{
-            $("#finalize_change_amount_input").val(change_amount);
+            $("#finalize_change_amount_input").val(parseFloat(change_amount).toFixed(op_precision));
         }
         let finalize_amount = parseFloat(this_value) - parseFloat(change_amount);
         if (isNaN(finalize_amount)) {
@@ -6487,7 +9975,7 @@ $(function () {
     $(".datepicker_custom").datepicker({
             autoclose: true,
             format: "yyyy-mm-dd",
-            startDate: "0",
+            // startDate: "0",
             todayHighlight: true,
     }).datepicker("update", open_invoice_date_hidden);
 
@@ -6508,77 +9996,80 @@ $(function () {
 
     // Code optimize by Azhar ** Final **
     $(document).on("click", "#open_discount_modal", function () {
-        let sub_total_discount_finalize = $('#sub_total_discount_finalize').val();
-        if(sub_total_discount_finalize){
-            toastr['error'](('Finalize Discount already given'), '');
-        }else{
-            let varified_status = $('.discount_permission_code').attr('varified-status');
-            if(session_uer_id == '1' && role == '1'){
-                $('.discount_field').show();
-                $('.discunt_check_modal').hide();
-                $.ajax({
-                    url: base_url + "Master/checkAccess",
-                    method: "GET",
-                    async: false,
-                    dataType: 'json',
-                    data: { controller: "287", function: "discountPermission" },
-                    success: function (response) {
-                        if (response == false) {
-                            Swal.fire({
-                                title: warning+" !",
-                                text: no_permission_for_this_module,
-                                showDenyButton: false,
-                                showCancelButton: false,
-                                confirmButtonText: ok,
-                            });
-                        } else {
-                            let discount = $('#walk_in_customer option:selected').attr('discount');
-                            if(discount == 0 || discount == ''){
-                                $("#discount_modal").addClass("active");
-                                $(".pos__modal__overlay").fadeIn(300);
-                            }else{
-                                toastr['error'](('This customer has already default discount!'), '');
-                            }
-                        }
-                    }
-                });
-
+        if(is_offline_system == '1'){
+            let sub_total_discount_finalize = $('#sub_total_discount_finalize').val();
+            if(sub_total_discount_finalize){
+                toastr['error'](('Finalize Discount already given'), '');
             }else{
-                if(varified_status == 'Yes'){
+                let varified_status = $('.discount_permission_code').attr('varified-status');
+                if(session_uer_id == '1' && role == '1'){
                     $('.discount_field').show();
                     $('.discunt_check_modal').hide();
-                }else{
-                    $('.discount_field').hide();
-                    $('.discount_err_message').parent().hide();
-                }
-                $.ajax({
-                    url: base_url + "Master/checkAccess",
-                    method: "GET",
-                    async: false,
-                    dataType: 'json',
-                    data: { controller: "287", function: "discountPermission" },
-                    success: function (response) {
-                        if (response == false) {
-                            Swal.fire({
-                                title: warning+" !",
-                                text: no_permission_for_this_module,
-                                showDenyButton: false,
-                                showCancelButton: false,
-                                confirmButtonText: ok,
-                            });
-                        } else {
-                            let discount = $('#walk_in_customer option:selected').attr('discount');
-                            if(discount == 0 || discount == ''){
-                                $("#discount_modal").addClass("active");
-                                $(".pos__modal__overlay").fadeIn(300);
-                            }else{
-                                toastr['error'](('This customer has already default discount!'), '');
+                    $.ajax({
+                        url: base_url + "Master/checkAccess",
+                        method: "GET",
+                        async: false,
+                        dataType: 'json',
+                        data: { controller: "287", function: "discountPermission" },
+                        success: function (response) {
+                            if (response == false) {
+                                Swal.fire({
+                                    title: warning+" !",
+                                    text: no_permission_for_this_module,
+                                    showDenyButton: false,
+                                    showCancelButton: false,
+                                    confirmButtonText: ok,
+                                });
+                            } else {
+                                let discount = $('#walk_in_customer option:selected').attr('discount');
+                                if(discount == 0 || discount == ''){
+                                    $("#discount_modal").addClass("active");
+                                    $(".pos__modal__overlay").fadeIn(300);
+                                }else{
+                                    toastr['error'](('This customer has already default discount!'), '');
+                                }
                             }
                         }
+                    });
+    
+                }else{
+                    if(varified_status == 'Yes'){
+                        $('.discount_field').show();
+                        $('.discunt_check_modal').hide();
+                    }else{
+                        $('.discount_field').hide();
+                        $('.discount_err_message').parent().hide();
                     }
-                });
+                    $.ajax({
+                        url: base_url + "Master/checkAccess",
+                        method: "GET",
+                        async: false,
+                        dataType: 'json',
+                        data: { controller: "287", function: "discountPermission" },
+                        success: function (response) {
+                            if (response == false) {
+                                Swal.fire({
+                                    title: warning+" !",
+                                    text: no_permission_for_this_module,
+                                    showDenyButton: false,
+                                    showCancelButton: false,
+                                    confirmButtonText: ok,
+                                });
+                            } else {
+                                let discount = $('#walk_in_customer option:selected').attr('discount');
+                                if(discount == 0 || discount == ''){
+                                    $("#discount_modal").addClass("active");
+                                    $(".pos__modal__overlay").fadeIn(300);
+                                }else{
+                                    toastr['error'](('This customer has already default discount!'), '');
+                                }
+                            }
+                        }
+                    });
+                }
             }
-            
+        }else{
+            toastr["warning"]("You are offline, this option will not work at the moment.", "Warning");
         }
     });
     
@@ -6688,9 +10179,14 @@ $(function () {
 
     // Code optimize by Azhar ** Final **
     $(document).on("click", "#coupon_discount_modal", function () {
-        $("#coupon_discount").addClass("active");
-        $(".pos__modal__overlay").fadeIn(300);
-        $('.coupon_err_message').parent().hide();
+        if(is_offline_system == '1'){
+            $("#coupon_discount").addClass("active");
+            $(".pos__modal__overlay").fadeIn(300);
+            $('.coupon_err_message').parent().hide();
+        }else{
+            toastr["warning"]("You are offline, this option will not work at the moment.", "Warning");
+        }
+        
     });
 
 
@@ -6723,6 +10219,9 @@ $(function () {
                             $('.coupon_err_message').parent().hide();
                             $('#coupon_discount').removeClass('active');
                             $(".pos__modal__overlay").fadeOut(300);
+                            setTimeout(function(){
+                                cartItemCalculationInPOS();
+                            }, 100);
                         }else{
                             $('.coupon_err_message').parent().hide();
                             Swal.fire({
@@ -6779,15 +10278,17 @@ $(function () {
 
     // Code optimize by Azhar ** Final **
     $(document).on("click", "#open__menu", function (e) {
-        $("aside#pos__sidebar").addClass("active");
-        $(".pos__modal__overlay").fadeIn(200);
+        if(is_offline_system == '1'){
+            $("aside#pos__sidebar").addClass("active");
+            $(".pos__modal__overlay").fadeIn(200);
+        }
     });
 
     // Code optimize by Azhar ** Final **
     $(document).on('click', '.show_cart_list', function () {
         $('.main_middle').fadeIn(300);
         $('.main_right').hide(0);
-        if (grocery_experience == 'ON') {
+        if (grocery_experience == 'Medicine' || grocery_experience == 'Grocery') {
             if (window.matchMedia("(min-width: 320px) and (max-width: 991.98px)").matches) {
                 $('.grocery_main_part_on').css({
                     'grid-template-columns': '1fr',
@@ -6800,7 +10301,7 @@ $(function () {
     $(document).on('click', '.show_product', function () {
         $('.main_right').fadeIn(300);
         $('.main_middle').hide();
-        if (grocery_experience == 'ON') {
+        if (grocery_experience == 'Medicine' || grocery_experience == 'Grocery') {
             if (window.matchMedia("(min-width: 320px) and (max-width: 991.98px)").matches) {
                 $('.grocery_main_part_on').css({
                     'grid-template-columns': '70% 29%',
@@ -6828,25 +10329,6 @@ $(function () {
             $(".all__menus").slideUp(333);
         }
     });
-
-
-    if(edit_mode != ''){
-        function editCustomerChange() {
-            let old_customer_id = $('#edit_sale_customer').val();
-            $('#walk_in_customer').val(old_customer_id).trigger('change'); // Trigger change event if needed
-        }
-        setTimeout(function(){
-            editCustomerChange();
-            $('.customer_pannel').css({
-                'pointer-events':'none',
-                'cursor':'not-allowed',
-            });
-            $('#edit_add_customer_button_section').css({
-                'pointer-events':'none',
-                'cursor':'not-allowed',
-            });
-        }, 200)
-    }
 
 
 
@@ -6885,7 +10367,7 @@ $(function () {
     // Key down event listener
 
 
-    if(grocery_experience == 'ON'){
+    if(grocery_experience == 'Medicine' || grocery_experience == 'Grocery'){
         $(document).on('focus', '#search_barcode', function(){
             let selector = $('.single-inner-div').find('.active_gm');
             selector.removeClass('active_gm');
@@ -6913,7 +10395,7 @@ $(function () {
         if(generic_name){
             let array_as = {};
             let alternativeProduct = '';
-            let foundItemsForItems = searchItemAndConstructGallery(generic_name,'','');
+            let foundItemsForItems = searchItemAndConstructGalleryAlternative(generic_name,'','');
             for (let key1 in foundItemsForItems) {
                 if(foundItemsForItems[key1].item_type != '0'){
                     if (foundItemsForItems.hasOwnProperty(key1)) {
@@ -6935,20 +10417,86 @@ $(function () {
                 $('#main_left').addClass('alternative-exist');
             }else{
                 $('#main_left').removeClass('alternative-exist');
-                $('#alternative_item_render').html(`<h6>Generic Medicine will shown here <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>`);
+                $('#alternative_item_render').html(`<h6>${Alternative_Medicine_will_shown_here} <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>`);
             }
         }else{
-            $('#alternative_item_render').empty();
+            $('#alternative_item_render').html(`<h6>${Alternative_Medicine_will_shown_here} <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>`);
             $('#main_left').removeClass('alternative-exist');
-            $('#alternative_item_render').html(`<h6>Generic Medicine will shown here <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>`);
+            $('#alternative_item_render').html(`<h6>${Alternative_Medicine_will_shown_here} <iconify-icon icon="solar:smile-circle-broken"></iconify-icon></h6>`);
         }
     }
 
     $(document).keydown(function(e) {
-        console.log(e);
+        // let item_modal = $('#item_modal').hasClass('active');
+        // let finalize_order_modal = $('#finalize_order_modal').hasClass('active');
+       
+        // if($('.generic_serch_option_checkbox').is(':checked')){
+        // }else{
+        //         if (e.key === 'ArrowDown') {
+        //             $('#search_barcode').blur();
+        //             $('#search').blur();
+        //             let selector = $('.single-inner-div').find('.active_gm_temp');
+        //             selector.addClass('active_gm');
+        //             selector.removeClass('active_gm_temp');
+        //             setTimeout(function(){
+        //                 let selector_gn = $('.single-inner-div').find('.active_gm');
+        //                 let generic_name = selector_gn.find('.generic_name').attr("data-tippy-content");
+        //                 let parent_id = selector_gn.attr("plain-id");
+        //                 show_generic_name_right_item(generic_name,parent_id); 
+        //                 const activeDiv = document.querySelector('.active_gm');
+        //                 const rect = activeDiv.getBoundingClientRect();
+        //                 const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+        //                 if (rect.bottom > viewportHeight) {
+        //                     $('.category_items').animate({
+        //                         scrollTop: $('.active_gm').offset().top-110
+        //                     },500);
+        //                 }  
+        //             }, 100);
+        //             let current = $('.single-inner-div .active_gm');
+        //             let next = current.next('.grocery_medicine_el');
+        //             if (next.length) {
+        //                 current.removeClass('active_gm');
+        //                 next.addClass('active_gm');
+        //                 $('.active_gm').focus();
+        //             } else {
+        //                 current.removeClass('active_gm');
+        //                 $('.single-inner-div .grocery_medicine_el').first().addClass('active_gm');
+        //                 $('.active_gm').focus();
+        //             }
+        //         }
+        //         if (e.key === 'ArrowUp') {
+        //             $('#search_barcode').blur();
+        //             $('#search').blur();
+        //             let selector = $('.single-inner-div').find('.active_gm_temp');
+        //             selector.addClass('active_gm');
+        //             selector.removeClass('active_gm_temp');
+    
+        //             setTimeout(function(){
+        //                 let selector_gn = $('.single-inner-div').find('.active_gm');
+        //                 let generic_name = selector_gn.find('.generic_name').attr("data-tippy-content");
+        //                 let parent_id = selector_gn.attr("plain-id");
+        //                 show_generic_name_right_item(generic_name,parent_id); 
+        //             }, 100);
+                    
+        //             let current = $('.single-inner-div .active_gm');
+        //             let previous = current.prev('.grocery_medicine_el');
+        //             if (previous.length) {
+        //                 current.removeClass('active_gm');
+        //                 previous.addClass('active_gm');
+        //                 $('.active_gm').focus();
+        //             } else {
+        //                 current.removeClass('active_gm');
+        //                 $('.single-inner-div .grocery_medicine_el').last().addClass('active_gm');
+        //                 $('.active_gm').focus();
+        //             }
+        //         }
+        // }
+
+
+
         let item_modal = $('#item_modal').hasClass('active');
         let finalize_order_modal = $('#finalize_order_modal').hasClass('active');
-        if(grocery_experience == 'ON' && !finalize_order_modal && !item_modal){
+        if((grocery_experience == 'Medicine' || grocery_experience == 'Grocery') && !finalize_order_modal && !item_modal){
             // Main Screen UP & Down
             let generic_medicine_part = $('#main_left').hasClass('main_left_arrow');
             if(!generic_medicine_part){
@@ -7093,8 +10641,10 @@ $(function () {
                 }
             }
         }
-        
-        
+
+
+
+      
 
         // When Item Add Modal Is Active
         if(item_modal){
@@ -7111,6 +10661,18 @@ $(function () {
                 if(e.keyCode == 65){
                     $('#add_to_cart').click(); // shift + a 
                 }
+            }
+            if ($('#item_quantity_modal_input').is(':focus') && e.key === 'ArrowUp') {
+                let modal_qty_selector = $('#item_quantity_modal_input');
+                let currentValue = modal_qty_selector.val();
+                currentValue = parseInt(currentValue, 10); 
+                modal_qty_selector.val(currentValue + 1);
+            }
+            if ($('#item_quantity_modal_input').is(':focus') && e.key === 'ArrowDown') {
+                let modal_qty_selector = $('#item_quantity_modal_input');
+                let currentValue = modal_qty_selector.val();
+                currentValue = parseInt(currentValue, 10); 
+                modal_qty_selector.val(currentValue - 1);
             }
         }
 
@@ -7215,44 +10777,28 @@ $(function () {
             altKeyDown = true; // Set flag to true
             if (e.keyCode == 80) {
                 e.preventDefault();
-                $.ajax({
-                    url: base_url + "Master/checkAccess",
-                    method: "GET",
-                    async: false,
-                    dataType: 'json',
-                    data: { controller: "138", function: "view_purchase_price" },
-                    success: function (response) {
-                        if (response == false) {
-                            toastr['error']('This user is not able to view purchase prices.', '');
-                        }else{
-                            $('.single_item').each(function (i, obj) {
-                                let pp = (!isNaN(parseFloat($(this).data("last_purchase_price")).toFixed(op_precision))) ? parseFloat($(this).data("last_purchase_price")).toFixed(op_precision) : parseFloat(0).toFixed(op_precision);
-                                let price_list = 'PP: ' + pp;
-                                $(this).find(".item_price").html(price_list);
-                            });
-                        }
-                    }
-                });
+                if(view_purchase_price == 'Yes'){
+                    $('.single_item').each(function (i, obj) {
+                        let pp = (!isNaN(parseFloat($(this).data("last_purchase_price")).toFixed(op_precision))) ? parseFloat($(this).data("last_purchase_price")).toFixed(op_precision) : parseFloat(0).toFixed(op_precision);
+                        let price_list = 'PP: ' + pp;
+                        $(this).find(".item_price").html(price_list);
+                    });
+                }else{
+                    toastr['error']('This user is not able to view purchase prices.', '');
+                }
             } else if (e.keyCode == 87) {
                 e.preventDefault();
-                $.ajax({
-                    url: base_url + "Master/checkAccess",
-                    method: "GET",
-                    async: false,
-                    dataType: 'json',
-                    data: { controller: "138", function: "view_purchase_price" },
-                    success: function (response) {
-                        if (response == false) {
-                            toastr['error']('This user is not able to view whole sale prices.', '');
-                        }else{
-                            $('.single_item').each(function (i, obj) {
-                                let wp = (!isNaN(parseFloat($(this).data("whole_sale_price")).toFixed(op_precision))) ? parseFloat($(this).data("whole_sale_price")).toFixed(op_precision) : parseFloat(0).toFixed(op_precision);
-                                let price_list = ' WP: ' + wp;
-                                $(this).find(".item_price").html(price_list);
-                            });
-                        }
-                    }
-                });
+                if(view_purchase_price == 'Yes'){
+                    $('.single_item').each(function (i, obj) {
+                        $('.single_item').each(function (i, obj) {
+                            let wp = (!isNaN(parseFloat($(this).data("whole_sale_price")).toFixed(op_precision))) ? parseFloat($(this).data("whole_sale_price")).toFixed(op_precision) : parseFloat(0).toFixed(op_precision);
+                            let price_list = ' WP: ' + wp;
+                            $(this).find(".item_price").html(price_list);
+                        });
+                    });
+                }else{
+                    toastr['error']('This user is not able to view whole sale prices.', '');
+                }
             } else if (e.keyCode == 83) {
                 e.preventDefault();
                 $('.single_item').each(function (i, obj) {
@@ -7373,6 +10919,7 @@ $(function () {
 
     // Items
     function search(nameKey, myArray, sort_id, is_main_search){
+        let generic_name_search_option = $('input[name="generic_serch_option_checkbox"]:checked').val();
         if(sort_id){
             if(sort_id==1){
                 myArray.sort(function(a, b) {
@@ -7387,14 +10934,16 @@ $(function () {
         }
         let foundResult = new Array();
         let counter = 0;
-        for (let i=0; i < myArray.length; i++) {
+       
+        for (let i= 0; i < myArray.length; i++) {
             let g_name = 'x';
-            
             if(myArray[i].generic_name && is_main_search!=1){
                 g_name = myArray[i].generic_name;
             }
-            if(sort_id==''){
-                if (myArray[i].item_name.toLowerCase().includes(nameKey.toLowerCase()) || g_name.toLowerCase().includes(nameKey.toLowerCase()) ||  myArray[i].item_code.toLowerCase().includes(nameKey.toLowerCase()) || myArray[i].category_name.toLowerCase().includes(nameKey.toLowerCase())) {
+           
+            if($('.generic_serch_option_checkbox').is(':checked')){
+                g_name = myArray[i].generic_name;
+                if (g_name && g_name.toLowerCase().includes(nameKey.toLowerCase())) {
                     foundResult.push(myArray[i]);
                     counter++;
                     if (nameKey && counter == 12) {
@@ -7402,24 +10951,94 @@ $(function () {
                     }
                 }
             }else{
-                if((sort_id==1 || sort_id==2) && myArray[i].total_sale){
-                    if (myArray[i].item_name.toLowerCase().includes(nameKey.toLowerCase()) || g_name.toLowerCase().includes(nameKey.toLowerCase()) ||  myArray[i].item_code.toLowerCase().includes(nameKey.toLowerCase()) || myArray[i].category_name.toLowerCase().includes(nameKey.toLowerCase())) {
-                        foundResult.push(myArray[i]);
-                        counter++;
-                        if (nameKey && counter == 12) {
-                            break;
+                if(sort_id==''){
+                    if(generic_name_search_option == 'on'){
+                        if (myArray[i].item_name.toLowerCase().includes(nameKey.toLowerCase()) || g_name.toLowerCase().includes(nameKey.toLowerCase()) ||  myArray[i].item_code.toLowerCase().includes(nameKey.toLowerCase()) || myArray[i].category_name.toLowerCase().includes(nameKey.toLowerCase())) {
+                            foundResult.push(myArray[i]);
+                            counter++;
+                            if (nameKey && counter == 12) {
+                                break;
+                            }
+                        }
+                    }else{
+                        if (myArray[i].item_name.toLowerCase().includes(nameKey.toLowerCase()) ||  myArray[i].item_code.toLowerCase().includes(nameKey.toLowerCase()) || myArray[i].category_name.toLowerCase().includes(nameKey.toLowerCase())) {
+                            foundResult.push(myArray[i]);
+                            counter++;
+                            if (nameKey && counter == 12) {
+                                break;
+                            }
                         }
                     }
-                }else if(sort_id==3 && !myArray[i].total_sale){
-                    if (myArray[i].item_name.toLowerCase().includes(nameKey.toLowerCase()) || g_name.toLowerCase().includes(nameKey.toLowerCase()) ||  myArray[i].item_code.toLowerCase().includes(nameKey.toLowerCase()) || myArray[i].category_name.toLowerCase().includes(nameKey.toLowerCase())) {
-                        foundResult.push(myArray[i]);
-                        counter++;
-                        if (nameKey && counter == 12) {
-                            break;
+                }else{
+                    if((sort_id==1 || sort_id==2) && myArray[i].total_sale){
+                        if(generic_name_search_option == 'on'){
+                            if (myArray[i].item_name.toLowerCase().includes(nameKey.toLowerCase()) || g_name.toLowerCase().includes(nameKey.toLowerCase()) ||  myArray[i].item_code.toLowerCase().includes(nameKey.toLowerCase()) || myArray[i].category_name.toLowerCase().includes(nameKey.toLowerCase())) {
+                                foundResult.push(myArray[i]);
+                                counter++;
+                                if (nameKey && counter == 12) {
+                                    break;
+                                }
+                            }
+                        }else{
+                            if (myArray[i].item_name.toLowerCase().includes(nameKey.toLowerCase()) ||  myArray[i].item_code.toLowerCase().includes(nameKey.toLowerCase()) || myArray[i].category_name.toLowerCase().includes(nameKey.toLowerCase())) {
+                                foundResult.push(myArray[i]);
+                                counter++;
+                                if (nameKey && counter == 12) {
+                                    break;
+                                }
+                            }
+                        }
+                        
+                    }else if(sort_id==3 && !myArray[i].total_sale){
+                        if(generic_name_search_option == 'on'){
+                            if (myArray[i].item_name.toLowerCase().includes(nameKey.toLowerCase()) || g_name.toLowerCase().includes(nameKey.toLowerCase()) ||  myArray[i].item_code.toLowerCase().includes(nameKey.toLowerCase()) || myArray[i].category_name.toLowerCase().includes(nameKey.toLowerCase())) {
+                                foundResult.push(myArray[i]);
+                                counter++;
+                                if (nameKey && counter == 12) {
+                                    break;
+                                }
+                            }
+                        }else{
+                            if (myArray[i].item_name.toLowerCase().includes(nameKey.toLowerCase()) ||  myArray[i].item_code.toLowerCase().includes(nameKey.toLowerCase()) || myArray[i].category_name.toLowerCase().includes(nameKey.toLowerCase())) {
+                                foundResult.push(myArray[i]);
+                                counter++;
+                                if (nameKey && counter == 12) {
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
+            } 
+            
+        }
+        return foundResult.sort( function(a, b) {
+          return parseInt(b.sold_for)-parseInt(a.sold_for);
+        });
+    }
+    function searchAlternative(nameKey, myArray, sort_id, is_main_search){
+        let generic_name_search_option = $('input[name="generic_serch_option_checkbox"]:checked').val();
+       
+        let foundResult = new Array();
+        let counter = 0;
+       
+        for (let i= 0; i < myArray.length; i++) {
+            let g_name = 'x';
+            if(myArray[i].generic_name && is_main_search!=1){
+                g_name = myArray[i].generic_name;
             }
+           
+            if($('.generic_serch_option_checkbox').is(':checked')){
+                
+            }else{
+                if (g_name.toLowerCase().includes(nameKey.toLowerCase())) {
+                    foundResult.push(myArray[i]);
+                    counter++;
+                    if (nameKey && counter == 12) {
+                        break;
+                    }
+                }
+            } 
             
         }
         return foundResult.sort( function(a, b) {
@@ -7464,41 +11083,44 @@ $(function () {
 
     // Code optimize by Azhar ** Final **
     $(document).on('click', '.logOutTrigger', function(){
-        let register_status = $('#register_status').val();
-        if(register_status == '1'){
-            Swal.fire({
-                title: warning + "!",
-                text: "Your Register is not close!",
-                showDenyButton: true,
-                showCancelButton: false,
-                confirmButtonText: "Not Now!",
-                denyButtonText: `Close Now?`
-            }).then((result) => {
-                /* Read more about isConfirmed, isDenied below */
-                if (result.isConfirmed) {
-                    $.ajax({
-                        type: "POST",
-                        url: base_url+"Authentication/logOut",
-                        success: function (response) {
-                            window.location.href = base_url + "Authentication/index"; 
-                        }
-                    });
-                } else if (result.isDenied) {
-                    $.ajax({
-                        url: base_url + "Sale/closeRegister",
-                        method: "POST",
-                        success: function (response) {
-                            toastr['success']((register_close), '');
-                            $("#close_register_button").hide();
-                            window.location.href = base_url + "Register/openRegister";
-                        },
-                        error: function () {
-                            alert("error");
-                        },
-                    });
-                }
-            });
+        if(is_offline_system == '1'){
+            let register_status = $('#register_status').val();
+            if(register_status == '1'){
+                Swal.fire({
+                    title: warning + "!",
+                    text: "Your Register is not close!",
+                    showDenyButton: true,
+                    showCancelButton: false,
+                    confirmButtonText: "Not Now!",
+                    denyButtonText: `Close Now?`
+                }).then((result) => {
+                    /* Read more about isConfirmed, isDenied below */
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "POST",
+                            url: base_url+"Authentication/logOut",
+                            success: function (response) {
+                                window.location.href = base_url + "Authentication/index"; 
+                            }
+                        });
+                    } else if (result.isDenied) {
+                        $.ajax({
+                            url: base_url + "Sale/closeRegister",
+                            method: "POST",
+                            success: function (response) {
+                                toastr['success']((register_close), '');
+                                $("#close_register_button").hide();
+                                window.location.href = base_url + "Register/openRegister";
+                            },
+                            error: function () {
+                                alert("error");
+                            },
+                        });
+                    }
+                });
+            }
         }
+        
     });
 
 
@@ -7579,6 +11201,7 @@ $(function () {
     });
 
     let local_cart_data = localStorage['cart_html'];
+    
     if(local_cart_data){
         if(edit_mode == ''){
             $(".order_holder").html(local_cart_data);
@@ -7628,7 +11251,6 @@ $(function () {
         // Card Payment info
         let credit_card_no = $("#credit_card_no").val();
         let holder_name = $("#holder_name").val();
-        let card_type = $("#card_type").val();
         let payment_month = $("#payment_month").val();
         let payment_year = $("#payment_year").val();
         let payment_cvc = $("#payment_cvc").val();
@@ -7638,7 +11260,6 @@ $(function () {
             stripePayment({
                 credit_card_no: credit_card_no,
                 holder_name: holder_name,
-                card_type: card_type,
                 payment_month: payment_month,
                 payment_year: payment_year,
                 payment_cvc: payment_cvc,
@@ -7649,7 +11270,6 @@ $(function () {
             paypalPayment({
                 credit_card_no: credit_card_no,
                 holder_name: holder_name,
-                card_type: card_type,
                 payment_month: payment_month,
                 payment_year: payment_year,
                 payment_cvc: payment_cvc,
@@ -7665,10 +11285,6 @@ $(function () {
 
         if (info.holder_name == "") {
             toastr["error"]("Card Holder Name Required", "");
-            return false;
-        }
-        if (info.card_type == "") {
-            toastr["error"]("Card Type Required", "");
             return false;
         }
         if (info.payment_month == "") {
@@ -7739,10 +11355,6 @@ $(function () {
             toastr["error"]("Card Holder Name Required", "");
             return false;
         }
-        if (info.card_type == "") {
-            toastr["error"]("Card Type Required", "");
-            return false;
-        }
         if (info.payment_month == "") {
             toastr["error"]("Payment Month Required", "");
             return false;
@@ -7783,25 +11395,27 @@ $(function () {
     
     // Grocery Experience
     $(document).on('change', '#grocery_experience_el', function(){
-        let grocery_value = $(this).is(':checked');
-        if(grocery_value){
-            grocery_value = 'ON';
-        }else{
-            grocery_value = 'OFF';
-        }
-        $.ajax({
-            type: "POST",
-            url: base_url+"Sale/groceryExperience",
-            data: {
-                grocery_value : grocery_value,
-            },
-            success: function (response) {
-                if(response.status == 'success'){
-                    toastr["success"](response.message, "");
-                    window.location.href = base_url+'Sale/POS';
-                }
+        if(is_offline_system == '1'){
+            let grocery_value = $(this).val();
+            if(grocery_value == ''){
+                grocery_value = 'Regular';
             }
-        });
+            $.ajax({
+                type: "POST",
+                url: base_url+"Sale/groceryExperience",
+                data: {
+                    grocery_value : grocery_value,
+                },
+                success: function (response) {
+                    if(response.status == 'success'){
+                        toastr["success"](response.message, "");
+                        window.location.href = base_url+'Sale/POS';
+                    }
+                }
+            });
+        }else{
+            toastr["warning"]("You are offline, this option will not work at the moment.", "Warning");
+        }
     });
 
     // Custom Num Pad for POS Added By Azhar 
@@ -7922,10 +11536,47 @@ $(function () {
         }
     }
 
-
     $(window).on("load", function () {
       $(".main-preloader").fadeOut(500);
     });
-    
+
+    $(document).on('click', '.btn_video_tutorial', function(){
+        $("#video_tutorial_modal").addClass("active");
+        $(".pos__modal__overlay").fadeIn(200);
+    })
+
+
+    $(document).on('change', '.generic_serch_option_checkbox', function(){
+        let generic_name = $('input[name="generic_serch_option_checkbox"]:checked').val();
+        if(generic_name == 'on'){
+            generic_name = 'Yes';
+            $('#search').attr('placeholder', pharmacy_search_place_holder_pos);
+        }else{
+            generic_name = 'No';
+            $('#search').attr('placeholder', other_search_place_holder_pos);
+        }
+        $.ajax({
+            type: "POST",
+            url: base_url+"Sale/searchByGenericName",
+            data: {
+                generic_name_search_option : generic_name,
+            },
+            success: function (response) {
+                if(response.status == 'success'){
+                    toastr["success"](response.message, "");
+                }
+            }
+        });
+    });
+
+    $(document).on('click', '.offline_prevent', function(e){
+        if(is_offline_system == '0'){
+            e.preventDefault();
+            toastr["warning"]("You are offline, this option will not work at the moment.", "Warning");
+        }
+    })
+
+
+
 });
 

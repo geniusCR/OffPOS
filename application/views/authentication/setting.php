@@ -57,32 +57,14 @@
                     <?php 
                         $company_id = $this->session->userdata('company_id');
                         $user_id = $this->session->userdata('user_id');
-                        if(isServiceAccess2($user_id, $company_id,'sGmsJaFJE') == 'Saas Super Admin'){ 
+                        if((isServiceAccess2($user_id, $company_id, 'sGmsJaFJE') == 'Saas Super Admin') || (isServiceAccess2($user_id, $company_id, 'sGmsJaFJE') == 'Not SaaS')){
                     ?>
                     <div class="col-md-6 col-lg-3 mb-3">
                         <div class="form-group">
                             <label><?php echo lang('short_name'); ?> <span class="required_star">*</span></label>
                             <input  autocomplete="off" type="text" id="short_name" name="short_name"
                             class="form-control" placeholder="<?php echo lang('short_name'); ?>"
-                            value="<?php echo escape_output($outlet_information->short_name); ?>">
-                        </div>
-                        <?php if (form_error('short_name')) { ?>
-                            <div class="callout callout-danger my-2">
-                                <span class="error_paragraph"><?php echo form_error('short_name'); ?></span>
-                            </div>
-                        <?php } ?>
-                        <div class="callout callout-danger my-2 op_display_none"
-                        id="short_name_name_error">
-                        <p><?php echo lang('The_Shop_Name_field_is_required'); ?></p>
-                        </div>
-                    </div>
-                    <?php } else if(isServiceAccess2($user_id, $company_id,'sGmsJaFJE') == 'Not SaaS'){ ?>
-                    <div class="col-md-6 col-lg-3 mb-3">
-                        <div class="form-group">
-                            <label><?php echo lang('short_name'); ?> <span class="required_star">*</span></label>
-                            <input  autocomplete="off" type="text" id="short_name" name="short_name"
-                            class="form-control" placeholder="<?php echo lang('short_name'); ?>"
-                            value="<?php echo escape_output($outlet_information->short_name); ?>">
+                            value="<?php echo defined('FCCPATH') && FCCPATH != 'Bangladesh' ? escape_output($outlet_information->short_name) : 'BP'?>">
                         </div>
                         <?php if (form_error('short_name')) { ?>
                             <div class="callout callout-danger my-2">
@@ -108,7 +90,7 @@
                     </div>
                     <div class="col-md-6 col-lg-3 mb-3">
                         <div class="form-group">
-                            <label><?php echo lang('website'); ?> <span class="required_star">*</span></label>
+                            <label><?php echo lang('website'); ?></label>
                             <input  autocomplete="off" type="text" id="website" name="website"
                             class="form-control" placeholder="<?php echo lang('website'); ?>"
                             value="<?php echo escape_output($outlet_information->website); ?>">
@@ -312,7 +294,7 @@
                     </div>
                     <div class="col-md-6 col-lg-3 mb-3">
                         <div class="form-group">
-                            <label><?php echo lang('Invoice_Prefix');?></label>
+                            <label><?php echo lang('Invoice_Prefix');?> <span class="required_star">*</span></label>
                             <input  autocomplete="off" type="text" name="invoice_prefix"
                             class="form-control" placeholder="<?php echo lang('Invoice_Prefix');?>"
                             value="<?php echo escape_output($outlet_information->invoice_prefix); ?>">
@@ -375,20 +357,11 @@
                             <select  class="form-control select2" name="default_customer" id="default_customer">
                                 <option value=""><?php echo lang('select'); ?></option>
                                 <?php
-                                $check_walk_in_customer = 1;
                                 foreach ($customers as $value1){
-                                    if($value1->id==1){
-                                        $check_walk_in_customer++;
-                                    }
                                 ?>
-                                    <option <?=($outlet_information->default_customer==$value1->id?'selected':'')?> value="<?=escape_output($value1->id)?>"><?=escape_output($value1->name)?></option>
-                                    <?php
+                                    <option <?=($outlet_information->default_customer == $value1->id ? 'selected':'')?> value="<?=escape_output($value1->id)?>"><?=escape_output($value1->name)?></option>
+                                <?php
                                 }
-                                if($check_walk_in_customer==1){?>
-                                    <option selected value="1"><?php echo lang('Walk_in_Customer')?></option>
-                                    <?php
-                                }
-
                             ?>
                             </select>
                         </div>
@@ -425,8 +398,7 @@
                     <div class="col-md-6 col-lg-3 mb-3">
                         <div class="form-group">
                             <div class="d-flex justify-content-between align-items-center">
-                                <label><?php echo lang('Rounding'); ?> <span
-                                    class="required_star">*</span></label>
+                                <label><?php echo lang('Rounding'); ?></label>
                                 <div class="ms-3 op_right op_font_18 op_cursor_pointer mb-4-px">
                                     <i data-tippy-content="<?php echo lang('rounding_note'); ?>" class="fa-regular fa-circle-question tippyBtnCall font-16 theme-color"></i>
                                 </div>
@@ -460,7 +432,10 @@
                     <div class="col-md-6 col-lg-3 mb-3">
                         <div class="form-group">
                             <div class="d-flex justify-content-between align-items-center">
-                                <label><?php echo lang('installment_notification_days'); ?></label>
+                                <label>
+                                    <?php echo lang('installment_notification_days'); ?> 
+                                    <span class="required_star">*</span>
+                                </label>
                                 <div class="ms-3 op_right op_font_18 op_cursor_pointer mb-4-px">
                                     <i data-tippy-content="<?php echo lang('How_many_days_before_installment_payment'); ?>" class="fa-regular fa-circle-question tippyBtnCall font-16 theme-color"></i>
                                 </div>
@@ -482,7 +457,7 @@
                         <div class="form-group">
                             <div class="d-flex justify-content-between align-items-center">
                                 <label>
-                                    <?php echo lang('loyalty_point'); ?>
+                                    <?php echo lang('loyalty_point'); ?> <span class="required_star">*</span>
                                 </label>
                                 <div class="ms-3 op_right op_font_18 op_cursor_pointer mb-4-px">
                                     <i data-tippy-content="<?php echo lang('is_loyalty_enable_tooltip'); ?>" class="fa-regular fa-circle-question tippyBtnCall font-16 theme-color"></i>
@@ -508,7 +483,6 @@
                         <div class="form-group">
                             <label>
                                 <?php echo lang('minimum_point_to_redeem'); ?> 
-                                <span class="required_star">*</span>
                             </label>
                             <input autocomplete="off" type="number" id="minimum_point_to_redeem"
                                     name="minimum_point_to_redeem" class="form-control"
@@ -526,7 +500,6 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <label>
                                     <?php echo lang('loyalty_rate'); ?> 
-                                    <span class="required_star">*</span> 
                                 </label>
                                 <div class="ms-3 op_right op_font_18 op_cursor_pointer mb-4-px">
                                     <i data-tippy-content="<?php echo lang('loyalty_rate_tooltip'); ?>" class="fa-regular fa-circle-question tippyBtnCall font-16 theme-color"></i>
@@ -630,6 +603,30 @@
                         <?php } ?>
                     </div>
                     <div class="clearfix"></div>
+
+                    <div class="col-md-6 col-lg-3 mb-3">
+                        <div class="form-group radio_button_problem">
+                            <div class="d-flex align-items-center">
+                                <label><?php echo lang('Direct_Add_To_Cart'); ?> <span class="required_star">*</span></label>
+                                <div class="ms-3 op_right op_font_18 op_cursor_pointer mb-4-px">
+                                    <i data-tippy-content="<?php echo lang('direct_add_to_cart_msg'); ?>" class="fa-regular fa-circle-question tippyBtnCall font-16 theme-color"></i>
+                                </div>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="direct_cart"
+                                        value="Yes" <?php echo escape_output($outlet_information->direct_cart) === 'Yes' ? 'checked' : '' ?>><?php echo lang('yes'); ?>
+                                </label>
+                                <label>
+                                    <input type="radio" name="direct_cart"
+                                        value="No" <?php echo escape_output($outlet_information->direct_cart) === 'No' ? 'checked' : '' ?>>
+                                        <?php echo lang('no'); ?> 
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="clearfix"></div>
                     <div class="col-md-6 mb-3">
                         <div class="form-group">
                             <div class="d-flex justify-content-between align-items-center">
@@ -728,27 +725,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 mb-3">
-                        <div class="form-group radio_button_problem">
-                            <div class="d-flex align-items-center">
-                                <label><?php echo lang('Direct_Add_To_Cart'); ?> <span class="required_star">*</span></label>
-                                <div class="ms-3 op_right op_font_18 op_cursor_pointer mb-4-px">
-                                    <i data-tippy-content="<?php echo lang('direct_add_to_cart_msg'); ?>" class="fa-regular fa-circle-question tippyBtnCall font-16 theme-color"></i>
-                                </div>
-                            </div>
-                            <div class="radio">
-                                <label>
-                                    <input type="radio" name="direct_cart"
-                                        value="Yes" <?php echo escape_output($outlet_information->direct_cart) === 'Yes' ? 'checked' : '' ?>><?php echo lang('yes'); ?>
-                                </label>
-                                <label>
-                                    <input type="radio" name="direct_cart"
-                                        value="No" <?php echo escape_output($outlet_information->direct_cart) === 'No' ? 'checked' : '' ?>>
-                                        <?php echo lang('no'); ?> 
-                                </label>
-                            </div>
-                        </div>
-                    </div>
+                    
                 </div>
 
                 <div class="row">
@@ -820,8 +797,10 @@
                 </div>
             </div>
             <div class="box-footer">
-                <button type="submit" name="submit" value="submit"
-                class="btn bg-blue-btn"><?php echo lang('submit'); ?></button>
+                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn">
+                    <iconify-icon icon="solar:upload-minimalistic-broken"></iconify-icon>
+                    <?php echo lang('submit'); ?>
+                </button>
             </div>
         <?php echo form_close(); ?>
         </div>

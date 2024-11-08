@@ -15,7 +15,7 @@
 
     .box-wrapper {
       padding: 15px;
-      border-radius: 5px;
+      border-radius: 12px;
       background-color: white;
       animation: fadeIn 1s both;
       border: 1px solid #EAEAEA;
@@ -51,34 +51,27 @@
   }
   .sidebar-collapse .arabic-lang .content-wrapper, .sidebar-collapse .arabic-lang .main-footer {
     transition: transform 0.3s ease-in-out, margin 0.3s ease-in-out;
-    margin-right: 0px;
   }
 }
 
 @media (min-width: 768px) {
   .sidebar-collapse .content-wrapper,
   .sidebar-collapse .main-footer {
-    margin-left: 0;
+    margin-left: 65px;
   }
   .sidebar-collapse .arabic-lang .content-wrapper,
   .sidebar-collapse .arabic-lang .main-footer {
-    margin-right: 0;
+    margin-right: 65px;
   }
 }
 
 @media (max-width: 767px) {
-  // .sidebar-open .content-wrapper,
-  // .sidebar-open .main-footer {
-  //   transform: translate(230px, 0);
-  // }
-
   .sidebar-open .content-wrapper, .sidebar-open .main-footer {
       transform: translate(120px, 0);
   }
 
   .sidebar-open .wrapper.arabic-lang .content-wrapper,
   .sidebar-open .wrapper.arabic-lang .main-footer {
-    // transform: translate(-230px, 0);
     transform: translate(-120px, 0);
   }
   .sidebar-mini .wrapper.arabic-lang .content-wrapper {
@@ -91,7 +84,6 @@
 
 .content-wrapper {
   min-height: 100%;
-  // background-color: #fafafa;
   background-color: white;
   z-index: 800;
 }
@@ -147,16 +139,6 @@
 }
 
 .main-preloader {
-  position: fixed;
-  top: 0;
-  left: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: white;
-  width: 100%;
-  height: 100%;
-  z-index: 1030;
   .lds-ring {
     display: inline-block;
     position: relative;

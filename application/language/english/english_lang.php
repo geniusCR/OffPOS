@@ -149,6 +149,7 @@ $lang['are_you_sure_cancel_booking'] = 'Are you sure to cancel this booking?';
 $lang['are_you_delete_notification'] = 'Are you sure to delete all notifications?';
 $lang['no_notification_select'] = 'No notification is selected';
 $lang['a_error'] = 'error';
+$lang['error'] = 'error';
 $lang['are_you_delete_all_hold_sale'] = 'Are you sure to delete all hold sales?';
 $lang['no_hold'] = 'There is no hold!';
 $lang['sure_delete_this_hold'] = 'Are you sure to delete this hold?';
@@ -367,7 +368,7 @@ $lang['supplier'] = 'Supplier';
 $lang['customer_due_receives'] = 'Customer Due Receives';
 $lang['customer_due_receive'] = 'Customer Due Receive';
 $lang['customer_panel'] = 'Customer Panel';
-$lang['Place_Order'] = 'Place Order';
+$lang['Place_Order'] = 'Payment';
 $lang['customer_display'] = 'Customer Display';
 $lang['add_customer_due_receive'] = 'Add Customer Receive';
 $lang['list_customer_due_receive'] = 'List Customer Receive';
@@ -1749,7 +1750,7 @@ $lang['Delivery_Date'] = 'Delivary Date';
 $lang['unit_type_message'] = 'Single Unit : When you purchase and sale in same unit <br>
 Double Unit : When your sale unit is different than purchase unit. eg: Purchase in box and sale in Pcs';
 $lang['day'] = 'Day';
-$lang['Send_To_Vendor'] = 'Send to Vendor';
+$lang['Send_To_Vendor'] = 'Sent to Vendor';
 $lang['Received_To_Vendor'] = 'Received from Vendor';
 $lang['Delivered_To_Customer'] = 'Delivered to Customer';
 $lang['customer_mobile'] = 'Customer Mobile';
@@ -2466,8 +2467,34 @@ $lang['POS_Experience'] = "POS Experience";
 $lang['Regular'] = "Regular";
 $lang['Medicine'] = "Medicine";
 $lang['Grocery'] = "Grocery";
-$lang['pharmacy_search_place_holder_pos'] = "Name or Generic Name or Code";
-$lang['other_search_place_holder_pos'] = "Name or Code or Category";
+$lang['pharmacy_search_place_holder_pos'] = "Search by name,generic name,code";
+$lang['other_search_place_holder_pos'] = "Search by name,code";
+
+
+
+// New
+$lang['expiry_date_maintain'] = "Expiry Date Maintain";
+$lang['expiry_date_maintain_guide'] = "Select Yes to maintain the product expiry date, 'No' means it does not maintain an expiry date";
+$lang['Upgrade_Plan'] = "Upgrade Plan";
+$lang['update'] = "Update";
+$lang['update_action'] = "Update Action";
+$lang['image'] = "Image";
+$lang['image_update'] = "Image Update";
+$lang['reminder_all'] = 'Reminder All';
+$lang['payment_method_sorting'] = 'Payment Method Sorting';
+$lang['module_management'] = 'Module Management';
+$lang['insert_err_i'] = 'Item add limit is over, please upgrade plan.';
+$lang['insert_err_o'] = 'Outlet add limit is over, please upgrade plan.';
+$lang['insert_err_c'] = 'Counter add limit is over, please upgrade plan.';
+$lang['upgrade_package'] = 'Upgrade Package';
+$lang['upgrade_code'] = 'Upgrade Code';
+$lang['username'] = 'Username';
+$lang['edit_sale_return'] = 'Edit Sale Return';
+$lang['how_to_begin_with_off_pos'] = 'How to begin with Off POS';
+$lang['open_cash_drawer'] = 'Open Chash Drawer';
+
+
+
 
 
 

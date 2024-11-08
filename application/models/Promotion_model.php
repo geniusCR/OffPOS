@@ -74,6 +74,7 @@ class Promotion_model extends CI_Model {
         if($food_menu_id){
             $this->db->where('food_menu_id', $food_menu_id);
         }
+        $this->db->where('status', 1);
         $this->db->where('outlet_id', $outlet_id);
         $this->db->where('del_status', 'Live');
         $query_result = $this->db->get();
@@ -92,6 +93,7 @@ class Promotion_model extends CI_Model {
             $this->db->where('food_menu_id', $food_menu_id);
         }
         $this->db->where('outlet_id', $outlet_id);
+        $this->db->where('status', 1);
         $this->db->where('del_status', 'Live');
         $query_result = $this->db->get();
         $result = $query_result->result();

@@ -57,7 +57,7 @@
               <div class="small-box box4column">
                   <div class="inner b-l-primary">
                       <p><?php echo lang('revenue');?></p>
-                      <h3 class="card-el first-el set_today_total_1"><?php echo getAmtPre(0) ?></h3>
+                      <h3 class="card-el first-el set_today_total_1"><?php echo getAmtPCustom(0) ?></h3>
                   </div>
                   <div class="icon">
                     <iconify-icon icon="solar:dollar-broken"></iconify-icon>
@@ -70,7 +70,7 @@
               <div class="small-box box4column">
                   <div class="inner b-l-primary">
                       <p><?php echo lang('net_profit');?></p>
-                      <h3 class="card-el first-el set_today_total_2"><?php echo getAmtPre(0) ?></h3>
+                      <h3 class="card-el first-el set_today_total_2"><?php echo getAmtPCustom(0) ?></h3>
                   </div>
                   <div class="icon">
                     <iconify-icon icon="solar:dollar-minimalistic-broken"></iconify-icon>
@@ -83,7 +83,7 @@
               <div class="small-box box4column">
                   <div class="inner b-l-primary">
                       <p><?php echo lang('transaction');?></p>
-                      <h3 class="card-el first-el set_today_total_3"><?php echo getAmtPre(0) ?></h3>
+                      <h3 class="card-el first-el set_today_total_3"><?php echo getAmtPCustom(0) ?></h3>
                   </div>
                   <div class="icon">
                     <iconify-icon icon="solar:transfer-vertical-broken"></iconify-icon>
@@ -96,7 +96,7 @@
               <div class="small-box box4column">
                   <div class="inner b-l-primary">
                       <p><?php echo lang('customers');?></p>
-                      <h3 class="card-el first-el set_today_total_4"><?php echo getAmtPre(0) ?></h3>
+                      <h3 class="card-el first-el set_today_total_4"><?php echo getAmtPCustom(0) ?></h3>
                   </div>
                   <div class="icon">
                     <iconify-icon icon="solar:users-group-rounded-broken"></iconify-icon>
@@ -109,7 +109,7 @@
               <div class="small-box box4column">
                   <div class="inner b-l-primary">
                       <p><?php echo lang('average_receipt');?></p>
-                      <h3 class="card-el first-el set_today_total_5"><?php echo getAmtPre(0) ?></h3>
+                      <h3 class="card-el first-el set_today_total_5"><?php echo getAmtPCustom(0) ?></h3>
                   </div>
                   <div class="icon">
                     <iconify-icon icon="solar:soundwave-broken"></iconify-icon>
@@ -155,7 +155,7 @@
               <div class="small-box box4column">
                   <div class="inner b-l-primary">
                       <p><?php echo lang('revenue');?></p>
-                      <h3 class="card-el first-el spincrement set_total_1"><?php echo getAmtPre(0) ?></h3>
+                      <h3 class="card-el first-el spincrement set_total_1"><?php echo getAmtPCustom(0) ?></h3>
                   </div>
                   <div class="icon">
                     <iconify-icon icon="solar:dollar-broken"></iconify-icon>
@@ -168,7 +168,7 @@
               <div class="small-box box4column">
                   <div class="inner b-l-primary">
                       <p><?php echo lang('net_profit');?></p>
-                      <h3 class="card-el first-el spincrement set_total_2"><?php echo getAmtPre(0) ?></h3>
+                      <h3 class="card-el first-el spincrement set_total_2"><?php echo getAmtPCustom(0) ?></h3>
                   </div>
                   <div class="icon">
                     <iconify-icon icon="solar:dollar-minimalistic-broken"></iconify-icon>
@@ -181,7 +181,7 @@
               <div class="small-box box4column">
                   <div class="inner b-l-primary">
                       <p><?php echo lang('transaction');?></p>
-                      <h3 class="card-el first-el spincrement set_total_3"><?php echo getAmtPre(0) ?></h3>
+                      <h3 class="card-el first-el spincrement set_total_3"><?php echo getAmtPCustom(0) ?></h3>
                   </div>
                   <div class="icon">
                     <iconify-icon icon="solar:transfer-vertical-broken"></iconify-icon>
@@ -194,7 +194,7 @@
               <div class="small-box box4column">
                   <div class="inner b-l-primary">
                       <p><?php echo lang('customers');?></p>
-                      <h3 class="card-el first-el spincrement set_total_4"><?php echo getAmtPre(0) ?></h3>
+                      <h3 class="card-el first-el spincrement set_total_4"><?php echo getAmtPCustom(0) ?></h3>
                   </div>
                   <div class="icon">
                     <iconify-icon icon="solar:users-group-rounded-broken"></iconify-icon>
@@ -207,7 +207,7 @@
               <div class="small-box box4column">
                   <div class="inner b-l-primary">
                       <p><?php echo lang('average_receipt');?></p>
-                      <h3 class="card-el first-el spincrement set_total_5"><?php echo getAmtPre(0) ?></h3>
+                      <h3 class="card-el first-el spincrement set_total_5"><?php echo getAmtPCustom(0) ?></h3>
                   </div>
                   <div class="icon">
                     <iconify-icon icon="solar:soundwave-broken"></iconify-icon>
@@ -263,7 +263,7 @@
                                     $alertQtySum ++;
                                 }
                             }
-                            if($item->type == 'General_Product' || $item->type == 'Installment_Product'){
+                            if($item->type == 'General_Product' || $item->type == 'Installment_Product' || ($item->type == 'Medicine_Product' && $item->expiry_date_maintain == 'No')){
                                 $generalStock = ((int)$item->stock_qty - (int)$item->out_qty);
                                 $genConvertedPrice = (float)$item->last_three_purchase_avg / (int)$item->conversion_rate;
                                 $purchasePriceSum = ($genConvertedPrice) * $generalStock;
@@ -339,7 +339,7 @@
                                         echo '-' . $v . "<br>";
                                     }
                                 }
-                            } else if($item->type == 'Medicine_Product'){ 
+                            } else if($item->type == 'Medicine_Product' && $item->expiry_date_maintain == 'Yes'){ 
                               if ((int)$item->conversion_rate != 0 && $item->last_three_purchase_avg != 0) {
                                   $purchasePriceSum = (float)$item->last_three_purchase_avg / (int)$item->conversion_rate * (int)$item->stock_qty - (int)$item->out_qty;
                               } else {

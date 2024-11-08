@@ -31,7 +31,7 @@ $(document).ready(function(){
                         let sortData = target.sortable('toArray',{ attribute: 'data-id'});
                         $.ajax({
                             type: "POST",
-                            url: base_url+'/Category/sortCategoryUpdate',
+                            url: base_url+'Category/sortCategoryUpdate',
                             data: {
                                 ids: sortData.join(',')
                             },

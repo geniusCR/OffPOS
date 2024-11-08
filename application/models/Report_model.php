@@ -694,7 +694,7 @@ class Report_model extends CI_Model {
             $this->db->where("del_status", 'Live');
             $total_installment_sale = $this->db->get()->row();
 
-            //Incomems
+            // Incomems
             $this->db->select('sum(amount) as total_income');
             $this->db->from('tbl_incomes');
             if ($start_date != '' && $end_date != '') {
@@ -707,9 +707,13 @@ class Report_model extends CI_Model {
             if ($start_date == '' && $end_date != '') {
                 $this->db->where('date', $end_date);
             }
-            $this->db->where('outlet_id', $outlet_id);
+            if($outlet_id != ''){
+                $this->db->where('outlet_id', $outlet_id);
+            }
             $this->db->where("del_status", 'Live');
             $total_income = $this->db->get()->row();
+            
+        
 
 
             //Salaries Cost
@@ -773,7 +777,11 @@ class Report_model extends CI_Model {
             $result['profit_total_tax'] = $total_vat;
             $result['profit_total_delivery'] = $delivery_charge;
             $result['profit_total_discount'] = $total_discount ?? 0;
-            $result['profit_total_installment_sale'] = $total_installment_sale->total_installment_sale ?? 0;
+            if(!moduleIsHideCheck('Installment Sale-YES')){ 
+                $result['profit_total_installment_sale'] = $total_installment_sale->total_installment_sale ?? 0;
+            }else {
+                $result['profit_total_installment_sale'] = 0;
+            }
             $result['profit_total_income'] = $total_income->total_income ?? 0;
             $result['profit_total_sale_return'] = $total_sell_return->total_sell_return ?? 0;
             $result['profit_total_servicing'] = $total_servicing->servicing_charge ?? 0;
@@ -1673,7 +1681,7 @@ class Report_model extends CI_Model {
         LEFT JOIN 
             (SELECT customer_id, COALESCE(SUM(amount), 0) AS amount_sum FROM tbl_customer_due_receives WHERE del_status = 'Live' GROUP BY customer_id) AS due_receive_sum ON c.id = due_receive_sum.customer_id
         LEFT JOIN 
-            (SELECT customer_id, COALESCE(SUM(total_return_amount), 0) AS total_return_amount_sum FROM tbl_sale_return WHERE del_status = 'Live' GROUP BY customer_id) AS return_sum ON c.id = return_sum.customer_id
+            (SELECT customer_id, COALESCE(SUM(due), 0) AS total_return_amount_sum FROM tbl_sale_return WHERE del_status = 'Live' GROUP BY customer_id) AS return_sum ON c.id = return_sum.customer_id
         LEFT JOIN 
             tbl_customer_groups g ON g.id = c.group_id
         LEFT JOIN 
@@ -1718,7 +1726,7 @@ class Report_model extends CI_Model {
         LEFT JOIN 
             (SELECT customer_id, COALESCE(SUM(amount), 0) AS amount_sum FROM tbl_customer_due_receives WHERE del_status = 'Live' GROUP BY customer_id) AS due_receive_sum ON c.id = due_receive_sum.customer_id
         LEFT JOIN 
-            (SELECT customer_id, COALESCE(SUM(total_return_amount), 0) AS total_return_amount_sum FROM tbl_sale_return WHERE del_status = 'Live' GROUP BY customer_id) AS return_sum ON c.id = return_sum.customer_id
+            (SELECT customer_id, COALESCE(SUM(due), 0) AS total_return_amount_sum FROM tbl_sale_return WHERE del_status = 'Live' GROUP BY customer_id) AS return_sum ON c.id = return_sum.customer_id
         LEFT JOIN 
             tbl_customer_groups g ON g.id = c.group_id
         LEFT JOIN 
@@ -1766,7 +1774,7 @@ class Report_model extends CI_Model {
         LEFT JOIN 
             (SELECT customer_id, COALESCE(SUM(amount), 0) AS amount_sum FROM tbl_customer_due_receives WHERE del_status = 'Live' GROUP BY customer_id) AS due_receive_sum ON c.id = due_receive_sum.customer_id
         LEFT JOIN 
-            (SELECT customer_id, COALESCE(SUM(total_return_amount), 0) AS total_return_amount_sum FROM tbl_sale_return WHERE del_status = 'Live' GROUP BY customer_id) AS return_sum ON c.id = return_sum.customer_id
+            (SELECT customer_id, COALESCE(SUM(due), 0) AS total_return_amount_sum FROM tbl_sale_return WHERE del_status = 'Live' GROUP BY customer_id) AS return_sum ON c.id = return_sum.customer_id
         LEFT JOIN 
             tbl_customer_groups g ON g.id = c.group_id
             LEFT JOIN 
@@ -1975,9 +1983,9 @@ class Report_model extends CI_Model {
         $company_id = $this->session->userdata('company_id');
         $selectString = '';
         if($c_type == 'Debit'){
-            $selectString.= "0 as credit, opening_balance + 10 as debit"; 
+            $selectString.= "0 as credit, opening_balance as debit";
         }else{
-            $selectString.= "opening_balance - 10 as credit, 0 as debit"; 
+            $selectString.= "opening_balance as credit, 0 as debit";
         }
         if($outlet_id){
             $s_outlet_id = " and s.outlet_id = '$outlet_id'";
@@ -1994,23 +2002,6 @@ class Report_model extends CI_Model {
         }else{
             $sr_outlet_id = '';
         }
-        if($start_date != '' && $end_date != ''){
-            $startDateTime = new DateTime($start_date);
-            $endDateTime = new DateTime($end_date);
-            $interval = $startDateTime->diff($endDateTime)->days;
-            if($interval > 30) {
-                $startDateTime->modify('-5 days');
-                $start_date = $startDateTime->format('Y-m-d');
-                $due = 's.due_amount * 10';
-                $sr_d = 'sr.total_return_amount * 5';
-            }else{
-                $due = 's.due_amount';
-                $sr_d = 'sr.total_return_amount';
-            }
-        }else{
-            $due = 's.due_amount';
-            $sr_d = 'sr.total_return_amount';
-        }
         $saleDateRange = "";
         if($start_date != '' && $end_date != ''){
             $saleDateRange.= " and s.sale_date BETWEEN '".$start_date."' and '".$end_date."'";
@@ -2025,26 +2016,25 @@ class Report_model extends CI_Model {
         }
         $result = $this->db->query("SELECT c.* FROM (
             (SELECT $selectString, '' as date, '' as id, 'Opening Balance' as type, '' as reference_no, '' as outlet_name FROM tbl_customers WHERE id=$customer_id AND company_id = $company_id)
-    
+
             UNION 
-            (SELECT 0 as credit, $due as debit, s.sale_date as date, s.id, 'Sale Due Amount' as type, s.sale_no as reference_no, o.outlet_name
+            (SELECT 0 as credit, due_amount as debit, s.sale_date as date, s.id, 'Sale Due Amount' as type, s.sale_no as reference_no, o.outlet_name
             FROM tbl_sales s 
             JOIN tbl_outlets o ON s.outlet_id = o.id 
             WHERE s.customer_id=$customer_id and s.due_amount != 0 and s.del_status='Live' AND s.company_id = $company_id $saleDateRange $s_outlet_id) 
-    
+
             UNION 
             (SELECT cr.amount as credit, 0 as debit, cr.date as date, cr.id, 'Customer Due Receive' as type, cr.reference_no as reference_no, o.outlet_name
             FROM tbl_customer_due_receives cr 
             JOIN tbl_outlets o ON cr.outlet_id = o.id 
             WHERE cr.customer_id=$customer_id and cr.del_status='Live' AND cr.company_id = $company_id $customerDueReceiveDateRange $cr_outlet_id) 
-    
+
             UNION 
-            (SELECT $sr_d as credit, 0 as debit, sr.date as date, sr.id, 'Sale Return' as type, sr.reference_no, o.outlet_name
+            (SELECT sr.due as credit, 0 as debit, sr.date as date, sr.id, 'Sale Return' as type, sr.reference_no, o.outlet_name
             FROM tbl_sale_return sr 
             JOIN tbl_outlets o ON sr.outlet_id = o.id 
-            WHERE sr.customer_id=$customer_id and sr.del_status='Live' AND sr.company_id = $company_id $saleReturnDateRange $sr_outlet_id)
+            WHERE sr.customer_id=$customer_id and sr.due != 0 and sr.del_status='Live' AND sr.company_id = $company_id $saleReturnDateRange $sr_outlet_id) 
         ) as c ORDER BY c.date ASC")->result();
-        
         return $result;
     }
 
@@ -2333,7 +2323,7 @@ class Report_model extends CI_Model {
 
                 (SELECT (i.purchase_price / i.conversion_rate) as item_price, '' as date, 'Opening Stock Price' as type, '' as reference_no, '' as outlet_name
                 FROM tbl_items i 
-                WHERE i.id=$item_id and i.del_status='Live' AND i.company_id = $company_id) 
+                WHERE i.id=$item_id and i.enable_disable_status and i.del_status='Live' AND i.company_id = $company_id) 
 
                 UNION
                 (SELECT sd.menu_unit_price as item_price,s.date_time as date, 'Sale' as type, s.sale_no as reference_no, o.outlet_name
@@ -2399,140 +2389,91 @@ class Report_model extends CI_Model {
 
         if($outlet_id){
             $cr_outlet_id = " and cr.outlet_id = '$outlet_id'";
-        }else{
-            $cr_outlet_id = '';
-        }
-        if($outlet_id){
             $dp_outlet_id = " and dp.outlet_id = '$outlet_id'";
-        }else{
-            $dp_outlet_id = '';
-        }
-        if($outlet_id){
             $dpd_outlet_id = " and dpd.outlet_id = '$outlet_id'";
-        }else{
-            $dpd_outlet_id = '';
-        }
-        if($outlet_id){
             $e_outlet_id = " and e.outlet_id = '$outlet_id'";
-        }else{
-            $e_outlet_id = '';
-        }
-
-        if($outlet_id){
             $i_outlet_id = " and i.outlet_id = '$outlet_id'";
-        }else{
-            $i_outlet_id = '';
-        }
-
-        if($outlet_id){
             $dow_outlet_id = " and dow.outlet_id = '$outlet_id'";
-        }else{
-            $dow_outlet_id = '';
-        }
-
-        if($outlet_id){
             $ins_outlet_id = " and ins.outlet_id = '$outlet_id'";
-        }else{
-            $ins_outlet_id = '';
-        }
-
-        if($outlet_id){
             $pp_outlet_id = " and pp.outlet_id = '$outlet_id'";
-        }else{
-            $pp_outlet_id = '';
-        }
-
-        if($outlet_id){
             $pr_outlet_id = " and pr.outlet_id = '$outlet_id'";
-        }else{
-            $pr_outlet_id = '';
-        }
-
-        if($outlet_id){
             $sl_outlet_id = " and sl.outlet_id = '$outlet_id'";
-        }else{
-            $sl_outlet_id = '';
-        }
-
-        if($outlet_id){
             $sp_outlet_id = " and sp.outlet_id = '$outlet_id'";
-        }else{
-            $sp_outlet_id = '';
-        }
-        if($outlet_id){
             $sr_outlet_id = " and sr.outlet_id = '$outlet_id'";
-        }else{
-            $sr_outlet_id = '';
-        }
-        if($outlet_id){
             $ser_outlet_id = " and ser.outlet_id = '$outlet_id'";
         }else{
+            $cr_outlet_id = '';
+            $dp_outlet_id = '';
+            $dpd_outlet_id = '';
+            $e_outlet_id = '';
+            $i_outlet_id = '';
+            $dow_outlet_id = '';
+            $ins_outlet_id = '';
+            $pp_outlet_id = '';
+            $pr_outlet_id = '';
+            $sl_outlet_id = '';
+            $sp_outlet_id = '';
+            $sr_outlet_id = '';
             $ser_outlet_id = '';
         }
 
-    
-      
         $dueReceiveDateRange = "";
+        $depositDateRange = "";
+        $withdrawDateRange = "";
+        $expenseDateRange = "";
+        $incomeDateRange = "";
+        $dowDateRange = "";
+        $insDateRange = "";
+        $ppDateRange = "";
+        $prDateRange = "";
+        $slDateRange = "";
+        $spDateRange = "";
+        $srDateRange = "";
+        $serDateRange = "";
+
         if($start_date != '' && $end_date != ''){
             $dueReceiveDateRange.= " and cr.date BETWEEN '".$start_date."' and '".$end_date."'";
-        }
-        $depositDateRange = "";
-        if($start_date != '' && $end_date != ''){
             $depositDateRange.= " and dp.date BETWEEN '".$start_date."' and '".$end_date."'";
-        }
-        $withdrawDateRange = "";
-        if($start_date != '' && $end_date != ''){
             $withdrawDateRange.= " and dpd.date BETWEEN '".$start_date."' and '".$end_date."'";
-        }
-        $expenseDateRange = "";
-        if($start_date != '' && $end_date != ''){
             $expenseDateRange.= " and e.date BETWEEN '".$start_date."' and '".$end_date."'";
-        }
-        $incomeDateRange = "";
-        if($start_date != '' && $end_date != ''){
             $incomeDateRange.= " and i.date BETWEEN '".$start_date."' and '".$end_date."'";
-        }
-
-        $dowDateRange = "";
-        if($start_date != '' && $end_date != ''){
             $dowDateRange.= " and dow.date BETWEEN '".$start_date."' and '".$end_date."'";
-        }
-
-        $insDateRange = "";
-        if($start_date != '' && $end_date != ''){
             $insDateRange.= " and ins.paid_date BETWEEN '".$start_date."' and '".$end_date."'";
-        }
-
-        $ppDateRange = "";
-        if($start_date != '' && $end_date != ''){
             $ppDateRange.= " and pp.added_date BETWEEN '".$start_date."' and '".$end_date."'";
-        }
-
-        $prDateRange = "";
-        if($start_date != '' && $end_date != ''){
             $prDateRange.= " and pr.date BETWEEN '".$start_date."' and '".$end_date."'";
-        }
-
-        $slDateRange = "";
-        if($start_date != '' && $end_date != ''){
             $slDateRange.= " and sl.date BETWEEN '".$start_date."' and '".$end_date."'";
-        }
-
-        $spDateRange = "";
-        if($start_date != '' && $end_date != ''){
             $spDateRange.= " and sp.date BETWEEN '".$start_date."' and '".$end_date."'";
-        }
-
-        $srDateRange = "";
-        if($start_date != '' && $end_date != ''){
             $srDateRange.= " and sr.date BETWEEN '".$start_date."' and '".$end_date."'";
-        }
-        $serDateRange = "";
-        if($start_date != '' && $end_date != ''){
             $serDateRange.= " and ser.date BETWEEN '".$start_date."' and '".$end_date."'";
         }
-       
-     
+
+        $query = '';
+        if(!moduleIsHideCheck('Installment Sale-YES')){ 
+            $query .="UNION 
+            (SELECT dow.down_payment as credit, '' as debit, dow.date as date, 'Installment Payment' as type, dow.reference_no as reference_no, o.outlet_name
+            FROM tbl_installments dow
+            JOIN tbl_outlets o ON dow.outlet_id = o.id 
+            WHERE dow.payment_method_id=2 and dow.down_payment != 0 and dow.del_status='Live' $dowDateRange $dow_outlet_id) 
+
+            UNION 
+            (SELECT ins.paid_amount as credit, '' as debit, ins.paid_date as date, 'Installment Payment' as type, '' as reference_no, o.outlet_name
+            FROM tbl_installment_items ins
+            JOIN tbl_outlets o ON ins.outlet_id = o.id 
+            WHERE ins.payment_method_id=2 and ins.paid_amount != 0 and ins.paid_status = 'Paid' and ins.del_status='Live' $insDateRange $ins_outlet_id)"; 
+        }
+
+        $query2 = '';
+        if(!moduleIsHideCheck('Servicing-YES')){ 
+            $query2 .="UNION 
+            (SELECT ser.servicing_charge as credit, '' as debit, ser.date as date, 'Servicing' as type, '' as reference_no, o.outlet_name
+            FROM tbl_servicing ser
+            JOIN tbl_outlets o ON ser.outlet_id = o.id 
+            WHERE ser.payment_method_id=2 and ser.servicing_charge != 0 and ser.del_status='Live' $serDateRange $ser_outlet_id)"; 
+        }
+
+
+        
+
         $result = $this->db->query("SELECT c.* FROM (
             (SELECT current_balance as credit, '' as debit, '' as date, 'Opening Balance' as type, '' as reference_no, '' as outlet_name FROM tbl_payment_methods WHERE id=2 AND company_id = $company_id)
 
@@ -2566,17 +2507,7 @@ class Report_model extends CI_Model {
             JOIN tbl_outlets o ON i.outlet_id = o.id 
             WHERE i.payment_method_id=2 and i.amount != 0 and i.del_status='Live' $incomeDateRange $i_outlet_id) 
 
-            UNION 
-            (SELECT dow.down_payment as credit, '' as debit, dow.date as date, 'Installment Payment' as type, dow.reference_no as reference_no, o.outlet_name
-            FROM tbl_installments dow
-            JOIN tbl_outlets o ON dow.outlet_id = o.id 
-            WHERE dow.payment_method_id=2 and dow.down_payment != 0 and dow.del_status='Live' $dowDateRange $dow_outlet_id) 
-
-            UNION 
-            (SELECT ins.paid_amount as credit, '' as debit, ins.paid_date as date, 'Installment Payment' as type, '' as reference_no, o.outlet_name
-            FROM tbl_installment_items ins
-            JOIN tbl_outlets o ON ins.outlet_id = o.id 
-            WHERE ins.payment_method_id=2 and ins.paid_amount != 0 and ins.paid_status = 'Paid' and ins.del_status='Live' $insDateRange $ins_outlet_id) 
+            $query 
 
             UNION 
             (SELECT '' as credit, pp.amount as debit, pp.added_date as date, 'Purchase Payment' as type, '' as reference_no, o.outlet_name
@@ -2609,12 +2540,9 @@ class Report_model extends CI_Model {
             FROM tbl_sale_return sr
             JOIN tbl_outlets o ON sr.outlet_id = o.id 
             WHERE sr.payment_method_id=2 and sr.total_return_amount != 0 and sr.del_status='Live' $srDateRange $sr_outlet_id)
-
-            UNION 
-            (SELECT ser.servicing_charge as credit, '' as debit, ser.date as date, 'Servicing' as type, '' as reference_no, o.outlet_name
-            FROM tbl_servicing ser
-            JOIN tbl_outlets o ON ser.outlet_id = o.id 
-            WHERE ser.payment_method_id=2 and ser.servicing_charge != 0 and ser.del_status='Live' $serDateRange $ser_outlet_id)
+            
+            $query2
+            
         ) as c ORDER BY c.date ASC")->result();
         return $result;
     }
@@ -2694,38 +2622,38 @@ class Report_model extends CI_Model {
         }
         $company_id = $this->session->userdata('company_id');
         $data = $this->db->query("SELECT 
-            p.id, p.name, p.code, p.type, p.alert_quantity, p.unit_type,p.last_three_purchase_avg, p.last_purchase_price, p.conversion_rate, 
+            p.id, p.name, p.code, p.type, p.alert_quantity, p.unit_type, p.expiry_date_maintain, p.last_three_purchase_avg, p.last_purchase_price, p.conversion_rate, 
             c.name as category_name, pu.unit_name as purchase_unit, su.unit_name as sale_unit,
             (
                 SELECT GROUP_CONCAT(st.expiry_imei_serial SEPARATOR '||') as dd
                 FROM tbl_stock_detail st
-                WHERE p.id = st.item_id AND st.type = 1 AND st.expiry_imei_serial != '' AND st.outlet_id = '$outlet_id'
+                WHERE p.id = st.item_id AND st.type = 2 AND st.expiry_imei_serial != '' AND st.outlet_id = '$outlet_id'
                 AND st.expiry_imei_serial NOT IN (
                     SELECT st2.expiry_imei_serial 
-                    FROM tbl_stock_detail st2 
-                    WHERE st2.item_id = p.id AND st2.type = 2 
+                    FROM tbl_stock_detail2 st2 
+                    WHERE st2.item_id = p.id AND st2.type = 1 
                     AND st2.expiry_imei_serial != '' AND st2.outlet_id = '$outlet_id'
                 )
             ) as allimei,
             (
                 SELECT IFNULL(SUM(st3.stock_quantity), 0) 
                 FROM tbl_stock_detail st3
-                WHERE p.id = st3.item_id AND st3.type = 1 AND st3.outlet_id = '$outlet_id'
+                WHERE p.id = st3.item_id AND st3.type = 2 AND st3.outlet_id = '$outlet_id'
             ) as stock_qty,
             (
                 SELECT IFNULL(SUM(st4.stock_quantity), 0) 
                 FROM tbl_stock_detail st4
-                WHERE p.id = st4.item_id AND st4.type = 2 AND st4.outlet_id = '$outlet_id'
+                WHERE p.id = st4.item_id AND st4.type = 1 AND st4.outlet_id = '$outlet_id'
             ) as out_qty,
             (
                 SELECT GROUP_CONCAT(
                     CONCAT(p_var.name, '|', p_var.code, '|', p_var.alert_quantity, '|', COALESCE(p_var.last_three_purchase_avg, 0), '|', 
                     COALESCE((SELECT IFNULL(SUM(vst1.stock_quantity), 0) 
                             FROM tbl_stock_detail vst1
-                            WHERE p_var.id = vst1.item_id AND vst1.type = 1 AND vst1.outlet_id = '$outlet_id'), 0), '|',
+                            WHERE p_var.id = vst1.item_id AND vst1.type = 2 AND vst1.outlet_id = '$outlet_id'), 0), '|',
                     COALESCE((SELECT IFNULL(SUM(vst2.stock_quantity), 0) 
                             FROM tbl_stock_detail vst2
-                            WHERE p_var.id = vst2.item_id AND vst2.type = 2 AND vst2.outlet_id = '$outlet_id'), 0)
+                            WHERE p_var.id = vst2.item_id AND vst2.type = 1 AND vst2.outlet_id = '$outlet_id'), 0)
                 ) SEPARATOR '||')
                 FROM tbl_items p_var
                 WHERE p_var.parent_id = p.id AND p_var.type = '0' AND p_var.del_status = 'Live' $where_item_parent
@@ -2735,14 +2663,14 @@ class Report_model extends CI_Model {
                     SELECT exp.item_id,CONCAT(exp.expiry_imei_serial, '|', COALESCE(SUM(exp.stock_quantity), 0)) as stockq
                         FROM tbl_stock_detail2 exp
                         WHERE  exp.outlet_id = '$outlet_id'
-                        GROUP BY exp.expiry_imei_serial ) 
+                        GROUP BY exp.expiry_imei_serial, item_id) 
                     as c WHERE c.item_id=p.id GROUP BY c.item_id
             ) as allexpiry
             FROM tbl_items p
             LEFT JOIN tbl_item_categories c ON p.category_id = c.id
             LEFT JOIN tbl_units pu ON pu.id = p.purchase_unit_id
             LEFT JOIN tbl_units su ON su.id = p.sale_unit_id
-            WHERE p.type != 'Service_Product' AND p.type != '0' AND p.company_id='$company_id' AND p.del_status = 'Live' $where 
+            WHERE p.company_id='$company_id' AND p.enable_disable_status = 'Enable' AND p.del_status = 'Live' $where 
             ORDER BY p.name ASC")->result();
             return $data;
     }
@@ -2796,7 +2724,7 @@ class Report_model extends CI_Model {
         }
         $company_id = $this->session->userdata('company_id');
         $data = $this->db->query("SELECT 
-            p.id, p.name, p.code, p.type, p.alert_quantity, p.unit_type,p.last_three_purchase_avg, p.last_purchase_price, p.conversion_rate, 
+            p.id, p.name, p.code, p.type, p.alert_quantity, p.unit_type, p.expiry_date_maintain, p.last_three_purchase_avg, p.last_purchase_price, p.conversion_rate, 
             c.name as category_name, pu.unit_name as purchase_unit, su.unit_name as sale_unit,
             (
                 SELECT GROUP_CONCAT(st.expiry_imei_serial SEPARATOR '||') as dd
@@ -2804,8 +2732,8 @@ class Report_model extends CI_Model {
                 WHERE p.id = st.item_id AND st.type = 2 AND st.expiry_imei_serial != '' AND st.outlet_id = '$outlet_id'
                 AND st.expiry_imei_serial NOT IN (
                     SELECT st2.expiry_imei_serial 
-                    FROM tbl_stock_detail st2 
-                    WHERE st2.item_id = p.id AND st2.type = 1 
+                    FROM tbl_stock_detail2 st2 
+                    WHERE st2.item_id = p.id AND st2.type = 1
                     AND st2.expiry_imei_serial != '' AND st2.outlet_id = '$outlet_id'
                 )
             ) as allimei,
@@ -2824,39 +2752,37 @@ class Report_model extends CI_Model {
                     CONCAT(p_var.name, '|', p_var.code, '|', p_var.alert_quantity, '|', COALESCE(p_var.last_three_purchase_avg, 0), '|', 
                     COALESCE((SELECT IFNULL(SUM(vst1.stock_quantity), 0) 
                             FROM tbl_stock_detail vst1
-                            WHERE p_var.id = vst1.item_id AND vst1.type = 1 AND vst1.outlet_id = '$outlet_id'), 0), '|',
+                            WHERE p_var.id = vst1.item_id AND vst1.type = 2 AND vst1.outlet_id = '$outlet_id'), 0), '|',
                     COALESCE((SELECT IFNULL(SUM(vst2.stock_quantity), 0) 
                             FROM tbl_stock_detail vst2
                             WHERE p_var.id = vst2.item_id AND vst2.type = 1 AND vst2.outlet_id = '$outlet_id'), 0)
                 ) SEPARATOR '||')
                 FROM tbl_items p_var
-                WHERE p_var.parent_id = p.id AND p_var.del_status = 'Live' $where_item_parent
+                WHERE p_var.parent_id = p.id AND p_var.type = '0' AND p_var.del_status = 'Live' $where_item_parent
             ) as variations,
             (
                 SELECT GROUP_CONCAT(c.stockq SEPARATOR '||') FROM (
                     SELECT exp.item_id,CONCAT(exp.expiry_imei_serial, '|', COALESCE(SUM(exp.stock_quantity), 0)) as stockq
                         FROM tbl_stock_detail2 exp
-                        WHERE  exp.outlet_id = '$outlet_id') 
+                        WHERE  exp.outlet_id = '$outlet_id'
+                        GROUP BY exp.expiry_imei_serial, item_id) 
                     as c WHERE c.item_id=p.id GROUP BY c.item_id
             ) as allexpiry
             FROM tbl_items p
             LEFT JOIN tbl_item_categories c ON p.category_id = c.id
             LEFT JOIN tbl_units pu ON pu.id = p.purchase_unit_id
             LEFT JOIN tbl_units su ON su.id = p.sale_unit_id
-            WHERE p.company_id='$company_id' AND p.del_status = 'Live' $where 
+            WHERE  p.company_id='$company_id' AND p.enable_disable_status = 'Enable' AND p.del_status = 'Live' $where 
             GROUP BY p.id
             HAVING 
                 CASE 
                     WHEN p.type = 'Variation_Product' THEN TRUE
                     WHEN p.type = 'Medicine_Product' THEN TRUE
-                    ELSE (stock_qty) > p.alert_quantity
+                    ELSE (stock_qty * out_qty) > p.alert_quantity
                 END
             ORDER BY p.name ASC")->result();
-            return $data; 
-
+            return $data;
     }
-
-
 
 
     /**
@@ -2866,18 +2792,35 @@ class Report_model extends CI_Model {
      * @param int
      * @return object
      */
-    public function sub_total_foods($startMonth = '',$outlet_id='') {
+    public function sub_total_foods($startMonth = '', $outlet_id = '') {
         $company_id =  $this->session->userdata('company_id');
-        $this->db->select('sum(menu_price_without_discount) sub_total_foods, sale_date, sum(due_amount) total_due');
-        $this->db->from('tbl_sales_details');
-        $this->db->join('tbl_sales', 'tbl_sales.id = tbl_sales_details.sales_id', 'left');
-        $this->db->where('sale_date', $startMonth);
-        $this->db->where('tbl_sales_details.outlet_id', $outlet_id);
-        $this->db->where('tbl_sales_details.company_id', $company_id); 
-        $this->db->where('tbl_sales_details.del_status', 'Live');
-        $query_result = $this->db->get();
-        $result = $query_result->row();
-        return $result;
+    
+        // First, calculate sub_total_foods
+        $this->db->select('SUM(sd.menu_price_without_discount) as sub_total_foods');
+        $this->db->from('tbl_sales_details sd');
+        $this->db->join('tbl_sales s', 's.id = sd.sales_id', 'left');
+        $this->db->where('s.sale_date', $startMonth);
+        $this->db->where('sd.outlet_id', $outlet_id);
+        $this->db->where('sd.company_id', $company_id); 
+        $this->db->where('sd.del_status', 'Live');
+        $query_subtotal = $this->db->get();
+        $sub_total_foods = $query_subtotal->row()->sub_total_foods;
+  
+    
+        // Then, calculate total_due independently to avoid duplicate sums
+        $this->db->select('SUM(s.due_amount) as total_due');
+        $this->db->from('tbl_sales s');
+        $this->db->where('s.sale_date', $startMonth);
+        $this->db->where('s.outlet_id', $outlet_id);
+        $this->db->where('s.company_id', $company_id);
+        $query_due = $this->db->get();
+        $total_due = $query_due->row()->total_due;
+    
+        // Return both results as an object or array
+        return (object) [
+            'sub_total_foods' => $sub_total_foods,
+            'total_due' => $total_due,
+        ];
     }
 
 
@@ -2961,25 +2904,26 @@ class Report_model extends CI_Model {
     public function totalFoodSales($startMonth = '', $endMonth = '',$outlet_id='',$top_less='') {
         $company_id =  $this->session->userdata('company_id');
         if ($startMonth || $endMonth):
-            $this->db->select('sum(qty) as totalQty,sum(menu_price_without_discount) net_sales, food_menu_id,tbl_items.name as menu_name,code,sale_date');
-            $this->db->from('tbl_sales_details');
-            $this->db->join('tbl_sales', 'tbl_sales.id = tbl_sales_details.sales_id', 'left');
-            $this->db->join('tbl_items', 'tbl_items.id = tbl_sales_details.food_menu_id', 'left');
+            $this->db->select('sum(sd.qty) as totalQty,sum(sd.menu_price_without_discount) net_sales, sd.food_menu_id, ii.name as parent_name, i.name as menu_name, i.code, s.sale_date');
+            $this->db->from('tbl_sales_details sd');
+            $this->db->join('tbl_sales s', 's.id = sd.sales_id', 'left');
+            $this->db->join('tbl_items i', 'i.id = sd.food_menu_id', 'left');
+            $this->db->join('tbl_items ii', 'ii.id = i.parent_id', 'left');
             if ($startMonth != '' && $endMonth != '') {
-                $this->db->where('sale_date>=', $startMonth);
-                $this->db->where('sale_date <=', $endMonth);
+                $this->db->where('s.sale_date>=', $startMonth);
+                $this->db->where('s.sale_date <=', $endMonth);
             }
             if ($startMonth != '' && $endMonth == '') {
-                $this->db->where('sale_date', $startMonth);
+                $this->db->where('s.sale_date', $startMonth);
             }
             if ($startMonth == '' && $endMonth != '') {
-                $this->db->where('sale_date', $endMonth);
+                $this->db->where('s.sale_date', $endMonth);
             }
-            $this->db->where('tbl_sales_details.outlet_id', $outlet_id);
-            $this->db->where('tbl_sales_details.company_id', $company_id);
-            $this->db->where('tbl_sales_details.del_status', 'Live');
+            $this->db->where('sd.outlet_id', $outlet_id);
+            $this->db->where('sd.company_id', $company_id);
+            $this->db->where('sd.del_status', 'Live');
             $this->db->order_by('totalQty', $top_less);
-            $this->db->group_by('tbl_sales_details.food_menu_id');
+            $this->db->group_by('sd.food_menu_id');
             $query_result = $this->db->get();
             $result = $query_result->result();
             return $result;

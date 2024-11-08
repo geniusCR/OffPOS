@@ -6,9 +6,14 @@
 <input type="hidden" id="price" value="<?php echo lang('price'); ?>">
 <input type="hidden" id="code" value="<?php echo lang('code'); ?>">
 <input type="hidden" id="Please_select_an_item" value="<?php echo lang('Please_select_an_item'); ?>">
+<input type="hidden" id="status_change" value="<?php echo lang('status_change');?>">
+
 
 <link rel="stylesheet" href="<?php echo base_url(); ?>frequent_changing/css/item.css">
 <div class="main-content-wrapper">
+
+<div class="ajax-message"></div>
+
     <?php
     if ($this->session->flashdata('exception')) {
         echo '<section class="alert-wrapper"><div class="alert alert-success alert-dismissible fade show"> 
@@ -48,7 +53,7 @@
 
     <div class="box-wrapper">
         <form action="<?php echo base_url();?>Item/bulkDelete" method="POST">
-            <div class="text-right d-flex justify-content-end">
+            <div class="text-right d-flex justify-content-end page_sort_but_wrp">
                 <a href="<?php echo base_url() ?>Item/addEditItem"
                     class="new-btn mb-2 ms-1"><iconify-icon icon="solar:add-circle-broken" width="22"></iconify-icon> <?php echo lang('add_item'); ?>
                 </a>

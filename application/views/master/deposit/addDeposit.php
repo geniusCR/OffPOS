@@ -130,16 +130,22 @@
                 </div>
             </div>
             <input type="hidden" name="suffix_hidden_field" id="suffix_hidden_field">
-            <div class="box-footer"> 
-                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn"><?php echo lang('submit'); ?></button>
+            <div class="box-footer">
+                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn">
+                    <iconify-icon icon="solar:upload-minimalistic-broken"></iconify-icon>
+                    <?php echo lang('submit'); ?>
+                </button>
                 <input type="hidden" id="set_save_and_add_more" name="add_more">
                 <button type="submit" name="submit" value="submit" class="btn bg-blue-btn" id="save_and_add_more">
+                    <iconify-icon icon="solar:undo-right-round-broken"></iconify-icon>
                     <?php echo lang('save_and_add_more'); ?>
                 </button>
-                <a href="<?php echo base_url() ?>Deposit/deposits"
-                    class="btn bg-blue-btn"><?php echo lang('back'); ?>
+                <a class="btn bg-blue-btn text-decoration-none" href="<?php echo base_url() ?>Deposit/deposits">
+                    <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
+                    <?php echo lang('back'); ?>
                 </a>
             </div>
+
             <?php echo form_close(); ?>
         </div>
     </div>

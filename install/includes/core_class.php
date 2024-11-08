@@ -176,7 +176,7 @@ class Core {
 
         if ($handle) {
             //version changeable
-            $content = '{ "version":"10.0.0", "url":"uggc://qbbefbsg.pb/hcqngre/bss_cbf/purpx_sbe_hcqngr.cuc"}';
+            $content = '{ "version":"10.3", "url":"uggc://qbbefbsg.pb/hcqngre/bss_cbf/purpx_sbe_hcqngr.cuc"}';
             // Write the file
             if(fwrite($handle,$content)) {
                 return true;

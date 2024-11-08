@@ -41,7 +41,7 @@ class PaymentMethod extends Cl_Controller {
             $function = "edit";
         }elseif($segment_2=="deletePaymentMethod"){
             $function = "delete";
-        }elseif($segment_2=="paymentMethods"){
+        }elseif($segment_2=="paymentMethods" || $segment_2 == 'sortPaymentMethod' || $segment_2 == 'sortPaymentMethodUpdate'){
             $function = "list";
         }else{
             $this->session->set_flashdata('exception_1',lang('no_access'));
@@ -64,22 +64,28 @@ class PaymentMethod extends Cl_Controller {
         $id = $this->custom->encrypt_decrypt($encrypted_id, 'decrypt');
         if($this->input->post('submit')) {
             $add_more = $this->input->post($this->security->xss_clean('add_more'));
+            $paymentname = htmlspecialcharscustom($this->input->post($this->security->xss_clean('name')));
             $this->form_validation->set_rules('name', lang('account_name'), 'required|max_length[50]');
-            $this->form_validation->set_rules('account_type', lang('account_type'), 'required|max_length[25]');
-            $this->form_validation->set_rules('current_balance', lang('opening_balance'), 'required|max_length[11]');
+            if($paymentname != 'Loyalty Point' && $id == ''){
+                $this->form_validation->set_rules('account_type', lang('account_type'), 'required|max_length[25]');
+            }
+            $this->form_validation->set_rules('current_balance', lang('opening_balance'), 'max_length[11]');
             $this->form_validation->set_rules('status', lang('status'), 'required');
             $this->form_validation->set_rules('description', lang('description'), 'max_length[255]');
             if ($this->form_validation->run() == TRUE) {
                 $fmc_info = array();
-                $paymentname = htmlspecialcharscustom($this->input->post($this->security->xss_clean('name')));
                 $fmc_info['name'] = $paymentname;
                 $fmc_info['description'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('description')));
 				$fmc_info['current_balance'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('current_balance')));
 				$fmc_info['status'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('status')));
                 if($paymentname == 'Loyalty Point'){
-                    $fmc_info['account_type'] = 'Loyalty Point';
+                    if($id == ''){
+                        $fmc_info['account_type'] = 'Loyalty Point';
+                    }
                 }else{
-                    $fmc_info['account_type'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('account_type')));
+                    if($id == ''){
+                        $fmc_info['account_type'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('account_type')));
+                    }
                 }
                 $fmc_info['user_id'] = $this->session->userdata('user_id');
                 $fmc_info['company_id'] = $this->session->userdata('company_id');
@@ -150,6 +156,45 @@ class PaymentMethod extends Cl_Controller {
         $data['paymentMethods'] = $this->Common_model->getAll($company_id, "tbl_payment_methods");
         $data['main_content'] = $this->load->view('master/paymentMethod/paymentMethods', $data, TRUE);
         $this->load->view('userHome', $data);
+    }
+
+
+    /**
+     * sortPaymentMethod
+     * @access public
+     * @param no
+     * @return void
+     */
+    public function sortPaymentMethod() {
+        $company_id = $this->session->userdata('company_id');
+        $data = array();
+        $data['payment_method'] = $this->Common_model->getPaymentMethodBySortedId($company_id);
+        $data['main_content'] = $this->load->view('master/paymentMethod/sortingPaymentMethod', $data, TRUE);
+        $this->load->view('userHome', $data);
+    }
+
+
+
+    /**
+     * sortPaymentMethodUpdate
+     * @access public
+     * @param no
+     * @return void
+     */
+    public function sortPaymentMethodUpdate() {
+        $data = array();
+        if($this->input->post($this->security->xss_clean('ids'))){
+            $arr = explode(',',$this->input->post('ids'));
+            foreach($arr as $sortOrder => $id){
+                $category = $this->db->query("SELECT id, sort_id FROM tbl_payment_methods where id=$id")->row();
+                $data['sort_id'] = $sortOrder+1;
+                $this->Common_model->updateInformation($data, $id, 'tbl_payment_methods');
+            }
+            $response = [
+                'success'=>true,'message'=>'Payment Method Successfully Sorted'
+            ];
+            $this->output->set_content_type('application/json')->set_output(json_encode($response));
+        }
     }
 
 }

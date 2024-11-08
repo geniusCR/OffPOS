@@ -136,7 +136,7 @@ if($purchase_return->return_status == 'draft'){
                             $i++;
 
                             $p_type = '';
-                            if ($pi->item_type == 'Medicine_Product'){
+                            if ($pi->item_type == 'Medicine_Product' && getItemExpiryStatus($pi->id) == 'Yes'){
                                 $p_type = 'Expiry Date:';
                             }else if($pi->item_type == 'IMEI_Product'){
                                 $p_type = 'IMEI:';

@@ -20,6 +20,10 @@ body {
 .pay_button{
   margin-top: 25px;
 }
+.online_sync  iconify-icon{
+  font-size: 16px;
+  margin-right: 4px;
+}
 
 .margin-r-5{
   margin-right: 5px;
@@ -313,14 +317,28 @@ body {
   margin-top: 7px;
   margin-bottom: 7px;
 }
+
+
+
 .bg__red {
-  background-color: #DB1B1F !important;
+  background-color: #FF503D !important;
   color: white !important;
   box-shadow: 0 2px 5px rgb(0 0 0 / 20%) !important;
    font-family: Outfit, sans-serif;
 }
+.add_as_new_customer {
+  font-family: Outfit, sans-serif;
+  display: flex;
+  align-items: center;
+  background-color: rgb(243 238 254);
+}
+.add_as_new_customer iconify-icon{
+  font-size: 15px;
+  margin-right: 5px;
+}
+
 .bg__red:hover {
-  box-shadow: 0 8px 25px -8px #DB1B1F !important;
+  box-shadow: 0 8px 25px -8px #FF503D !important;
 }
 .bg__blue {
   background-color: #8b5cf6 !important;
@@ -773,7 +791,9 @@ table.dataTable thead td {
 .active_medicine{
   border: 1px solid #8b5cf6;
 }
-
+.grocery_single_off .active_gm, .grocery_single_off .active_medicine {
+  border: transparent !important;
+}
 .generic_name_gm{
   margin-top: 6px !important;
 }
@@ -1534,10 +1554,10 @@ div:where(.swal2-container) button:where(.swal2-styled).swal2-deny:focus {
   align-items: center;
 }
 .variationProductHtmlRender .v-active .checkmark::before{
-  background: #76a2e7  !important;
+  background: #8b5cf6  !important;
 }
 .variationProductHtmlRender .v-active{
-  background: #c8deff !important;
+  background: #8d5df457 !important;
 }
 .variationProductHtmlRender .pl-10 {
   padding-left: 10px;
@@ -1655,13 +1675,14 @@ div:where(.swal2-container) button:where(.swal2-styled).swal2-deny:focus {
 aside#pos__sidebar .pos__menu__list > li > a iconify-icon {
   padding: 8px;
   transition: all 0.3s;
+  color: #99a1b7;
 }
 
 aside#pos__sidebar .pos__menu__list > li > a span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding: 6px 8px 6px 14px;
+  padding: 6px 8px;
   font-weight: 500;
   transition: all 0.3s;
   line-height: 22px;
@@ -1687,7 +1708,7 @@ aside#pos__sidebar .pos__menu__list > li > a span {
 	height: 100%;
 	overflow: auto;
 	width: 220px;
-  left: 120px;
+  left: 150px;
 }
 
 .treeview-menu-in li {
@@ -1708,7 +1729,6 @@ aside#pos__sidebar .pos__menu__list > li > a span {
 #pos__sidebar .brand__logo{
   padding-top: 20px;
   padding-bottom: 15px;
-  border-bottom: 1px solid #d1d5db;
 }
 aside#pos__sidebar .pos__menu__list .active a::after {
   transform: rotate(270deg);
@@ -2051,6 +2071,28 @@ label{
 ::selection {
 	color: white;
 	background-color: #8b5cf6;
+}
+.input-group-text{
+  height: 40px;
+}
+.detail_holder {
+  /* max-height: 370px; */
+}
+
+#pos__sidebar .have_sub_menu  > a::after {
+  content: "\f067";
+  font-family: "fontAwesome";
+  font-size: 12px;
+  color: #99a1b7;
+  position: absolute;
+  right: 22px;
+  /* transform: rotate(180deg); */
+  z-index: 1;
+  transition: all 0.3s;
+}
+#pos__sidebar .have_sub_menu.submenu_active > a::after {
+  content: "\f068";
+  transform: rotate(180deg);
 }
 /*###########  Place the following codes at the bottom of this file for user experience ###########*/
 

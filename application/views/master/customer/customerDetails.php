@@ -57,9 +57,9 @@
                             <tr>
                                 <td class="view_detail_border_right"><strong><?php echo lang('opening_balance');?></strong></td>
                                 <?php if($customer_due < 0){?>
-                                    <td class="view_detail_border_right"><?php echo getAmtCustom(abs($customer_due)); ?> (<?php echo lang('Credit');?>)</td> 
+                                    <td class="view_detail_border_right"><?php echo getAmtCustom(absCustom($customer_due)); ?> (<?php echo lang('Credit');?>)</td> 
                                 <?php }else if($customer_due > 0) { ?>
-                                    <td class="view_detail_border_right"><?php echo getAmtCustom(abs($customer_due)); ?> (<?php echo lang('Debit');?>)</td> 
+                                    <td class="view_detail_border_right"><?php echo getAmtCustom(absCustom($customer_due)); ?> (<?php echo lang('Debit');?>)</td> 
                                 <?php }else { ?>
                                     <td class="view_detail_border_right"><?php echo getAmtCustom($customer_due); ?></td> 
                                 <?php } ?>
@@ -192,8 +192,14 @@
             </div>
             <!-- /.box-body -->
             <div class="box-footer">
-                <a href="javascript:void(0)" class="btn bg-blue-btn" id="print_trigger"><?php echo lang('print'); ?></a>
-                <a class="btn bg-blue-btn" href="<?php echo base_url() ?>Customer/customers"><?php echo lang('back'); ?></a>
+                <a href="javascript:void(0)" class="btn bg-blue-btn" id="print_trigger">
+                    <iconify-icon icon="solar:printer-2-broken"></iconify-icon>
+                    <?php echo lang('print'); ?>
+                </a>
+                <a class="btn bg-blue-btn" href="<?php echo base_url() ?>Customer/customers">
+                    <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
+                    <?php echo lang('back'); ?>
+                </a>
             </div>
         </div>
     </div>

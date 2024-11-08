@@ -1,5 +1,7 @@
 <input type="hidden" id="stock_value_tooltip" value="<?php echo lang('stock_value_tooltip');?>">
 <link rel="stylesheet" href="<?php echo base_url(); ?>frequent_changing/css/stock.css">
+
+
 <div class="main-content-wrapper">
 
 

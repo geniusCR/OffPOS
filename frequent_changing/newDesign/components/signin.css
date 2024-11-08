@@ -15,13 +15,19 @@
 
 .bg-blue-btn {
   background-color: #8b5cf6;
+  background-color: rgba(139, 92, 246, 0.1);
 }
 .bg-blue-btn:hover, .bg-blue-btn:focus {
   box-shadow: 0 8px 25px -8px #8b5cf6 !important;
 }
 
+.bg-blue-btn {
+  background-color: #8b5cf6;
+}
+
 .bg-blue-btn,
-.bg-red-btn {
+.bg-red-btn,
+.bg-green-btn {
   color: white;
   text-decoration: none;
   padding: 8.5px 21px !important;
@@ -33,15 +39,19 @@
   align-items: center;
   justify-content: center;
   transition: all 0.3s;
+  height: 45px;
 }
 .bg-blue-btn svg,
-.bg-red-btn svg {
+.bg-red-btn svg,
+.bg-green-btn svg {
   width: 14px;
   height: 14px;
 }
 .bg-blue-btn:hover, .bg-blue-btn:focus,
 .bg-red-btn:hover,
-.bg-red-btn:focus {
+.bg-red-btn:focus,
+.bg-green-btn:hover,
+.bg-green-btn:focus {
   color: white;
 }
 

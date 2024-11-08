@@ -56,7 +56,7 @@ if ($this->session->flashdata('exception')) {
                                     <td><?php echo escape_output($si->name); ?></td> 
                                     <td><?php echo escape_output($si->contact_person); ?></td> 
                                     <td><?php echo escape_output($si->phone); ?></td>  
-                                    <td class="text-center"><?php echo getAmtCustom(abs($si->opening_balance)); ?></td>
+                                    <td class="text-center"><?php echo getAmtCustom(absCustom($si->opening_balance)); ?></td>
                                     <td><?php echo escape_output($si->added_by); ?></td>  
                                     <td><?php echo date($this->session->userdata('date_format'), strtotime($si->added_date != '' ? $si->added_date : '')); ?></td>  
                                     <td class="text-center">
@@ -83,7 +83,7 @@ if ($this->session->flashdata('exception')) {
                                 <th></th>
                                 <th></th>
                                 <th></th>
-                                <th><?php echo lang('Total_Debit_Amount'); ?>: <?php echo getAmtCustom(abs($supplier_debit_sum)); ?></th>
+                                <th><?php echo lang('Total_Debit_Amount'); ?>: <?php echo getAmtCustom(absCustom($supplier_debit_sum)); ?></th>
                                 <th></th>
                                 <th></th>
                                 <th></th>

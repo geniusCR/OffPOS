@@ -445,13 +445,14 @@ class Installment extends Cl_Controller {
             '.getUserName($user_id).'
             '.getOutletName($outlet_id).'';
             smsSendOnly($message_content, $information[1]);
-            $data['notifications_details'] =  'Notify '.$information[0].' to pay about '. $information[2] .'product, installment payment of '. getAmtCustom($information[4]) .' on '. date($this->session->userdata('date_format'), strtotime($information[5]));
-            $data['visible_status'] = '1';
-            $data['date'] = date('Y-d-m');
-            $data['outlet_id'] = $outlet_id;
-            $data['company_id'] = $company_id;
-            $data['date'] = date('Y-d-m');
-            $this->Common_model->insertInformation($data, "tbl_notifications");
+
+            // $data['notifications_details'] =  'Notify '.$information[0].' to pay about '. $information[2] .'product, installment payment of '. getAmtCustom($information[4]) .' on '. date($this->session->userdata('date_format'), strtotime($information[5]));
+            // $data['visible_status'] = '1';
+            // $data['date'] = date('Y-d-m');
+            // $data['outlet_id'] = $outlet_id;
+            // $data['company_id'] = $company_id;
+            // $data['date'] = date('Y-d-m');
+            // $this->Common_model->insertInformation($data, "tbl_notifications");
         }
         redirect('Installment/listDueInstallment');
     }
@@ -840,9 +841,9 @@ class Installment extends Cl_Controller {
         $start_date =  date('Y-m-d');
         if ($due_within == "3"){
             $due_date =  date('Y-m-d',strtotime('+3 days'));
-        }elseif($due_within == "5"){
-            $due_date =  date('Y-m-d',strtotime('+5 days'));
         }elseif($due_within == "7"){
+            $due_date =  date('Y-m-d',strtotime('+7 days'));
+        }elseif($due_within == "15"){
             $due_date =  date('Y-m-d',strtotime('+15 days'));
         }else{
             $due_date =  date('Y-m-d',strtotime('+3 days'));

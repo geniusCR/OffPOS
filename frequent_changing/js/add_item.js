@@ -120,6 +120,7 @@ $(function ($) {
             $('#alert_quantity_group').removeClass('d-none');
             $('#combo_item_cart').hide();
             $('#sale_price').prop('readonly', false);
+            $('.expiry_maintain_wrapper').hide();
 
         }else if(item_type=="Variation_Product"){
             $('#variation_wrap').removeClass('d-none');
@@ -146,6 +147,7 @@ $(function ($) {
             $('#alert_quantity_group').addClass('d-none');
             $('#combo_item_cart').hide();
             $('#sale_price').prop('readonly', false);
+            $('.expiry_maintain_wrapper').hide();
 
         }else if(item_type=="IMEI_Product"){
             $('#variation_wrap').removeClass('d-block');
@@ -170,6 +172,7 @@ $(function ($) {
             $('#alert_quantity_group').removeClass('d-none');
             $('#combo_item_cart').hide();
             $('#sale_price').prop('readonly', false);
+            $('.expiry_maintain_wrapper').hide();
 
         }else if(item_type=="Serial_Product"){
             $('#variation_wrap').removeClass('d-block');
@@ -195,6 +198,7 @@ $(function ($) {
             $('#combo_item_cart').hide();
             $('#sale_price').prop('readonly', false);
             $('#sale_price_group').show();
+            $('.expiry_maintain_wrapper').hide();
 
         }else if(item_type=="Medicine_Product"){
             $('#variation_wrap').removeClass('d-block');
@@ -219,6 +223,8 @@ $(function ($) {
             $('#combo_item_cart').hide();
             $('#sale_price').prop('readonly', false);
             $('#sale_price_group').show();
+            $('.expiry_maintain_wrapper').show();
+
 
         }else if(item_type == 'Installment_Product'){
             $('.for_items').addClass('off-d-none');
@@ -242,6 +248,8 @@ $(function ($) {
             $('#combo_item_cart').hide();
             $('#sale_price').prop('readonly', false);
             $('#sale_price_group').show();
+            $('.expiry_maintain_wrapper').hide();
+
 
         }else if(item_type == 'Service_Product'){
             $('.disable_service_field').addClass('off-d-none');
@@ -257,6 +265,7 @@ $(function ($) {
             $('#combo_item_cart').hide();
             $('#sale_price').prop('readonly', false);
             $('#sale_price_group').show();
+            $('.expiry_maintain_wrapper').hide();
 
         }else if(item_type == 'Combo_Product'){
             $('.generic_name').hide();
@@ -273,6 +282,8 @@ $(function ($) {
             $('#combo_item_cart').show();
             $('#sale_price').prop('readonly', true);
             $('#sale_price_group').hide();
+            $('.expiry_maintain_wrapper').hide();
+
         }else{
             $('.for_installment').addClass('off-d-none');
             $('.for_items').removeClass('off-d-none');
@@ -287,6 +298,13 @@ $(function ($) {
         }else{
             $(this).parent().find('.checkbox_el').val('off');
         }
+    });
+
+
+    $(document).on('change', '#expiry_date_maintain', function(){
+        $('#opening_stock').val('');
+        $('.quantity_trigger ').val('');
+        $('.item_append ').html('');
     });
 
 
@@ -408,6 +426,7 @@ $(function ($) {
     $(document).on('focus', '#opening_stock', function(){
         $('#opening_stock_modal').modal('show');
         let type = $('.check_type').find(":selected").val();
+        let expiry_date_maintain = $('#expiry_date_maintain').find(":selected").val();
         $('.expiry_add_more').html('');
         $('.expiry_heading').text('');
         $(".quantity_trigger").prop("readonly", false);
@@ -418,7 +437,7 @@ $(function ($) {
                 <iconify-icon icon="solar:add-circle-broken" width="18"></iconify-icon>
                 </button>
             `)
-        }else if(type == 'Medicine_Product'){
+        }else if(type == 'Medicine_Product' && expiry_date_maintain == 'Yes'){
             $('.imeiSerial_add_more').html('');
             $('.expiry_add_more').html(`
                 <button type="button" class="mt-2 new-btn h-40 bg-blue-btn-p-14 add_new_expiry">
@@ -627,6 +646,7 @@ $(function ($) {
         let type = $('.check_type').find(":selected").val();
         let purchase_price = $('#purchase_price').val();
         let opening_stock = $('#opening_stock').val();
+        let expiry_date_maintain = $('#expiry_date_maintain').val();
         let quantity;
         let outlet;
         let quantitySum = 0;
@@ -651,7 +671,7 @@ $(function ($) {
             }
         }
 
-        if(type == 'General_Product' || type == 'Installment_Product'){
+        if(type == 'General_Product' || type == 'Installment_Product' || (type == 'Medicine_Product' && expiry_date_maintain == 'No')){
             $('.item_append').html('');
             $('.quantity_trigger').each(function(){
                 quantity = $(this).val();

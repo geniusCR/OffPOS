@@ -185,7 +185,7 @@ class Sale_model extends CI_Model {
    * @return object
    */
   public function getHoldsByOutletAndUserId($outlet_id,$user_id){
-    $this->db->select("tbl_holds.*,tbl_customers.name as customer_name");
+    $this->db->select("tbl_holds.*,tbl_customers.name as customer_name,tbl_customers.phone as customer_phone");
     $this->db->from('tbl_holds');
     $this->db->join('tbl_customers', 'tbl_customers.id = tbl_holds.customer_id', 'left');
     $this->db->where("tbl_holds.outlet_id", $outlet_id);
@@ -321,6 +321,24 @@ class Sale_model extends CI_Model {
     $this->db->order_by('hd.id', 'ASC');
     return $this->db->get()->result();
   }
+  /**
+   * getAllHoldComboItems
+   * @access public
+   * @param int
+   * @return object
+   */
+  public function getAllHoldComboItems($hold_id)
+  {
+    $this->db->select('i.name as item_name, i.code, cs.combo_item_id,cs.show_in_invoice,cs.combo_item_seller_id,cs.combo_item_type,cs.combo_item_qty, cs.combo_item_price, u.unit_name');
+    $this->db->from('tbl_hold_combo_items cs');
+    $this->db->join('tbl_holds_details sd', 'sd.id = cs.combo_sale_item_id', 'left');
+    $this->db->join('tbl_items i', 'i.id = cs.combo_item_id', 'left');
+    $this->db->join('tbl_units u', 'u.id = i.sale_unit_id', 'left');
+    $this->db->where("cs.combo_sale_item_id", $hold_id);
+    $this->db->where("cs.del_status", 'Live');
+    $this->db->group_by("cs.combo_item_id");
+    return $this->db->get()->result();
+  }
    /**
    * getCustomerInfoBySaleId
    * @access public
@@ -375,6 +393,7 @@ class Sale_model extends CI_Model {
     $this->db->where("status", 'Enable');
     $this->db->where("company_id", $company_id);
     $this->db->where("del_status", 'Live');
+    $this->db->order_by("sort_id");
     return $this->db->get()->result();
   }
 
@@ -1231,4 +1250,106 @@ class Sale_model extends CI_Model {
     $result = $this->db->get();
     return $result->num_rows();
   }
+
+
+
+  /**
+   * stockInoDBSetter
+   * @access public
+   * @param int
+   * @param int
+   * @return int
+   */
+  public function stockInoDBSetter($item_id="",$item_code="",$brand_id="",$category_id="",$supplier_id="", $generic_name = "", $outlet_id="") {
+    $where = '';
+    $where_item_parent = '';
+    if($item_id!=''){
+        $parent_id = getItemParentId($item_id);
+        if($parent_id){
+            $where.= " AND p.id = '$parent_id'";
+            $where_item_parent.= " AND p_var.id = '$item_id'";
+        }else{
+            $where.= " AND p.id = '$item_id'";
+        }
+    }else{
+        $where.= " AND p.parent_id = '0'"; 
+    }
+    if($item_code!=''){
+        $where.= "  AND p.code = '$item_code'";
+    }
+
+    if($brand_id!=''){
+        $where.= " AND p.brand_id = '$brand_id'";
+    }
+    if($category_id!=''){
+        $where.= " AND p.category_id = '$category_id'";
+    }
+    
+    if($supplier_id!=''){
+        $where.= "  AND p.supplier_id = '$supplier_id'";
+    }
+    if($generic_name!=''){
+        $where.= "  AND p.generic_name = '$generic_name'";
+    }
+
+    if($outlet_id){
+        $outlet_id = $outlet_id;
+    }else{
+        $outlet_id = $this->session->userdata('outlet_id');
+    }
+    $company_id = $this->session->userdata('company_id');
+    $data = $this->db->query("SELECT 
+        p.id, p.parent_id, p.name, p.code, p.type, p.expiry_date_maintain, p.conversion_rate, su.unit_name as sale_unit,
+        (
+            SELECT GROUP_CONCAT(st.expiry_imei_serial SEPARATOR '||') as dd
+            FROM tbl_stock_detail st
+            WHERE p.id = st.item_id AND st.type = 1 AND st.expiry_imei_serial != '' AND st.outlet_id = '$outlet_id'
+            AND st.expiry_imei_serial NOT IN (
+                SELECT st2.expiry_imei_serial 
+                FROM tbl_stock_detail2 st2 
+                WHERE st2.item_id = p.id AND st2.type = 2 
+                AND st2.expiry_imei_serial != '' AND st2.outlet_id = '$outlet_id'
+            )
+        ) as allimei,
+        (
+            SELECT IFNULL(SUM(st3.stock_quantity), 0) 
+            FROM tbl_stock_detail st3
+            WHERE p.id = st3.item_id AND st3.type = 1 AND st3.outlet_id = '$outlet_id'
+        ) as stock_qty,
+        (
+            SELECT IFNULL(SUM(st4.stock_quantity), 0) 
+            FROM tbl_stock_detail st4
+            WHERE p.id = st4.item_id AND st4.type = 2 AND st4.outlet_id = '$outlet_id'
+        ) as out_qty,
+        (
+            SELECT GROUP_CONCAT(
+                CONCAT(p_var.id, '|', p_var.name, '|', p_var.code, '|', p_var.alert_quantity, '|', COALESCE(p_var.last_three_purchase_avg, 0), '|', 
+                COALESCE((SELECT IFNULL(SUM(vst1.stock_quantity), 0) 
+                        FROM tbl_stock_detail vst1
+                        WHERE p_var.id = vst1.item_id AND vst1.type = 1 AND vst1.outlet_id = '$outlet_id'), 0), '|',
+                COALESCE((SELECT IFNULL(SUM(vst2.stock_quantity), 0) 
+                        FROM tbl_stock_detail vst2
+                        WHERE p_var.id = vst2.item_id AND vst2.type = 2 AND vst2.outlet_id = '$outlet_id'), 0)
+            ) SEPARATOR '||')
+            FROM tbl_items p_var
+            WHERE p_var.parent_id = p.id AND p_var.type = '0' AND p_var.del_status = 'Live' $where_item_parent
+        ) as variations,
+        (
+            SELECT GROUP_CONCAT(c.stockq SEPARATOR '||') FROM (
+                SELECT exp.item_id,CONCAT(exp.expiry_imei_serial, '|', COALESCE(SUM(exp.stock_quantity), 0)) as stockq
+                    FROM tbl_stock_detail2 exp
+                    WHERE  exp.outlet_id = '$outlet_id'
+                    GROUP BY exp.expiry_imei_serial, item_id) 
+                as c WHERE c.item_id=p.id GROUP BY c.item_id
+        ) as allexpiry
+        FROM tbl_items p
+        LEFT JOIN tbl_item_categories c ON p.category_id = c.id
+        LEFT JOIN tbl_units pu ON pu.id = p.purchase_unit_id
+        LEFT JOIN tbl_units su ON su.id = p.sale_unit_id
+        WHERE p.type != 'Service_Product' AND p.type != '0' AND p.company_id='$company_id' AND p.enable_disable_status = 'Enable' AND p.del_status = 'Live' $where 
+        ORDER BY p.name ASC")->result();
+        return $data;
+  }
+
+
 }

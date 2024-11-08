@@ -200,13 +200,22 @@ $customer_info = getCustomer($installment->customer_id);
                     </div>
                 </div>
             </div> 
-            <div class="box-footer"> 
-                <a class="btn bg-blue-btn" href="<?php echo base_url() ?>Installment/installmentPrint/<?php echo $this->custom->encrypt_decrypt($installment->id, 'encrypt'); ?>" ><?php echo lang('print'); ?></a>
-                <a href="<?php echo base_url() ?>Installment/addEditInstallmentSale/<?php echo $this->custom->encrypt_decrypt($installment->id, 'encrypt'); ?>"
-                class="btn bg-blue-btn"><?php echo lang('edit'); ?></a>
-                <a href="<?php echo base_url() ?>Report/installmentDueReport"
-                    class="btn bg-blue-btn"><?php echo lang('back'); ?></a>
+            <div class="box-footer">
+
+                <a class="btn bg-blue-btn" href="<?php echo base_url() ?>Installment/installmentPrint/<?php echo $this->custom->encrypt_decrypt($installment->id, 'encrypt'); ?>" >
+                    <iconify-icon icon="solar:printer-2-broken"></iconify-icon>
+                    <?php echo lang('print'); ?>
+                </a>
+                <a href="<?php echo base_url() ?>Installment/addEditInstallmentSale/<?php echo $this->custom->encrypt_decrypt($installment->id, 'encrypt'); ?>" class="btn bg-blue-btn">
+                    <iconify-icon icon="solar:pen-new-round-broken" class="me-2"></iconify-icon>
+                    <?php echo lang('edit'); ?>
+                </a>
+                <a class="btn bg-blue-btn text-decoration-none" href="<?php echo base_url() ?>Report/installmentDueReport">
+                    <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
+                    <?php echo lang('back'); ?>
+                </a>
             </div>
+
         </div>
     </div>
 </div>

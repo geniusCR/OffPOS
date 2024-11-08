@@ -90,7 +90,6 @@ class Sale_return extends Cl_Controller {
         $outlet_id = $this->session->userdata('outlet_id');
         $user_id = $this->session->userdata('user_id');
         $company_id = $this->session->userdata('company_id');
-
         if ($id == "") {
             $sale_return_info['reference_no'] = $this->Sale_model->generateSaleReturnRefNo($outlet_id);
         } else {
@@ -98,6 +97,7 @@ class Sale_return extends Cl_Controller {
         }
 
         if (htmlspecialcharscustom($this->input->post('submit'))) {
+            // pre($_POST);
             $add_more = $this->input->post($this->security->xss_clean('add_more'));
             $this->form_validation->set_rules('date',lang('date'), 'required|max_length[50]');
             if ($this->form_validation->run() == TRUE) {
@@ -110,6 +110,7 @@ class Sale_return extends Cl_Controller {
                 $data['paid'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('paid')));
                 $data['due'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('due')));
                 $data['note'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('note')));
+                $data['sale_id'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('sale_id')));
                 $data['user_id'] = $this->session->userdata('user_id');
                 $data['outlet_id'] = $this->session->userdata('outlet_id');
                 $data['company_id'] = $this->session->userdata('company_id');
@@ -142,6 +143,7 @@ class Sale_return extends Cl_Controller {
                     $data['paymentMethods'] = $this->Common_model->getAllPaymentMethod();
                     $data['customers'] = $this->Common_model->getAllByCustomerASC();
                     $data['encrypted_id'] = $encrypted_id;
+                    $data['sale_return_items'] = $this->Common_model->saleReturnItems($id);
                     $data['main_content'] = $this->load->view('saleReturn/editSaleReturn', $data, TRUE);
                     $this->load->view('userHome', $data);
                 }
@@ -156,9 +158,12 @@ class Sale_return extends Cl_Controller {
                 $this->load->view('userHome', $data);
             } else {
                 $data = array();
-                $data['encrypted_id'] = $encrypted_id;
                 $data['paymentMethods'] = $this->Common_model->getAllPaymentMethod();
                 $data['customers'] = $this->Common_model->getAllByCustomerASC();
+                $data['encrypted_id'] = $encrypted_id;
+                $data['sale_return_details'] = $this->Common_model->getDataById($id, "tbl_sale_return");
+                $data['sale_return_items'] = $this->Common_model->saleReturnItems($id);
+
                 $data['main_content'] = $this->load->view('saleReturn/editSaleReturn', $data, TRUE);
                 $this->load->view('userHome', $data);
             }
@@ -276,6 +281,11 @@ class Sale_return extends Cl_Controller {
 
             $html .= ' <a class="btn btn-cyan" href="'.base_url().'Sale_return/saleReturnDetails/'.($this->custom->encrypt_decrypt($return->id, 'encrypt')).'" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="'. lang('view_details') .'"><i class="far fa-eye"></i></a>';
 
+            $html .= '<a class="btn btn-warning" href="' . base_url() . 'Sale_return/addEditSaleReturn/' . $this->custom->encrypt_decrypt($return->id, 'encrypt') . '" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="' . lang('edit') . '">
+                <i class="far fa-edit"></i>
+            </a>';
+
+
             $html .= ' <a class="delete btn btn-danger" href="'.base_url().'Sale_return/deleteSaleReturn/'.($this->custom->encrypt_decrypt($return->id, 'encrypt')).'" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="'. lang('delete') .'"><i class="fa-regular fa-trash-can"></i></a>';
             $sub_array[] = '<div class="btn_group_wrap">
             '.$html.'
@@ -335,11 +345,12 @@ class Sale_return extends Cl_Controller {
      */
     public function getCustomerSales() {
         $customer_id = htmlspecialcharscustom($this->input->post($this->security->xss_clean('customer_id')));
+        $old_slae_id = htmlspecialcharscustom($this->input->post($this->security->xss_clean('old_slae_id')));
         $customer_sales = $this->db->query("select id, customer_id, sale_no, total_items, total_payable, sale_date from tbl_sales where customer_id='$customer_id' and del_status='Live'")->result();
         $invoice_dropdown = '<option value="">'.lang('select').'</option>';
         if (!empty($customer_sales)) { 
             foreach ($customer_sales as $value){
-                $invoice_dropdown .= '<option value="'. $value->id .'">Inoice: '. $value->sale_no .' Date: '. date($this->session->userdata('date_format'), strtotime($value->sale_date)) .' Total Item: '. $value->total_items .' Payable: '. $value->total_payable. $this->session->userdata('currency') .'</option>';
+                $invoice_dropdown .= '<option value="'. $value->id .'" '. ($old_slae_id == $value->id ? 'selected' : '') .'>Invoice: '. $value->sale_no .' Date: '. date($this->session->userdata('date_format'), strtotime($value->sale_date)) .' Total Item: '. $value->total_items .' Payable: '. $value->total_payable. $this->session->userdata('currency') .'</option>';
             }
         }
         echo $invoice_dropdown;

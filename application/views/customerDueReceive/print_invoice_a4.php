@@ -91,10 +91,10 @@ $ln_text = isset($lng) && $lng && $lng=="bangla"?"bangla":'';
             $balance_type = "";
             $customerBalance = getCustomerDue($receipt_object[0]->customer_id);
                 if($customerBalance < 0){
-                    $balance_type = getAmtCustom(abs($customerBalance)) . " (Credit)";
+                    $balance_type = getAmtCustom(absCustom($customerBalance)) . " (Credit)";
 
                 }else if ($customerBalance > 0){
-                    $balance_type = getAmtCustom(abs($customerBalance)) . " (Debit)";
+                    $balance_type = getAmtCustom(absCustom($customerBalance)) . " (Debit)";
                 } else {
                     $balance_type = "0";
                 }

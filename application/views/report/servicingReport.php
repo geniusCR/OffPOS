@@ -82,8 +82,8 @@
                                 <th class="w-10 text-center"><?php echo lang('servicing_charge'); ?></th>
                                 <th class="w-10 text-center"><?php echo lang('paid_amount'); ?></th>
                                 <th class="w-10 text-center"><?php echo lang('due_amount'); ?></th>
-                                <th class="w-10"><?php echo lang('receiving_date'); ?></th>
-                                <th class="w-10"><?php echo lang('delivery_date'); ?></th>
+                                <th class="w-10 text-center"><?php echo lang('receiving_date'); ?></th>
+                                <th class="w-10 text-center"><?php echo lang('delivery_date'); ?></th>
                                 <th class="op_width_10_p text-right"><?php echo lang('status'); ?></th>
                             </tr>
                         </thead>
@@ -101,8 +101,8 @@
                                         <td class="text-center"><?php echo escape_output($value->servicing_charge); ?></td>
                                         <td class="text-center"><?php echo escape_output($value->paid_amount); ?></td>
                                         <td class="text-center"><?php echo escape_output($value->due_amount); ?></td>
-                                        <td><?php echo dateFormat($value->receiving_date); ?></td>
-                                        <td class="text-right"><?php echo dateFormat($value->delivery_date); ?></td>
+                                        <td class="text-center"><?php echo dateFormat($value->receiving_date); ?></td>
+                                        <td class="text-center"><?php echo dateFormat($value->delivery_date); ?></td>
                                         <td>
                                             <?php if($value->status == 'Received'){?>
                                                 <span class="pending-status"><?php echo escape_output($value->status) ?></span>

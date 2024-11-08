@@ -432,6 +432,7 @@
                         </tfoot>
                     </table> 
 
+                    <?php if(!moduleIsHideCheck('Damage-YES')){ ?>
                     <h4 class="op_font_weight_b op_margin_top_30 text-left"><?php echo lang('damage'); ?></h4>
                     <table class="table table-striped">    
                         <thead>
@@ -483,7 +484,9 @@
                                 </tr>
                             </tfoot>
                     </table> 
+                    <?php } ?>
             
+                    <?php if(!moduleIsHideCheck('Installment Sale-YES')){ ?>
                     <h4 class="op_font_weight_b op_margin_top_30 text-left"><?php echo lang('installment_collection'); ?></h4>
                     <table class="table table-striped">    
                         <thead>
@@ -561,7 +564,10 @@
                         </tr>
                         </tfoot>
                     </table> 
+                    <?php } ?>
 
+
+                    <?php if(!moduleIsHideCheck('Servicing-YES')){ ?>
                     <h4 class="op_font_weight_b op_margin_top_30 text-left"><?php echo lang('servicing'); ?></h4>
                     <table class="table table-striped">    
                         <thead>
@@ -607,7 +613,7 @@
                         </tr>
                         </tfoot>
                     </table> 
-
+                    <?php } ?>
                 </div>
             </div>
         </div> 

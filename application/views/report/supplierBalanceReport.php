@@ -98,9 +98,9 @@
                                     <td class="op_center"><?php echo $key+1; ?></td>
                                     <td><?php echo escape_output($value->name) ?></td>
                                     <?php if($value->opening_balance < 0){ 
-                                        $total_debit += abs($value->opening_balance); 
+                                        $total_debit += absCustom($value->opening_balance); 
                                         ?>
-                                        <td class="text-right"><?php echo getAmtCustom(abs($value->opening_balance)) . '(Debit)';?></td>
+                                        <td class="text-right"><?php echo getAmtCustom(absCustom($value->opening_balance)) . '(Debit)';?></td>
                                     <?php } else if ($value->opening_balance > 0){ 
                                         $total_credit += $value->opening_balance; 
                                         ?>

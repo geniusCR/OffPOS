@@ -52,14 +52,14 @@ if ($this->session->flashdata('exception')) {
                                 $i = count($customers);
                             }
                             foreach ($customers as $cust) {
-                                $customer_credit_total += abs($cust->opening_balance);
+                                $customer_credit_total += absCustom($cust->opening_balance);
                                 ?>                       
                                 <tr> 
                                     <td class="op_center"><?php echo $i--; ?></td>
                                     <td><?php echo escape_output($cust->name); ?></td> 
                                     <td><?php echo escape_output($cust->phone); ?></td> 
                                     <td><?php echo escape_output($cust->email); ?></td>
-                                    <td class="text-center"><?php echo getAmtCustom(abs($cust->opening_balance)); ?></td>
+                                    <td class="text-center"><?php echo getAmtCustom(absCustom($cust->opening_balance)); ?></td>
                                     <td><?php echo escape_output($cust->added_by); ?></td>
                                     <td><?php echo date($this->session->userdata('date_format'), strtotime($cust->added_date != '' ? $cust->added_date : '')); ?></td>
                                     <td class="text-cneter">
@@ -89,7 +89,7 @@ if ($this->session->flashdata('exception')) {
                                 <th></th>
                                 <th></th>
                                 <th></th>
-                                <th><?php echo lang('Total_Credit_Amount');?> <?php echo getAmtCustom(abs($customer_credit_total)); ?></th>
+                                <th><?php echo lang('Total_Credit_Amount');?> <?php echo getAmtCustom(absCustom($customer_credit_total)); ?></th>
                                 <th></th>
                                 <th></th>
                                 <th></th>

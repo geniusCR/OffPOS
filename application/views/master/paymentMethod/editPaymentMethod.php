@@ -55,7 +55,7 @@
                     
                     <div class="col-md-4 mb-3">
                         <div class="form-group">
-                            <label><?php echo lang('opening_balance'); ?> <span class="required_star">*</span></label>
+                            <label><?php echo lang('opening_balance'); ?></label>
                             <input  autocomplete="off" type="text" name="current_balance" class="form-control integerchk" placeholder="<?php echo lang('current_balance'); ?>" value="<?php echo escape_output($payment_method_information->current_balance); ?>">
                         </div>
                         <?php if (form_error('current_balance')) { ?>
@@ -98,13 +98,18 @@
                 <!-- /.box-body --> 
             </div>
             <div class="box-footer">
-                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn"><?php echo lang('submit'); ?></button>
+                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn">
+                    <iconify-icon icon="solar:upload-minimalistic-broken"></iconify-icon>
+                    <?php echo lang('submit'); ?>
+                </button>
                 <input type="hidden" id="set_save_and_add_more" name="add_more">
                 <button type="submit" name="submit" value="submit" class="btn bg-blue-btn" id="save_and_add_more">
+                    <iconify-icon icon="solar:undo-right-round-broken"></iconify-icon>
                     <?php echo lang('save_and_add_more'); ?>
                 </button>
-                <a href="<?php echo base_url() ?>PaymentMethod/paymentMethods"
-                    class="btn bg-blue-btn"><?php echo lang('back'); ?>
+                <a class="btn bg-blue-btn text-decoration-none" href="<?php echo base_url() ?>PaymentMethod/paymentMethods">
+                    <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
+                    <?php echo lang('back'); ?>
                 </a>
             </div>
             <?php echo form_close(); ?> 

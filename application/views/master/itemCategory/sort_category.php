@@ -13,11 +13,16 @@
         echo '</div></div></section>';
     }
     ?>
-    <div class="content-header">
-        <h3 class="top-left-header">
-            <?php echo lang('category_sorting'); ?>
-        </h3>  
-    </div>
+    <section class="content-header">
+        <div class="row justify-content-between">
+            <div class="col-6 p-0">
+                <h3 class="top-left-header mt-2"><?php echo lang('category_sorting'); ?></h3>
+            </div>
+            <?php $this->view('updater/breadcrumb', ['firstSection'=> lang('category'), 'secondSection'=> lang('category_sorting')])?>
+        </div>
+    </section>
+
+
     <div class="box-wrapper">
         <div class="table-box">
             <div>

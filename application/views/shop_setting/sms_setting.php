@@ -399,13 +399,17 @@
                     </div>
                 </div>
             </div>
-
             <div class="box-footer">
-                <button type="submit" name="submit" value="submit"
-                    class="btn bg-blue-btn"><?php echo lang('submit'); ?></button>
-                <a class="btn bg-blue-btn"
-                    href="<?php echo base_url();?>Short_message_service/smsService"><?php echo lang('go_to_send_sms_page'); ?></a>
+                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn">
+                    <iconify-icon icon="solar:upload-minimalistic-broken"></iconify-icon>
+                    <?php echo lang('submit'); ?>
+                </button>
+                <a class="btn bg-blue-btn text-decoration-none" href="<?php echo base_url() ?>Short_message_service/smsService">
+                    <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
+                    <?php echo lang('go_to_send_sms_page'); ?>
+                </a>
             </div>
+
             <?php echo form_close(); ?>
         </div>
     </div>

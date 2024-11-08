@@ -33,7 +33,6 @@ body {
   font-weight: 400;
   overflow-x: hidden;
   overflow-y: auto;
-  background-color: #f4f5f7;
 }
 
 /* Layout */
@@ -90,7 +89,7 @@ h6,
 .h5,
 .h6 {
   font-family: Outfit, sans-serif;
-  color: #636363;
+  color: #252f4a;
 }
 
 /* General Links */
@@ -124,9 +123,6 @@ a:focus {
   .main-header .navbar-right a {
     color: inherit;
     background: transparent;
-  }
-  .logo_Section_main_sidebar .sidebar-toggle{
-    display: none !important;
   }
 }
 
@@ -1656,6 +1652,7 @@ select.input-sm {
   border-bottom-right-radius: 3px;
   border-bottom-left-radius: 3px;
   padding: 0px 10px 10px 10px;
+  display: flex;
 }
 
 .chart-legend {
@@ -3146,9 +3143,7 @@ table.text-center th {
   padding-left: 20px;
 }
 
-.treeview-menu > li {
-  margin: 0;
-}
+
 
 .treeview-menu > li > a {
   padding: 5px 5px 5px 15px;
@@ -6250,10 +6245,11 @@ table.text-center th {
 .outlet-box {
   width: 100%;
   background: #fff;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   padding: 20px;
   transition: 0.5s;
+  box-shadow: 0px 3px 4px 0px rgba(0, 0, 0, .03);
+  border: 1px solid #f1f1f4;
 }
 .outlet-box .title {
   margin: 10px 0 5px 0;

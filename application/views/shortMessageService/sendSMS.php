@@ -57,13 +57,18 @@
                     </div> 
                     <!-- /.box-body --> 
                 </div>
-                
+
                 <div class="box-footer">
-                    <button type="submit" name="submit" value="submit" class="btn bg-blue-btn"><?php echo lang('submit'); ?></button>
-                    <a href="<?php echo base_url() ?>Short_message_service/smsService"
-                        class="btn bg-blue-btn"><?php echo lang('back'); ?>
+                    <button type="submit" name="submit" value="submit" class="btn bg-blue-btn">
+                        <iconify-icon icon="solar:upload-minimalistic-broken"></iconify-icon>
+                        <?php echo lang('submit'); ?>
+                    </button>
+                    <a class="btn bg-blue-btn text-decoration-none" href="<?php echo base_url() ?>Short_message_service/smsService">
+                        <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
+                        <?php echo lang('back'); ?>
                     </a>
                 </div>
+
                 <?php echo form_close(); ?>
             </div>
         </div>

@@ -58,7 +58,7 @@
                                         echo getAmtCustom($balance) . ' (Credit)';
                                     }?>
                                     <?php if($balance < 0){ 
-                                        echo getAmtCustom(abs($balance)) . ' (Debit)';
+                                        echo getAmtCustom(absCustom($balance)) . ' (Debit)';
                                     }?>
                                 </td>
                             </tr>
@@ -77,7 +77,7 @@
                                 echo getAmtCustom($total_balance) . ' (Credit)';
                             }?>
                             <?php if($total_balance < 0){ 
-                                echo getAmtCustom(abs($total_balance)) . ' (Debit)';
+                                echo getAmtCustom(absCustom($total_balance)) . ' (Debit)';
                             }?>
                         </th>
                     </tr>

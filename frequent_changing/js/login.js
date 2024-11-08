@@ -34,8 +34,11 @@ $(function () {
             }
             if(error){
                 return false;
-            }
+            }1366
         });
+    }else if(APPLICATION_MODE == 'demo'){
+        $('#phone_number').val('admin@doorsoft.co');
+        $('.password').val('123456');
     }
 
     

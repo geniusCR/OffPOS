@@ -75,10 +75,11 @@
             <p>&nbsp;</p>
             <a><?php echo lang('total_opening_balance'); ?>: <?php echo escape_output($this->session->userdata('currency')); ?><span class="total_opening_balance"><?php echo getAmt(0)?></span></a>
             <p>&nbsp;</p>
-            <div class="box-footer px-0">
-                <button type="submit" name="submit" value="submit"
-                    class="btn bg-blue-btn"><?php echo lang('submit'); ?></button>
-
+            <div class="box-footer">
+                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn">
+                    <iconify-icon icon="solar:upload-minimalistic-broken"></iconify-icon>
+                    <?php echo lang('submit'); ?>
+                </button>
             </div>
             <?php echo form_close(); ?>
         </div>

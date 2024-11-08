@@ -84,7 +84,10 @@
             </div>
             <!-- /.box-body -->
             <div class="box-footer">
-                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn"><?php echo lang('submit'); ?></button>
+                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn">
+                    <iconify-icon icon="solar:upload-minimalistic-broken"></iconify-icon>
+                    <?php echo lang('submit'); ?>
+                </button>
             </div>
             <?php echo form_close(); ?>
         </div>

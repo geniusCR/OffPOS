@@ -71,7 +71,7 @@ if ($this->session->flashdata('exception')) {
                                     <?php if($si->opening_balance < 0){?>
                                         <td class="text-center"><?php
                                             $supplier_debit_sum += $si->opening_balance;
-                                            echo getAmtCustom(abs($si->opening_balance)); ?> (<?php echo lang('Debit');?>)</td> 
+                                            echo getAmtCustom(absCustom($si->opening_balance)); ?> (<?php echo lang('Debit');?>)</td> 
                                     <?php }else if($si->opening_balance > 0) { 
                                         $supplier_credit_sum += $si->opening_balance;
                                         ?>
@@ -118,7 +118,7 @@ if ($this->session->flashdata('exception')) {
                                 <td></td>
                                 <th><?php echo lang('Total_Debit_Amount'); ?> </th>
                                 <th class="text-center">
-                                    <?php echo abs($supplier_debit_sum) == 0 ? '' : getAmtCustom(abs($supplier_debit_sum)); ?>
+                                    <?php echo absCustom($supplier_debit_sum) == 0 ? '' : getAmtCustom(absCustom($supplier_debit_sum)); ?>
                                 </th>
                                 <td></td>
                                 <td></td>

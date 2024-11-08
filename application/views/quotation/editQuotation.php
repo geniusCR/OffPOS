@@ -294,26 +294,33 @@
                 <input  class="form-control" type="hidden" name="subtotal" id="subtotal">
             </div>
             <div class="box-footer mt-3">
-                <button type="submit" name="submit" value="submit"
-                    class="btn bg-blue-btn"><?php echo lang('submit'); ?></button>
+                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn">
+                    <iconify-icon icon="solar:upload-minimalistic-broken"></iconify-icon>
+                    <?php echo lang('submit'); ?>
+                </button>
                 <input type="hidden" id="set_save_and_add_more" name="add_more">
                 <button type="submit" name="submit" value="submit" class="btn bg-blue-btn" id="save_and_add_more">
+                    <iconify-icon icon="solar:undo-right-round-broken"></iconify-icon>
                     <?php echo lang('save_and_add_more'); ?>
                 </button>
                 <input type="hidden" id="set_save_and_download" name="save_download">
                 <button type="submit" name="submit" value="submit" class="btn bg-blue-btn" id="save_and_download">
+                    <iconify-icon icon="solar:cloud-download-broken"></iconify-icon>
                     <?php echo lang('save_and_download'); ?>
                 </button>
                 <input type="hidden" id="set_save_and_email" name="save_email">
                 <button type="submit" name="submit" value="submit" class="btn bg-blue-btn" id="save_and_email">
+                    <iconify-icon icon="solar:inbox-line-broken"></iconify-icon>
                     <?php echo lang('save_and_email'); ?>
                 </button>
                 <input type="hidden" id="set_save_and_print" name="save_print">
                 <button type="submit" name="submit" value="submit" class="btn bg-blue-btn" id="save_and_print">
+                    <iconify-icon icon="solar:printer-2-broken"></iconify-icon>
                     <?php echo lang('save_and_print'); ?>
                 </button>
-                <a href="<?php echo base_url() ?>Quotation/quotations"
-                    class="btn bg-blue-btn"><?php echo lang('back'); ?>
+                <a href="<?php echo base_url() ?>Quotation/quotations" class="btn bg-blue-btn">
+                    <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
+                    <?php echo lang('back'); ?>
                 </a>
             </div>
             <?php echo form_close(); ?> 

@@ -245,11 +245,21 @@
                             </div>
                         </div>
                         <div class="clear-fix"></div>
-                        <div class="mb-3 col-lg-4 col-md-6">
+                        <div class="mb-3 col-lg-4 col-md-6 hide_show_10">
                             <div class="form-group">
                                 <label><?php echo lang('fiscal_printer_status'); ?></label>
                                 <select class="form-control printing select2" id="fiscal_printer_status"
                                         name="fiscal_printer_status">
+                                    <option value="ON"><?php echo lang('on'); ?></option>
+                                    <option value="OFF"><?php echo lang('off'); ?></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3 col-lg-4 col-md-6 hide_show_11">
+                            <div class="form-group">
+                                <label><?php echo lang('open_cash_drawer'); ?></label>
+                                <select class="form-control select2"
+                                        name="open_cash_drawer_when_printing_invoice" id="open_cash_drawer">
                                     <option value="ON"><?php echo lang('on'); ?></option>
                                     <option value="OFF"><?php echo lang('off'); ?></option>
                                 </select>

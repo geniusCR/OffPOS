@@ -83,12 +83,18 @@
                     </table>
                 </div>
             </div>
+
             <div class="box-footer">
-                <a  class="btn bg-blue-btn" id="print_trigger"><?php echo lang('print'); ?></a>
-                <a href="<?php echo base_url() ?>Installment/customers"
-                class="btn bg-blue-btn"><?php echo lang('back'); ?>
+                <a  class="btn bg-blue-btn" id="print_trigger">
+                    <iconify-icon icon="solar:printer-2-broken"></iconify-icon>
+                    <?php echo lang('print'); ?>
+                </a>
+                <a class="btn bg-blue-btn text-decoration-none" href="<?php echo base_url() ?>Installment/customers">
+                    <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
+                    <?php echo lang('back'); ?>
                 </a>
             </div>
+
         </div>
     </div>
 </div>

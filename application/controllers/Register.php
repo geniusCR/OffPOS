@@ -114,20 +114,36 @@ class Register extends Cl_Controller {
                 }
                 $register_info['opening_details'] = json_encode($arr);
                 $register_id = $this->Common_model->insertInformation($register_info, "tbl_register");
+                
                 // Printer Session Data Set
                 $count_id = $this->Common_model->getCounterIdByRegisterId($register_id);
                 $printer_id = $this->Common_model->getPrinterIdByCounterId($count_id);
                 $printer_info = $this->Common_model->getPrinterInfoById($printer_id);
-                $print_arr = [];
-                $print_arr['printer_id'] = $printer_id;
-                $print_arr['print_format'] = $printer_info->print_format;
-                $print_arr['characters_per_line'] = $printer_info->characters_per_line;
-                $print_arr['printer_ip_address'] = $printer_info->printer_ip_address;
-                $print_arr['printer_port'] = $printer_info->printer_port;
-                $print_arr['qr_code_type'] = $printer_info->qr_code_type;
-                $print_arr['invoice_print'] = $printer_info->invoice_print;
-                $print_arr['print_server_url_invoice'] = $printer_info->print_server_url_invoice;
-                $print_arr['inv_qr_code_status'] = $printer_info->inv_qr_code_status;
+
+                $print_arr = [
+                    'print_format' => '',
+                    'characters_per_line' => '',
+                    'printer_ip_address' => '',
+                    'printer_port' => '',
+                    'qr_code_type' => '',
+                    'invoice_print' => '',
+                    'fiscal_printer_status' => '',
+                    'print_server_url_invoice' => '',
+                    'inv_qr_code_status' => ''
+                ];
+                if ($printer_info) {
+                    $print_arr['printer_id'] = $printer_id;
+                    $print_arr['print_format'] = $printer_info->print_format;
+                    $print_arr['characters_per_line'] = $printer_info->characters_per_line;
+                    $print_arr['printer_ip_address'] = $printer_info->printer_ip_address;
+                    $print_arr['printer_port'] = $printer_info->printer_port;
+                    $print_arr['qr_code_type'] = $printer_info->qr_code_type;
+                    $print_arr['invoice_print'] = $printer_info->invoice_print;
+                    $print_arr['fiscal_printer_status'] = $printer_info->fiscal_printer_status;
+                    $print_arr['print_server_url_invoice'] = $printer_info->print_server_url_invoice;
+                    $print_arr['inv_qr_code_status'] = $printer_info->inv_qr_code_status;
+                }
+
                 $this->session->set_userdata($print_arr);
                 if (!$this->session->has_userdata('clicked_controller')) {
                     if ($this->session->userdata('role') == '1') {

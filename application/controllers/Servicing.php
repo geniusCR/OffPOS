@@ -250,6 +250,8 @@ class Servicing extends Cl_Controller {
             $this->load->view('servicing/print_invoice_a4', $data);
         }elseif($print_format == 'Half A4 Print'){
             $this->load->view('servicing/print_invoice_ha4', $data);
+        }elseif($print_format == 'Letter Head'){
+            $this->load->view('servicing/print_letter_head', $data);
         }
     }
 

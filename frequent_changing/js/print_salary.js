@@ -3,8 +3,8 @@ $(function () {
     let The_Month_field_required = $("#The_Month_field_required").val();
     let The_Year_field_required = $("#The_Year_field_required").val();
     //set add salary button text
-        setTimeout(() => {
-            $(".dataFilterBy").html(`<iconify-icon icon="solar:add-circle-broken" width="22"></iconify-icon> ${title}`);
+    setTimeout(() => {
+        $(".dataFilterBy").html(`<iconify-icon icon="solar:add-circle-broken" width="22"></iconify-icon> ${title}`);
     }, 700);
     $(document).on('click', '.printNow', function(e){
         "use strict";

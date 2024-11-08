@@ -92,8 +92,8 @@
                                             }else{ 
                                                 $to_time = strtotime($value->out_time);
                                                 $from_time = strtotime($value->in_time);
-                                                $minute = round(abs($to_time - $from_time) / 60,2); 
-                                                $hour = round(abs($minute) / 60,2);
+                                                $minute = round(absCustom($to_time - $from_time) / 60,2); 
+                                                $hour = round(absCustom($minute) / 60,2);
                                                 echo escape_output($hour." Hour");
                                             }
 

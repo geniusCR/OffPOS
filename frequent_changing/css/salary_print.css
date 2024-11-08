@@ -326,9 +326,9 @@ tr.noBorder td {
   background-color: #8b5cf6;
 }
 
-.bg-blue-btn:hover{
+/* .bg-blue-btn:hover{
   color: white;
-}
+} */
 
 .btn-check:focus+.btn, .btn:focus {
   box-shadow: none;

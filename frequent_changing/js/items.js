@@ -12,6 +12,21 @@ $(function () {
   let csv_db = $('#csv_db_exp').val();
   let pdf_db = $('#pdf_db_exp').val();
 
+
+  let alert = $("#warning").val();
+  let are_you_sure = $("#are_you_sure").val();
+  let cancel = $("#cancel").val();
+  let yes = $("#yes").val();
+  let status_change = $("#status_change").val();
+  let no_permission_for_this_module = $('#no_permission_for_this_module').val();
+  let ok = $("#ok").val();
+  let warning = $('#warning').val();
+
+
+  let APPLICATION_DEMO_TYPE = $('#APPLICATION_DEMO_TYPE').val();
+
+
+
   initTooltips();
   function initTooltips() {
     $('[data-toggle="tooltip"]').tooltip();
@@ -37,9 +52,10 @@ $(function () {
     columnDefs: [
       { orderable: true, targets: [ 4, 6, 7 ] }
     ],
-
+    
     dom: '<"top-left-item col-sm-12 col-md-6"lf> <"top-right-item col-sm-12 col-md-6"B> t <"bottom-left-item col-sm-12 col-md-6 "i><"bottom-right-item col-sm-12 col-md-6 "p>',
-    buttons: [{
+    
+    buttons: APPLICATION_DEMO_TYPE != 'Pharmacy'  ? [{
           extend: "print",
           text: '<span style="display: flex; align-items-center; gap: 8px;"><iconify-icon icon="solar:printer-broken" width="16"></iconify-icon> '+print_db+'</span>',
           titleAttr: "print",
@@ -63,10 +79,8 @@ $(function () {
           extend: "pdfHtml5",
           text: '<span style="display: flex; align-items-center; gap: 8px;"><iconify-icon icon="teenyicons:pdf-outline" width="16"></iconify-icon> '+pdf_db+'</span>',
           titleAttr: "PDF",
-      },
-
-      
-    ],
+      }
+    ] : [],
 
     language: {
       paginate: {
@@ -78,9 +92,76 @@ $(function () {
     // Use initComplete to initialize tooltips after DataTable initialization is complete
     initComplete: function() {
       $('#datatable [data-bs-toggle="tooltip"]').tooltip();
+      $('.select2').select2();
     },
 
   });
+
+
+  $(document).on('change', '#status_trigger', function () { 
+    let himSelf = $(this);
+    $.ajax({
+        url: base_url + "Master/checkAccess",
+        method: "GET",
+        async: false,
+        dataType: 'json',
+        data: { controller: "49", function: "enable_disable_status"},
+        success: function (response) {
+            if (response == false) {
+                Swal.fire({
+                    title: warning+" !",
+                    text: no_permission_for_this_module,
+                    showDenyButton: false,
+                    showCancelButton: false,
+                    confirmButtonText: ok,
+                });
+            } else {
+                let status = himSelf.val();
+                let get_id = himSelf.parent().parent().attr('data_id');
+                Swal.fire({
+                    title: alert + "!",
+                    text: are_you_sure,
+                    showDenyButton: true,
+                    showCancelButton: false,
+                    confirmButtonText: yes,
+                    denyButtonText: cancel
+                }).then((result) => {
+                    /* Read more about isConfirmed, isDenied below */
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            method: "POST",
+                            url: base_url+"Item/changeStatus",
+                            data:{
+                                get_id : get_id,
+                                status : status,
+                            },
+                            success: function (response) {
+                              if(response.status == 'success'){
+                                $('.ajax-message').html(`
+                                    <section class="alert-wrapper">
+                                        <div class="alert alert-success alert-dismissible fade show"> 
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            <div class="alert-body">
+                                                <i class="m-right fa fa-check"></i>
+                                                ${status_change}
+                                            </div>
+                                        </div>
+                                    </section>
+                                `);
+                              }
+                            }
+                        });
+                    }
+                });
+            }
+        }
+    });
+  });
+
+
+
+
+
 
   $(document).on('click', '#view_variation', function(){
     $("#variation_view_modal").modal('show');

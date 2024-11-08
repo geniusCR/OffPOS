@@ -25,6 +25,8 @@
 <input type="hidden" id="register_status" value="<?php echo escape_output($this->session->userdata('register_status')); ?>">
 <input type="hidden" id="print_type" value="<?php echo escape_output($this->session->userdata('print_format')); ?>">
 <input type="hidden" id="op_precision" value="<?php echo escape_output($this->session->userdata('precision'))?>">
+<input type="hidden" id="op_decimals_separator" value="<?php echo escape_output($this->session->userdata('decimals_separator'))?>">
+<input type="hidden" id="op_thousands_separator" value="<?php echo escape_output($this->session->userdata('thousands_separator'))?>">
 <input type="hidden" id="not_closed_yet" value="<?php echo lang('not_closed_yet'); ?>">
 <input type="hidden" id="opening_balance" value="<?php echo lang('opening_balance'); ?>">
 <input type="hidden" id="paid_amount" value="<?php echo lang('paid_amount'); ?>">
@@ -53,5 +55,5 @@
 <input type="hidden" id="export_db" value="<?php echo lang('export'); ?>">
 <input type="hidden" id="APPLICATION_DEMO_TYPE" value="<?php echo APPLICATION_DEMO_TYPE ?>">
 <input type="hidden" id="APPLICATION_MODE" value="<?php echo APPLICATION_MODE ?>">
-
+<input type="hidden" id="error" value="<?php echo lang('error'); ?>">
 

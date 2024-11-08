@@ -148,7 +148,7 @@
                                 <?php foreach ($items as $value) { 
                                 $string = ($value->parent_name != '' ? $value->parent_name . ' - ' : '') . ($value->name) . ($value->brand_name != '' ? ' - ' . $value->brand_name : '') . ( ' - ' . $value->code);     
                                 ?>
-                                <option value="<?php echo escape_output($value->id) . "|" . $string  ."|" . $value->sale_unit . "|" . $value->purchase_price  . "|" . $value->conversion_rate . "|" .  $value->type ?>">
+                                <option value="<?php echo escape_output($value->id) . "|" . $string  ."|" . $value->sale_unit . "|" . $value->purchase_price  . "|" . $value->conversion_rate . "|" .  $value->type . "|" . $value->expiry_date_maintain ?>">
                                     <?php echo escape_output($string) ?>
                                 </option>
                                 <?php } ?>
@@ -238,14 +238,20 @@
             </div>
             <div class="box-footer">
                 <button type="submit" name="submit" value="submit" class="btn bg-blue-btn">
-                    <?php echo lang('submit'); ?></button>
+                    <iconify-icon icon="solar:upload-minimalistic-broken"></iconify-icon>
+                    <?php echo lang('submit'); ?>
+                </button>
                 <input type="hidden" id="set_save_and_add_more" name="add_more">
                 <button type="submit" name="submit" value="submit" class="btn bg-blue-btn" id="save_and_add_more">
+                    <iconify-icon icon="solar:undo-right-round-broken"></iconify-icon>
                     <?php echo lang('save_and_add_more'); ?>
                 </button>
-                <a href="<?php echo base_url() ?>Purchase_return/purchaseReturns"
-                    class="btn bg-blue-btn"><?php echo lang('back'); ?></a>
+                <a class="btn bg-blue-btn text-decoration-none" href="<?php echo base_url() ?>Purchase_return/purchaseReturns">
+                    <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
+                    <?php echo lang('back'); ?>
+                </a>
             </div>
+
             <?php echo form_close(); ?>
         </div>
     </section>
@@ -287,6 +293,7 @@
                         <input type="hidden" id="hidden_input_item_type">
                         <input type="hidden" id="hidden_input_item_id">
                         <input type="hidden" id="hidden_input_item_name">
+                        <input type="hidden" id="hidden_input_expiry_date_maintain">
                         <div class="alert alert-error error-msg modal_qty_err_msg_contnr ">
                             <p id="modal_qty_err_msg"></p>
                         </div>

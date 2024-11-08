@@ -197,7 +197,7 @@
                                     $string = ($item->parent_name != '' ? $item->parent_name . ' - ' : '') . ($item->name) . ($item->brand_name != '' ? ' - ' . $item->brand_name : '') . ( ' - ' . $item->code); 
                                 ?>
                                     <option
-                                    value="<?php echo escape_output($item->id . "||" . $string . "||" . $item->purchase_price. "||" . $item->sale_unit . "||" . $item->type) ?>"
+                                    value="<?php echo escape_output($item->id . "||" . $string . "||" . $item->purchase_price. "||" . $item->sale_unit . "||" . $item->type . "||" .  $item->expiry_date_maintain) ?>"
                                     <?php echo set_select('ingredient_id', $item->id); ?>>
                                     <?php echo escape_output($string) ?></option>
                                 <?php } ?>
@@ -237,11 +237,14 @@
                                         $i_type = '';
                                         $readonly_expiry = '';
                                         $qtyReadonly = '';
+                                        $d_none = '';
 
-                                        if ($value->item_type == 'Medicine_Product'){
+
+                                        if ($value->item_type == 'Medicine_Product' && $value->expiry_date_maintain == 'Yes'){
                                             $date_picker = 'customDatepicker';
                                             $readonly_expiry = 'readonly';
                                             $i_type = 'Expiry Date:';
+                                            $d_none = "d-none";
                                         }elseif ($value->item_type == 'IMEI_Product'){
                                             $i_type = 'IMEI:';
                                             $readonly = 'readonly';
@@ -252,9 +255,11 @@
                                             $readonly = 'readonly';
                                             $checkIMEISerialUnique = 'checkIMEISerialUnique';
                                             $qtyReadonly = 'readonly';
-                                        }elseif($value->item_type == 0 || $value->item_type == 'General_Product' || $value->item_type == 'Variation_Product' || $value->item_type == 'Installment_Product'){
+                                        }elseif($value->item_type == 0 || $value->item_type == 'General_Product' || $value->item_type == 'Variation_Product' || $value->item_type == 'Installment_Product' || ($value->item_type == 'Medicine_Product' && $value->expiry_date_maintain == 'No')){
                                             $readonly2 = 'readonly';
+                                            $d_none = "d-none";
                                         }
+
                                         $key++;
                                         ?>
                                         <tr class="rowCount" data-item_id="<?=$value->ingredient_id?>" row-counter="<?=$key?>" data-id="<?=$key?>" id="row_<?=$key?>">
@@ -269,7 +274,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center form-group">
                                                     <small class="pe-1"><?php echo $i_type ?></small>
-                                                    <input <?php echo $readonly_expiry; ?> data-type="<?php echo escape_output($value->item_type) ?>" data-countid="<?php echo $key ?>" <?= $readonly2 . ' ' . $readonly ?> class="form-control <?php echo $checkIMEISerialUnique ?>" id="serial_<?=$key?>" name="expiry_imei_serial[]" value="<?=$value->expiry_imei_serial?>">
+                                                    <input <?php echo $readonly_expiry; ?> data-type="<?php echo escape_output($value->item_type) ?>" data-countid="<?php echo $key ?>" <?= $readonly2 . ' ' . $readonly ?> class="form-control <?php echo $checkIMEISerialUnique . $d_none ?>" id="serial_<?=$key?>" name="expiry_imei_serial[]" value="<?=$value->expiry_imei_serial?>">
                                                     <p class="imei-serial-err imei-serial-err-unique-<?php echo $key; ?>"></p>
                                                 </div>
                                             </td>
@@ -307,13 +312,17 @@
                 </div>
             </div>
             <div class="box-footer">
-                <button type="submit" name="submit" value="submit"
-                class="btn bg-blue-btn"><?php echo lang('submit'); ?></button>
+                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn">
+                    <iconify-icon icon="solar:upload-minimalistic-broken"></iconify-icon>
+                    <?php echo lang('submit'); ?>
+                </button>
                 <input type="hidden" id="set_save_and_add_more" name="add_more">
                 <button type="submit" name="submit" value="submit" class="btn bg-blue-btn" id="save_and_add_more">
+                    <iconify-icon icon="solar:undo-right-round-broken"></iconify-icon>
                     <?php echo lang('save_and_add_more'); ?>
                 </button>
-                <a class="btn bg-blue-btn" href="<?php echo base_url() ?>Transfer/transfers">
+                <a class="btn bg-blue-btn text-decoration-none" href="<?php echo base_url() ?>Transfer/transfers">
+                    <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
                     <?php echo lang('back'); ?>
                 </a>
             </div>
@@ -351,6 +360,7 @@
                         <input type="hidden" id="hidden_input_item_id">
                         <input type="hidden" id="hidden_input_item_name">
                         <input type="hidden" id="hidden_input_unit_name">
+                        <input type="hidden" id="hidden_input_expiry_date_maintain">
                         <div class="alert alert-error error-msg modal_qty_err_msg_contnr ">
                             <p id="modal_qty_err_msg"></p>
                         </div>

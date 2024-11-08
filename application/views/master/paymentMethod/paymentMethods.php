@@ -17,6 +17,9 @@
                 <h3 class="top-left-header"><?php echo lang('list_account'); ?> </h3>
                 <input type="hidden" class="datatable_name" data-title="<?php echo lang('list_account'); ?>" data-id_name="datatable">
                 <div class="btn_list m-right d-flex">
+                    <a class="new-btn me-1" href="<?php echo base_url() ?>PaymentMethod/sortPaymentMethod">
+                        <iconify-icon icon="solar:checklist-broken" width="22"></iconify-icon> <?php echo lang('payment_method_sorting'); ?>
+                    </a>
                     <a class="new-btn me-1" href="<?php echo base_url() ?>PaymentMethod/addEditPaymentMethod">
                     <iconify-icon icon="solar:add-circle-broken" width="22"></iconify-icon> <?php echo lang('add_account'); ?>
                     </a>
@@ -50,7 +53,7 @@
                                 }
                                 foreach ($paymentMethods as $value) {
                                 $balance = 0; 
-                                $balance = $value->current_balance+$value->total_sale-$value->total_purchase+$value->total_customer_due_receive-$value->total_supplier_due_payment+$value->total_down_payment+$value->total_installment_collection+$value->total_deposit - $value->total_withdraw+$value->total_purchase_return_amount-$value->total_expense-$value->total_salary_amount-$value->total_sale_return;
+                                $balance = $value->current_balance+$value->total_sale-$value->total_purchase+$value->total_customer_due_receive-$value->total_supplier_due_payment+$value->total_down_payment+$value->total_installment_collection+$value->total_deposit - $value->total_withdraw+$value->total_purchase_return_amount-$value->total_expense-$value->total_salary_amount-$value->total_sale_return+$value->total_income;
                             ?>
                             <tr>
                                 <td class="op_center"><?php echo $i--; ?></td>

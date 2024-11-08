@@ -93,9 +93,8 @@
                         <tbody>
                             <?php
                             
-                            if(isset($cashFlowReport) && $cashFlowReport){
-                            foreach ($cashFlowReport as $key=>$cash){
-                                
+                                if(isset($cashFlowReport) && $cashFlowReport){
+                                foreach ($cashFlowReport as $key=>$cash){
                             ?>
                             <tr>
                                 <td><?php echo $key + 1; ?></td>
@@ -106,7 +105,7 @@
                                 <td><?php echo escape_output($cash->reference_no) ?></td>
                                 <?php if(isset($sum_of_op_before_date) && $key == 0){ ?>
                                     <td class="text-center"><?php echo $sum_of_op_before_date > 0 ? getAmtCustom($sum_of_op_before_date) : getAmtCustom(0) ?></td>
-                                    <td class="text-center"><?php echo $sum_of_op_before_date < 0 ? getAmtCustom(abs($sum_of_op_before_date)) : getAmtCustom(0); ?></td>
+                                    <td class="text-center"><?php echo $sum_of_op_before_date < 0 ? getAmtCustom(absCustom($sum_of_op_before_date)) : getAmtCustom(0); ?></td>
                                 <?php }else{ ?>
                                     <td class="text-center"><?php echo getAmtCustom($cash->debit) ?></td>
                                     <td class="text-center"><?php echo getAmtCustom($cash->credit) ?></td>

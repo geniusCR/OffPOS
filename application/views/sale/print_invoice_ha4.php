@@ -218,14 +218,14 @@ if($sale_object->sale_vat_objects != ''){
         <div>
             <?php
                 if($sale_object->previous_due > 0){
-                    $inv_prev_due = abs($sale_object->previous_due);
+                    $inv_prev_due = absCustom($sale_object->previous_due);
             ?>
             <div class="d-flex justify-content-between pt-5">
                 <p class="f-w-600"><?php echo lang('previous_balance');?></p>
                 <p><?php echo getAmtCustom($ln_text=="bangla"?banglaNumber($inv_prev_due):  $inv_prev_due)?> (Debit)</p>
             </div>
             <?php } else if ($sale_object->previous_due < 0){ 
-                $inv_prev_due = abs($sale_object->previous_due);
+                $inv_prev_due = absCustom($sale_object->previous_due);
                 
                 ?>
                 <div class="d-flex justify-content-between pt-2 pb-3 mt-2 mb-2 border-bottom-dotted-gray">
@@ -365,20 +365,20 @@ if($sale_object->sale_vat_objects != ''){
             if($sale_object->due_amount < 0) {  
                 $due_reveive  = 0;
                 $advance_receive = 0;
-                if(abs($sale_object->due_amount) <= $inv_prev_due){
+                if(absCustom($sale_object->due_amount) <= $inv_prev_due){
                     $due_reveive  = $sale_object->due_amount;
                 }
-                if(abs($sale_object->due_amount) > $inv_prev_due){
+                if(absCustom($sale_object->due_amount) > $inv_prev_due){
                     $due_reveive = $inv_prev_due;
-                    $advance_receive = abs($sale_object->due_amount) - $inv_prev_due;
+                    $advance_receive = absCustom($sale_object->due_amount) - $inv_prev_due;
                 } ?>
                 <div class="d-flex justify-content-between pt-2 pb-3 mt-2 mb-2 border-bottom-dotted-gray">
                     <p class="f-w-600"><?php echo lang('due_receive');?></p>
-                    <p><?php echo getAmtCustom($ln_text=="bangla"?banglaNumber(abs($due_reveive) ? abs($due_reveive) : 0 ): (abs($due_reveive) ? abs($due_reveive) : 0)); ?></p>
+                    <p><?php echo getAmtCustom($ln_text=="bangla"?banglaNumber(absCustom($due_reveive) ? absCustom($due_reveive) : 0 ): (absCustom($due_reveive) ? absCustom($due_reveive) : 0)); ?></p>
                 </div>
                 <div class="d-flex justify-content-between pt-2 pb-3 mt-2 mb-2 border-bottom-dotted-gray">
                     <p class="f-w-600"><?php echo lang('advance_receive');?></p>
-                    <p><?php echo getAmtCustom($ln_text=="bangla"?banglaNumber(abs($advance_receive) ? abs($advance_receive) : 0 ): (abs($advance_receive) ? abs($advance_receive) : 0)); ?></p>
+                    <p><?php echo getAmtCustom($ln_text=="bangla"?banglaNumber(absCustom($advance_receive) ? absCustom($advance_receive) : 0 ): (absCustom($advance_receive) ? absCustom($advance_receive) : 0)); ?></p>
                 </div>
             <?php } ?>
             <div class=" pt-2 pb-3 mt-2 mb-2">

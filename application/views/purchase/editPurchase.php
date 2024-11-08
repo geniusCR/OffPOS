@@ -130,7 +130,7 @@
                                 <?php foreach ($items as $value) { 
                                 $string = ($value->parent_name != '' ? $value->parent_name . ' - ' : '') . ($value->name) . ($value->brand_name != '' ? ' - ' . $value->brand_name : '') . ( ' - ' . $value->code);      
                                 ?>
-                                    <option value="<?php echo escape_output($value->id) . "|" . $string ."|" . $value->purchase_unit . "|" . $value->purchase_price. "|" . $value->conversion_rate . "|" .  $value->type ?>">
+                                    <option value="<?php echo escape_output($value->id) . "|" . $string ."|" . $value->purchase_unit . "|" . $value->purchase_price. "|" . $value->conversion_rate . "|" .  $value->type . "|" .  $value->expiry_date_maintain ?>">
                                     <?php echo escape_output($string) ?>
                                     </option>
                                 <?php } ?>
@@ -177,13 +177,13 @@
                                             $checkIMEISerialUnique = '';
                                             
 
-                                            if($pi->item_type == 'General_Product' || $pi->item_type == 0 ){
+                                            if($pi->item_type == 'General_Product' || $pi->item_type == 0 || ($pi->item_type == 'Medicine_Product' && $pi->expiry_date_maintain == 'No')){
                                                 $d_none = 'd-none';
                                             }else if($pi->item_type == 'Variation_Product'){
                                                 $d_none = 'd-none';
                                             }else if($pi->item_type == 'Installment_Product'){
                                                 $d_none = 'd-none';
-                                            }else if ($pi->item_type == 'Medicine_Product'){
+                                            }else if ($pi->item_type == 'Medicine_Product' && $pi->expiry_date_maintain == 'Yes'){
                                                 $p_type = 'Expiry Date:';
                                                 $p_placeholder = '';
                                                 $date_picker = 'customDatepicker'; 
@@ -390,15 +390,19 @@
             <div class="row">
                 <input  class="form-control" type="hidden" name="subtotal" id="subtotal">
             </div>
-            <div class="box-footer mt-3">
-                <input type="hidden" name="suffix_hidden_field" id="suffix_hidden_field">
-                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn"><?php echo lang('submit'); ?></button>
+            <div class="box-footer">
+                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn">
+                    <iconify-icon icon="solar:upload-minimalistic-broken"></iconify-icon>
+                    <?php echo lang('submit'); ?>
+                </button>
                 <input type="hidden" id="set_save_and_add_more" name="add_more">
                 <button type="submit" name="submit" value="submit" class="btn bg-blue-btn" id="save_and_add_more">
+                    <iconify-icon icon="solar:undo-right-round-broken"></iconify-icon>
                     <?php echo lang('save_and_add_more'); ?>
                 </button>
-                <a href="<?php echo base_url() ?>Purchase/purchases"
-                class="btn bg-blue-btn"><?php echo lang('back'); ?>
+                <a class="btn bg-blue-btn text-decoration-none" href="<?php echo base_url() ?>Purchase/purchases">
+                    <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
+                    <?php echo lang('back'); ?>
                 </a>
             </div>
             <?php echo form_close(); ?> 
@@ -437,6 +441,7 @@
                         <input type="hidden" id="hidden_input_item_type">
                         <input type="hidden" id="hidden_input_item_id">
                         <input type="hidden" id="hidden_input_item_name">
+                        <input type="hidden" id="hidden_input_expiry_date_maintain">
                     </div>
                     <div class="form-group mt-3 imei_p_f">
                         <label class="col-sm-4 control-label imei_serial_label"></label>

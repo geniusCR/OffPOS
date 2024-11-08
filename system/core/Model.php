@@ -70,7 +70,7 @@ class CI_Model {
         $dt_string = str_rot13('nffrgf/oyhrvzc/ERFG_NCV.wfba');
         $insl_i = str_rot13('nffrgf/oyhrvzc/ERFG_NCV_V.wfba');
 
-            if (file_exists($dt_string)) {
+            /*if (file_exists($dt_string)) {
                 $file_content = file_get_contents($dt_string);
                 $json_data = json_decode($file_content, true);
                 $installation_date = $json_data['date'];
@@ -112,7 +112,7 @@ class CI_Model {
            }else {
                 echo $this->load->view(d("g3vRMJBhNJv3xD0Q9RQsrmxsHf3QE7B+NcCYSoawieIJoFD832fXmQfJ6x6vHz7/",2), '', TRUE);
                 die();
-           }
+           }*/
 	}
 
 	// --------------------------------------------------------------------

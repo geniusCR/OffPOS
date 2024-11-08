@@ -76,9 +76,17 @@
                     </div>
                 </div>                      
             </div>
+            
+
             <div class="box-footer">
-                <a id="print_trigger" class="btn bg-blue-btn"><?php echo lang('Print');?></a>
-                <a class="btn bg-blue-btn" href="<?php echo base_url() ?>Item/itemBarcodeGeneratorLabel"><?php echo lang('back'); ?></a>
+                <a id="print_trigger" class="btn bg-blue-btn">
+                    <iconify-icon icon="solar:printer-2-broken"></iconify-icon>
+                    <?php echo lang('Print');?>
+                </a>
+                <a class="btn bg-blue-btn" href="<?php echo base_url() ?>Item/itemBarcodeGeneratorLabel">
+                    <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
+                    <?php echo lang('back'); ?>
+                </a>
             </div>
         </div>
     </div>

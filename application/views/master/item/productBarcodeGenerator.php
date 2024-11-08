@@ -28,20 +28,19 @@
                             <div class="text-center border-1-default p-2">
                                 <div>
                                     <?php if($items[$i]['parent_id'] != 0) { ?>
-                                        <span class="font-700"><?= getItemNameById($items[$i]['parent_id']) ?></span> - 
+                                        <span><?= limit_string(getItemNameById($items[$i]['parent_id']), 10) ?></span> - 
                                     <?php } ?>
-                                    <span class="font-700"><?= $items[$i]['item_name'] ?>
+                                    <span><?= limit_string($items[$i]['item_name'], 10) ?>
                                     <?php if($items[$i]['parent_id'] != 0) { ?>
-                                        (<span class="font-700"><?= $items[$i]['code'] ?></span>)
+                                        (<span><?= $items[$i]['code'] ?></span>)
                                     <?php } ?>
                                 </div>
                                 <div>
                                     <img class="op__min_width_139" id="barcode<?= $items[$i]['id'] ?><?= $j ?>">
                                 </div>
                                 <div class="text-center item_description">
-                                    <p class="font-700"><?php echo lang('code');?>: <?= $items[$i]['code'] ?></p>
-                                    <p><?php echo lang('price');?>: <?= getAmtCustom($items[$i]['sale_price']) ?></p>
-                                    <p class="mb-0"><?php echo getBusinessName($this->session->userdata('company_id')) ?></p>
+                                    <p><?= $items[$i]['code'] ?></p>
+                                    <p><?= getAmtCustom($items[$i]['sale_price']) ?></p>
                                 </div>
                             </div>
                         <?php
@@ -74,9 +73,18 @@
                 </div>
             </div>
             <div class="box-footer">
-                <a id="print_trigger" class="btn bg-blue-btn"><?php echo lang('Print');?></a>
-                <a class="btn bg-blue-btn" href="<?php echo base_url() ?>Item/itemBarcodeGenerator"><?php echo lang('back'); ?></a>
+                <a id="print_trigger" class="btn bg-blue-btn">
+                    <iconify-icon icon="solar:printer-2-broken"></iconify-icon>
+                    <?php echo lang('Print');?>
+                </a>
+                <a class="btn bg-blue-btn" href="<?php echo base_url() ?>Item/itemBarcodeGenerator">
+                    <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
+                    <?php echo lang('back'); ?>
+                </a>
             </div>
+
+            
+
         </div>
     </div>
 </div>

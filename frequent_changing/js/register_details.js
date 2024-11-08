@@ -67,76 +67,86 @@ $(function () {
     show_details_for_details_page();
  
     $(document).on("click", ".register_details", function (e) {
-        $('.overlayForCalculator').css('display', 'none');
-        $('#calculator_main').css('display', 'none');
-        let status = true;
-        if (status) {
-            let csrf_value_ = $("#csrf_value_").val();
-            $.ajax({
-                url: base_url + "Sale/registerDetailCalculationToShowAjax",
-                method: "POST",
-                data: {
-                    csrf_name_: csrf_value_,
-                },
-                success: function (response) {
-                    response = JSON.parse(response);
-                    $("#register_modal").addClass("active");
-                    $(".pos__modal__overlay").fadeIn(200);
-                    $("#opening_register_time").html(response.opening_date_time);
-                    $(".html_content").html(response.html_content_for_div);
+        let is_offline_system = $('#is_offline_system').val();
 
-                    setTimeout(function () {
-                        $("#datatable").DataTable({
-                            'autoWidth': false,
-                            'ordering': false,
-                            'paging': false,
-                            'bFilter': false,
-                            dom: 'Blfrtip',
-                            buttons: [{
-                                extend: "print",
-                                text: '<span style="display: flex; align-items-center; gap: 8px;"><iconify-icon icon="solar:printer-broken" width="16"></iconify-icon> '+print_db+'</span>',
-                                titleAttr: "print",
-                            },
-                            {
-                                extend: "copyHtml5",
-                                text: '<span style="display: flex; align-items-center; gap: 8px;"><iconify-icon icon="solar:copy-broken" width="16"></iconify-icon> '+copy_db+'</span>',
-                                titleAttr: "Copy",
-                            },
-                            {
-                                extend: "excelHtml5",
-                                text: '<span style="display: flex; align-items-center; gap: 8px;"><iconify-icon icon="icon-park-solid:excel" width="16"></iconify-icon> '+excel_db+'</span>',
-                                titleAttr: "Excel",
-                            },
-                            {
-                                extend: "csvHtml5",
-                                text: '<span style="display: flex; align-items-center; gap: 8px;"><iconify-icon icon="teenyicons:csv-outline" width="16"></iconify-icon> '+csv_db+'</span>',
-                                titleAttr: "CSV",
-                            },
-                            {
-                                extend: "pdfHtml5",
-                                text: '<span style="display: flex; align-items-center; gap: 8px;"><iconify-icon icon="teenyicons:pdf-outline" width="16"></iconify-icon> '+pdf_db+'</span>',
-                                titleAttr: "PDF",
-                            },
-                
-                            
-                        ],
-                        });
-
-                        $('.closing_balance').each(function(){
-                            let closing_balance = $(this).attr('data-closing-balance');
-                            if(closing_balance == 0){
+        if(is_offline_system == '1'){
+            $('.overlayForCalculator').css('display', 'none');
+            $('#calculator_main').css('display', 'none');
+            let status = true;
+            if (status) {
+                let csrf_value_ = $("#csrf_value_").val();
+                $.ajax({
+                    url: base_url + "Sale/registerDetailCalculationToShowAjax",
+                    method: "POST",
+                    data: {
+                        csrf_name_: csrf_value_,
+                    },
+                    success: function (response) {
+                        response = JSON.parse(response);
+                        $("#register_modal").addClass("active");
+                        $(".pos__modal__overlay").fadeIn(200);
+                        $("#opening_register_time").html(response.opening_date_time);
+                        $(".html_content").html(response.html_content_for_div);
+    
+                        setTimeout(function () {
+                            $("#datatable").DataTable({
+                                'autoWidth': false,
+                                'ordering': false,
+                                'paging': false,
+                                'bFilter': false,
+                                dom: 'Blfrtip',
+                                buttons: [{
+                                    extend: "print",
+                                    text: '<span style="display: flex; align-items-center; gap: 8px;"><iconify-icon icon="solar:printer-broken" width="16"></iconify-icon> '+print_db+'</span>',
+                                    titleAttr: "print",
+                                },
+                                {
+                                    extend: "copyHtml5",
+                                    text: '<span style="display: flex; align-items-center; gap: 8px;"><iconify-icon icon="solar:copy-broken" width="16"></iconify-icon> '+copy_db+'</span>',
+                                    titleAttr: "Copy",
+                                },
+                                {
+                                    extend: "excelHtml5",
+                                    text: '<span style="display: flex; align-items-center; gap: 8px;"><iconify-icon icon="icon-park-solid:excel" width="16"></iconify-icon> '+excel_db+'</span>',
+                                    titleAttr: "Excel",
+                                },
+                                {
+                                    extend: "csvHtml5",
+                                    text: '<span style="display: flex; align-items-center; gap: 8px;"><iconify-icon icon="teenyicons:csv-outline" width="16"></iconify-icon> '+csv_db+'</span>',
+                                    titleAttr: "CSV",
+                                },
+                                {
+                                    extend: "pdfHtml5",
+                                    text: '<span style="display: flex; align-items-center; gap: 8px;"><iconify-icon icon="teenyicons:pdf-outline" width="16"></iconify-icon> '+pdf_db+'</span>',
+                                    titleAttr: "PDF",
+                                },
+                    
                                 
-                            }
-                            console.log(closing_balance);
-                        });
-
-                    }, 1000);
-                },
-                error: function () {
-                    alert("error");
-                },
-            });
+                            ],
+                            });
+    
+                            $('.closing_balance').each(function(){
+                                let closing_balance = $(this).attr('data-closing-balance');
+                                if(closing_balance == 0){
+                                    
+                                }
+                                console.log(closing_balance);
+                            });
+    
+                        }, 1000);
+                    },
+                    error: function () {
+                        alert("error");
+                    },
+                });
+            }
+        }else{
+            if(is_offline_system == '0'){
+                e.preventDefault();
+                toastr["warning"]("You are offline, this option will not work at the moment.", "Warning");
+            }
         }
+        
     });
 
     $(document).on("click", ".pos__modal__close", function () {

@@ -17,6 +17,10 @@ $(function () {
     let csv_db = $('#csv_db_exp').val();
     let pdf_db = $('#pdf_db_exp').val();
 
+
+    let APPLICATION_DEMO_TYPE = $('#APPLICATION_DEMO_TYPE').val();
+
+
     // get data using ajax datatable
     $("#datatable").DataTable({
         processing: true,
@@ -41,7 +45,7 @@ $(function () {
             { orderable: true, targets: [4, 6] }
         ],
         dom: '<"top-left-item col-sm-12 col-md-6"lf> <"top-right-item col-sm-12 col-md-6"B> t <"bottom-left-item col-sm-12 col-md-6 "i><"bottom-right-item col-sm-12 col-md-6 "p>',
-        buttons: [{
+        buttons: APPLICATION_DEMO_TYPE != 'Pharmacy'  ? [{
             extend: "print",
             text: '<span style="display: flex; align-items-center; gap: 8px;"><iconify-icon icon="solar:printer-broken" width="16"></iconify-icon> '+print_db+'</span>',
             titleAttr: "print",
@@ -65,10 +69,8 @@ $(function () {
             extend: "pdfHtml5",
             text: '<span style="display: flex; align-items-center; gap: 8px;"><iconify-icon icon="teenyicons:pdf-outline" width="16"></iconify-icon> '+pdf_db+'</span>',
             titleAttr: "PDF",
-        },
-
-        
-    ],
+        }
+      ] : [],
         language: {
             paginate: {
                 previous: "Previous",

@@ -136,14 +136,17 @@
             </div>
             <div class="box-footer">
                 <button type="submit" name="submit" value="submit" class="btn bg-blue-btn">
+                    <iconify-icon icon="solar:upload-minimalistic-broken"></iconify-icon>
                     <?php echo lang('submit'); ?>
                 </button>
                 <input type="hidden" id="set_save_and_add_more" name="add_more">
                 <button type="submit" name="submit" value="submit" class="btn bg-blue-btn" id="save_and_add_more">
+                    <iconify-icon icon="solar:undo-right-round-broken"></iconify-icon>
                     <?php echo lang('save_and_add_more'); ?>
                 </button>
-                <a href="<?php echo base_url() ?>Counter/counters"
-                    class="btn bg-blue-btn"><?php echo lang('back'); ?>
+                <a class="btn bg-blue-btn text-decoration-none" href="<?php echo base_url() ?>Counter/counters">
+                    <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
+                    <?php echo lang('back'); ?>
                 </a>
             </div>
             <?php echo form_close(); ?>
@@ -151,47 +154,6 @@
     </div>
 </section>
 
-
-
-<div class="modal fade " id="allPrinters"  role="dialog">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">
-                <?php echo lang('list_printer'); ?></h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i
-                data-feather="x"></i></span></button>
-            </div>
-            <div class="modal_message">
-                <div class="ajax-modal-msg"></div>
-                <div class="d-flex justify-content-end">
-                    <button class="add_new_printer new-btn"><iconify-icon icon="solar:add-circle-broken" width="22"></iconify-icon> <?php echo lang('add_printer');?></button>
-                </div>
-            </div>
-            <div class="modal-body modal_body_scroll">
-                <table class="table all_printer printer_table_trigger">
-                    <thead>
-                        <tr>
-                            <th class="w-5"><?php echo lang('sn'); ?></th>
-                            <th class="w-10" ><?php echo lang('title'); ?></th>
-                            <th class="w-10" ><?php echo lang('printer_type'); ?></th>
-                            <th class="w-10" ><?php echo lang('characters_per_line'); ?></th>
-                            <th class="w-10" ><?php echo lang('printer_ip_address'); ?></th>
-                            <th class="w-10" ><?php echo lang('printer_port_address'); ?></th>
-                            <th class="w-10" ><?php echo lang('share_name'); ?></th>
-                            <th class="op_width_2_p c_center not-export-col"><?php echo lang('actions'); ?></th> 
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn bg-blue-btn" data-bs-dismiss="modal"><?php echo lang('close'); ?></button>
-            </div>
-        </div>
-    </div>
-</div>
 
 
 
@@ -347,11 +309,21 @@
                             </div>
                         </div>
                         <div class="clear-fix"></div>
-                        <div class="mb-3 col-lg-4 col-md-6">
+                        <div class="mb-3 col-lg-4 col-md-6 hide_show_10">
                             <div class="form-group">
                                 <label><?php echo lang('fiscal_printer_status'); ?></label>
                                 <select class="form-control printing select2" id="fiscal_printer_status"
                                         name="fiscal_printer_status">
+                                    <option value="ON"><?php echo lang('on'); ?></option>
+                                    <option value="OFF"><?php echo lang('off'); ?></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3 col-lg-4 col-md-6 hide_show_11">
+                            <div class="form-group">
+                                <label><?php echo lang('open_cash_drawer'); ?></label>
+                                <select class="form-control select2"
+                                        name="open_cash_drawer_when_printing_invoice" id="open_cash_drawer">
                                     <option value="ON"><?php echo lang('on'); ?></option>
                                     <option value="OFF"><?php echo lang('off'); ?></option>
                                 </select>
@@ -365,40 +337,6 @@
                     <button type="button" class="btn bg-blue-btn reset_trigger" data-bs-dismiss="modal"><?php echo lang('close'); ?></button>
                 </div>
             </form>
-        </div>
-    </div>
-</div>
-
-
-
-<div class="modal fade " id="allAssignPrinter"  role="dialog">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">
-                    <span><?php echo lang('List_Assign_Printer');?></span>
-                </h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i
-                data-feather="x"></i></span></button>
-            </div>
-        
-            <div class="modal-body modal_body_scroll">
-                <table class="table  printer_table_trigger assignerPrinters">
-                    <thead>
-                        <tr>
-                            <th class="w-5"><?php echo lang('sn'); ?></th>
-                            <th class="w-33"><?php echo lang('user'); ?></th>
-                            <th class="w-33"><?php echo lang('printer'); ?></th>
-                            <th class="w-33"><?php echo lang('open_cash_drawer'); ?></th> 
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn bg-blue-btn" data-bs-dismiss="modal"><?php echo lang('close'); ?></button>
-            </div>
         </div>
     </div>
 </div>

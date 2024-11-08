@@ -13,6 +13,17 @@
     }
     ?>
 
+    <?php
+    if ($this->session->flashdata('exception_error')) {
+
+        echo '<section class="alert-wrapper"><div class="alert alert-danger alert-dismissible fade show"> 
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-hidden="true"></button>
+        <div class="alert-body"><i class="icon fa fa-times me-2"></i>';
+        echo escape_output($this->session->flashdata('exception_error'));unset($_SESSION['exception_error']);
+        echo '</div></div></section>';
+    }
+    ?>
+
     
     <section class="content-header">
         <div class="row justify-content-between">

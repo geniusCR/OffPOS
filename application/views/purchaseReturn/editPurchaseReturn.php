@@ -151,7 +151,7 @@
                                 <?php foreach ($items as $value) { 
                                 $string = ($value->parent_name != '' ? $value->parent_name . ' - ' : '') . ($value->name) . ($value->brand_name != '' ? ' - ' . $value->brand_name : '') . ( ' - ' . $value->code);    
                                 ?>
-                                <option value="<?php echo escape_output($value->id) . "|" . $string  ."|" . $value->sale_unit . "|" . $value->purchase_price  . "|" . $value->conversion_rate . "|" .  $value->type ?>">
+                                <option value="<?php echo escape_output($value->id) . "|" . $string  ."|" . $value->sale_unit . "|" . $value->purchase_price  . "|" . $value->conversion_rate . "|" .  $value->type . "|" . $value->expiry_date_maintain ?>">
                                     <?php echo escape_output($string); ?>
                                 </option>
                                 <?php } ?>
@@ -198,28 +198,28 @@
                                             $return_unique_match = '';
                                             $readonly_expiry = '';
 
-                                            if($item->item_type == 'General_Product' || $item->item_type == 0 ){
+                                            if($item->item_type == 'General_Product' || $item->item_type == 0 || ($item->item_type == 'Medicine_Product' && $item->expiry_date_maintain == 'No') ){
                                                 $d_none = 'd-none';
                                             }else if($item->item_type == 'Variation_Product'){
                                                 $d_none = 'd-none';
                                             }else if($item->item_type == 'Installment_Product'){
                                                 $d_none = 'd-none';
-                                            }else if ($item->item_type == 'Medicine_Product'){
-                                                $p_type = 'Expiry Date';
+                                            }else if ($item->item_type == 'Medicine_Product' && $item->expiry_date_maintain == 'Yes'){
+                                                $p_type = 'Return Expiry Date';
                                                 $p_placeholder = '';
                                                 $date_picker = 'customDatepicker'; 
                                                 $validation_cls = 'countID2';
                                                 $expiryDateExistCheck = 'expiryDateExistCheck';
                                                 $readonly_expiry = 'readonly';
                                             }else if($item->item_type == 'IMEI_Product'){
-                                                $p_type = 'IMEI';
+                                                $p_type = 'Return IMEI';
                                                 $p_placeholder = lang('enter_imei_number');
                                                 $readonly = 'readonly';
                                                 $validation_cls = 'countID2';
                                                 $checkIMEISerialUnique = 'checkIMEISerialUnique';
                                                 $return_unique_match = 'return_unique_match';
                                             }else if($item->item_type == 'Serial_Product'){
-                                                $p_type = 'Serial';
+                                                $p_type = 'Return Serial';
                                                 $p_placeholder = lang('enter_serial_number');
                                                 $readonly = 'readonly';
                                                 $validation_cls = 'countID2';
@@ -228,9 +228,9 @@
 
                                             }
                                             $imeiSerial = '';
-                                            if($purchase_return->return_status == 'taken_by_sup_pro_returned'){
+                                            if($purchase_return->return_status == 'taken_by_sup_pro_returned'  && $item->expiry_date_maintain == 'Yes'){
                                                 $imeiSerial = '<div class="d-flex align-items-center form-group mt-2">
-                                                    <small class="pe-1">Return '.$p_type.'</small>
+                                                    <small class="pe-1">'.$p_type.'</small>
                                                     <input item-type="'.$item->item_type.'" '.$readonly.' data-countid="'.$i.'" type="text" autocomplete="off" id="rSerial_'.$i.'" name="expiry_imei_serial_in[]" onfocus="this.select();" class="'.$date_picker.' '.$return_unique_match.' '. $d_none .'  form-control '.$validation_cls.'" value="'.$item->expiry_imei_serial_in.'" >
                                                 </div>
                                                 <p class="imei-serial-err return-imei-serial-err-unique-'.$i.'"></p>';
@@ -370,16 +370,23 @@
                 </div> 
                 <!-- /.box-body -->
             </div>
+            
             <div class="box-footer">
                 <button type="submit" name="submit" value="submit" class="btn bg-blue-btn">
-                    <?php echo lang('submit'); ?></button>
+                    <iconify-icon icon="solar:upload-minimalistic-broken"></iconify-icon>
+                    <?php echo lang('submit'); ?>
+                </button>
                 <input type="hidden" id="set_save_and_add_more" name="add_more">
                 <button type="submit" name="submit" value="submit" class="btn bg-blue-btn" id="save_and_add_more">
+                    <iconify-icon icon="solar:undo-right-round-broken"></iconify-icon>
                     <?php echo lang('save_and_add_more'); ?>
                 </button>
-                <a href="<?php echo base_url() ?>Purchase_return/purchaseReturns"
-                    class="btn bg-blue-btn"><?php echo lang('back'); ?></a>
+                <a class="btn bg-blue-btn text-decoration-none" href="<?php echo base_url() ?>Purchase_return/purchaseReturns">
+                    <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
+                    <?php echo lang('back'); ?>
+                </a>
             </div>
+
             <?php echo form_close(); ?>
         </div>
     </div>
@@ -422,6 +429,7 @@
                         <input type="hidden" id="hidden_input_item_type">
                         <input type="hidden" id="hidden_input_item_id">
                         <input type="hidden" id="hidden_input_item_name">
+                        <input type="hidden" id="hidden_input_expiry_date_maintain">
                         <div class="alert alert-error error-msg modal_qty_err_msg_contnr ">
                             <p id="modal_qty_err_msg"></p>
                         </div>

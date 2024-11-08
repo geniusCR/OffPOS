@@ -72,7 +72,7 @@ if ($this->session->flashdata('exception')) {
                                     <?php }else if($cust->opening_balance > 0){ ?>
                                         <td class="text-center"><?php echo getAmtCustom($cust->opening_balance); ?>(Debit)</td>
                                     <?php }else{ ?>
-                                        <td class="text-center"><?php echo getAmtCustom(abs($cust->opening_balance)); ?>(Credit)</td>
+                                        <td class="text-center"><?php echo getAmtCustom(absCustom($cust->opening_balance)); ?>(Credit)</td>
                                     <?php } ?>
                                     <td><?php echo escape_output($cust->added_by); ?></td>
                                     <td><?php echo dateFormat($cust->added_date); ?></td>

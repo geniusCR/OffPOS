@@ -1,4 +1,4 @@
-<?php
+<iconify-icon icon="solar:map-arrow-square-broken"></iconify-icon><?php
 /*
     ###########################################################
     # PRODUCT NAME:   Off POS
@@ -504,7 +504,6 @@ class Report extends Cl_Controller {
         }
         $data['main_content'] = $this->load->view('report/profitLossReport', $data, TRUE);
         $this->load->view('userHome', $data);
-
     }
 
     /**
@@ -798,8 +797,8 @@ class Report extends Cl_Controller {
         $data['outlet_id'] = $outlet_id;
         $data['customer_id'] = $customer_id;
         $data['paid_status'] = $paid_status;
-        $data['customers'] = $this->Common_model->getCustomerByType($company_id, "tbl_customers","installment");
-        if ($this->input->post('submit')  && $customer_id) {
+        $data['customers'] = $this->Common_model->getCustomerByType($company_id, "tbl_customers", "installment");
+        if ($this->input->post('submit')) {
             $data['payments'] = $this->Installment_model->getAllInstallmentPayments($customer_id,$installment_id,$paid_status,$outlet_id);
         }
         $data['main_content'] = $this->load->view('report/installmentCollectionReport', $data, TRUE);
@@ -951,6 +950,7 @@ class Report extends Cl_Controller {
         $selected_submit_post = htmlspecialcharscustom($this->input->post($this->security->xss_clean('date')));
         $selectedDate = (isset($selected_submit_post) && $selected_submit_post?$selected_submit_post:date("Y-m-d"));
         $data['sub_total_foods'] = $this->Report_model->sub_total_foods($selectedDate,$outlet_id);
+
         $data['totalDueReceived'] = $this->Report_model->totalDueReceived($selectedDate,$outlet_id);
         $data['taxes_foods'] = $this->Report_model->taxes_foods($selectedDate,$outlet_id);
         $data['total_discount_amount_foods'] = $this->Report_model->total_discount_amount_foods($selectedDate,$outlet_id);
@@ -975,6 +975,7 @@ class Report extends Cl_Controller {
             $data['registers'][$ky]->inline_total = $inline_total;
             $array_p_name[] = $vl->name."||".$inline_total;
         }
+        // pre($selectedDate);
         $data['total_payments'] = $array_p_name;
         $data['selectedDate'] = $selectedDate;
         $data['main_content'] = $this->load->view('report/zReport', $data, TRUE);

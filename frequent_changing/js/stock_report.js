@@ -7,6 +7,8 @@ $(function () {
     let The_items_field_is_required = $("#The_items_field_is_required").val();
     let The_outlet_field_is_required = $("#The_outlet_field_is_required").val();
 
+
+
     $(document).on('change', '#food_id', function() {
         let value = this.value;
         if(value){

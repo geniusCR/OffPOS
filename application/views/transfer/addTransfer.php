@@ -192,7 +192,7 @@
     
                                 ?>
                                     <option
-                                    value="<?php echo escape_output($item->id . "||" . $string . "||" . $item->purchase_price. "||" . $item->sale_unit . "||" . $item->type) ?>"
+                                    value="<?php echo escape_output($item->id . "||" . $string . "||" . $item->purchase_price. "||" . $item->sale_unit . "||" . $item->type . "||" .  $item->expiry_date_maintain) ?>"
                                     <?php echo set_select('item_id', $item->id); ?>>
                                     <?php echo escape_output($string) ?>
                                     </option>
@@ -250,17 +250,23 @@
                 </div>
             </div>
             <input type="hidden" name="suffix_hidden_field" id="suffix_hidden_field">
+
             <div class="box-footer">
-                <button type="submit" name="submit" value="submit"
-                class="btn bg-blue-btn"><?php echo lang('submit'); ?></button>
+                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn">
+                    <iconify-icon icon="solar:upload-minimalistic-broken"></iconify-icon>
+                    <?php echo lang('submit'); ?>
+                </button>
                 <input type="hidden" id="set_save_and_add_more" name="add_more">
                 <button type="submit" name="submit" value="submit" class="btn bg-blue-btn" id="save_and_add_more">
+                    <iconify-icon icon="solar:undo-right-round-broken"></iconify-icon>
                     <?php echo lang('save_and_add_more'); ?>
                 </button>
-                <a class="btn bg-blue-btn" href="<?php echo base_url() ?>Transfer/transfers">
+                <a class="btn bg-blue-btn text-decoration-none" href="<?php echo base_url() ?>Transfer/transfers">
+                    <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
                     <?php echo lang('back'); ?>
                 </a>
             </div>
+
             <?php echo form_close(); ?>
         </div>
     </div>
@@ -294,6 +300,7 @@
                         <input type="hidden" id="hidden_input_item_id">
                         <input type="hidden" id="hidden_input_item_name">
                         <input type="hidden" id="hidden_input_unit_name">
+                        <input type="hidden" id="hidden_input_expiry_date_maintain">
                         <div class="alert alert-error error-msg modal_qty_err_msg_contnr ">
                             <p id="modal_qty_err_msg"></p>
                         </div>

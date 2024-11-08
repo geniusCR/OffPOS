@@ -42,10 +42,14 @@
                     </div>
                 </div>
             </div>
+            
             <div class="box-footer">
-                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn"><?php echo lang('submit'); ?></button>
-                <a class="text-decoration-none btn bg-blue-btn" href="<?php echo base_url() ?>"><?php echo lang('back'); ?></a>
+                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn">
+                    <iconify-icon icon="solar:upload-minimalistic-broken"></iconify-icon>
+                    <?php echo lang('submit'); ?>
+                </button>
             </div>
+
             <?php echo form_close(); ?>
         </div>
     </div>

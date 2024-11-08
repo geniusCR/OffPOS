@@ -18,10 +18,17 @@
         <div class="row justify-content-between">
             <div class="col-6 p-0">
                 <h3 class="top-left-header mt-2"><?php echo lang('warranty_product_all_in_stock'); ?></h3>
+                <input type="hidden" class="datatable_name" data-title="<?php echo lang('warranty_product_all_in_stock'); ?>" data-id_name="datatable">
+                <div class="btn_list m-right d-flex">
+                    <button type="button" class="dataFilterBy new-btn"><iconify-icon icon="solar:filter-broken"  width="22"></iconify-icon> <?php echo lang('filter_by');?></button>
+                </div>
             </div>
             <?php $this->view('updater/breadcrumb', ['firstSection'=> lang('warranty_product'), 'secondSection'=> lang('warranty_product_all_in_stock')])?>
         </div>
     </section>
+
+
+
 
     <div class="box-wrapper">
         <div class="table-box"> 
@@ -78,6 +85,78 @@
     </div>
 </div>
 
+
+
+<div class="filter-overlay"></div>
+<div id="product-filter" class="filter-modal">
+    <div class="filter-modal-body">
+        <header>
+                <h3 class="filter-modal-title"><span><?php echo lang('FilterOptions'); ?></span></h3>
+                <button type="button" class="close-filter-modal" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">
+                        <i data-feather="x"></i>
+                    </span>
+                </button>
+        </header>
+        <?php echo form_open(base_url() . 'WarrantyProducts/warrantyAllStock', array('id' => 'warrantyAllStock')) ?>
+        <div class="row">
+            <div class="col-sm-12 col-md-6 mb-2">
+                <div class="form-group">
+                    <label class="container op_margin_top_6 op_color_dim_grey">
+                        <?php echo lang('Received_From_Customer'); ?>
+                        <input class="checkbox_userAll" type="checkbox" id="Received_From_Customer" name="Received_From_Customer"
+                            <?php echo set_checkbox('Received_From_Customer', 'on', isset($_POST['Received_From_Customer'])); ?> >
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="container op_margin_top_6 op_color_dim_grey">
+                        <?php echo lang('Send_To_Vendor'); ?>
+                        <input class="checkbox_userAll" type="checkbox" id="Send_To_Vendor" name="Send_To_Vendor"
+                            <?php echo set_checkbox('Send_To_Vendor', 'on', isset($_POST['Send_To_Vendor'])); ?> >
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="container op_margin_top_6 op_color_dim_grey">
+                        <?php echo lang('Received_To_Vendor'); ?>
+                        <input class="checkbox_userAll" type="checkbox" id="Received_To_Vendor" name="Received_To_Vendor"
+                            <?php echo set_checkbox('Received_To_Vendor', 'on', isset($_POST['Received_To_Vendor'])); ?> >
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+            </div>
+
+            <?php if(isLMni()): ?>
+            <div class="col-sm-12 col-md-6 mb-2">
+                <div class="form-group">
+                    <select class="form-control select2 ir_w_100" id="outlet_id" name="outlet_id">
+                        <option value=""><?php echo lang('outlet'); ?></option>
+                        <?php
+                        $outlets = getAllOutlestByAssign();
+                        foreach ($outlets as $value):
+                        ?>
+                            <option <?= set_select('outlet_id', $value->id, isset($_POST['outlet_id']) && $_POST['outlet_id'] == $value->id) ?>
+                                    value="<?php echo escape_output($value->id); ?>">
+                                <?php echo escape_output($value->outlet_name); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+            <?php endif; ?>
+        
+            <div class="col-12 mb-2">
+                <button type="submit" name="submit" value="submit" class="new-btn">
+                    <iconify-icon icon="solar:hourglass-broken" width="22"></iconify-icon>
+                    <?php echo lang('submit'); ?>
+                </button>
+            </div>
+        </div>
+        <?php echo form_close(); ?>
+    </div>
+</div>
+
+
 <?php $this->view('updater/reuseJs'); ?>
-<script src="<?php echo base_url(); ?>frequent_changing/js/select2-inisialize.js"></script>
-<script src="<?php echo base_url(); ?>frequent_changing/js/warranty.js"></script>
+

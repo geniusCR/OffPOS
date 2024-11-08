@@ -16,14 +16,10 @@
     }elseif($item_details->guarantee_date == "year"){
         $guarantee_date = "Year";
     }
-
-    getAmtCustom(100);
-
 ?>
 
 
 <div class="main-content-wrapper">
-
     <section class="content-header">
         <div class="row justify-content-between">
             <div class="col-6 p-0">
@@ -59,6 +55,7 @@
                                 <td class="view_detail_border_right"><strong><?php echo lang('type');?></strong></td>
                                 <td class="view_detail_border_right"> <?php echo escape_output(checkSingleItemType($item_details->type)); ?></td>
                             </tr>
+                            
                             <?php if($item_details->type == 'Variation_Product') { ?>
                             <tr>
                                 <td class="view_detail_border_right"><strong><?php echo lang('item_variation');?></strong></td>

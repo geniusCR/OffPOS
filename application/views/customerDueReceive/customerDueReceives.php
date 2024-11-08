@@ -20,7 +20,7 @@
                     <iconify-icon icon="solar:add-circle-broken" width="22"></iconify-icon> <?php echo lang('add_customer_due_receive'); ?>
                     </a>
                     <a class="new-btn me-1" href="<?php echo base_url() ?>Customer_due_receive/sendSMSAll">
-                    <iconify-icon icon="solar:map-arrow-square-bold-duotone" width="22"></iconify-icon> <?php echo lang('send_sms'); ?>
+                    <iconify-icon icon="solar:map-arrow-square-broken" width="22"></iconify-icon> <?php echo lang('send_sms'); ?>
                     </a>
                 </div>
             </div>

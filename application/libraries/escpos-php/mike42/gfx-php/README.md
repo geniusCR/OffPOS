@@ -1,4 +1,5 @@
 # gfx-php - The pure PHP graphics library
+
 [![Build Status](https://travis-ci.org/mike42/gfx-php.svg?branch=master)](https://travis-ci.org/mike42/gfx-php) [![Latest Stable Version](https://poser.pugx.org/mike42/gfx-php/v/stable)](https://packagist.org/packages/mike42/gfx-php)
 [![Total Downloads](https://poser.pugx.org/mike42/gfx-php/downloads)](https://packagist.org/packages/mike42/gfx-php)
 [![License](https://poser.pugx.org/mike42/gfx-php/license)](https://packagist.org/packages/mike42/gfx-php) [![Coverage Status](https://coveralls.io/repos/github/mike42/gfx-php/badge.svg?branch=master)](https://coveralls.io/github/mike42/gfx-php?branch=master)

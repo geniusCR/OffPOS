@@ -89,13 +89,19 @@ if ($this->session->flashdata('exception')) {
                     </table>
                 </div>
             </div>
+            
+
             <div class="box-footer">
-                <button type="submit" name="submit" value="submit"
-                        class="btn bg-blue-btn alertClass"><?php echo lang('submit'); ?></button>
-                <a href="<?php echo base_url() ?>Item/items"
-                class="btn bg-blue-btn"><?php echo lang('back'); ?>
+                <button type="submit" name="submit" value="submit" class="btn bg-blue-btn">
+                    <iconify-icon icon="solar:upload-minimalistic-broken"></iconify-icon>
+                    <?php echo lang('submit'); ?>
+                </button>
+                <a class="btn bg-blue-btn" href="<?php echo base_url() ?>Item/items">
+                    <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
+                    <?php echo lang('back'); ?>
                 </a>
             </div>
+
             <?php echo form_close(); ?>
         </div>
     </div>

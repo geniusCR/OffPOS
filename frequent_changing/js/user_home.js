@@ -892,4 +892,18 @@ $(window).on("load", function () {
     });
 
 
+
+    // Get modal and buttons
+    /*const modal = $("#message-modal");
+    const openModalBtn = $("#message-modal-t");
+    const closeModalBtn = $("#closeModalBtn");
+    setTimeout(function(){
+        modal.show();
+    }, 1000)
+    // Close modal on close button click
+    closeModalBtn.on("click", function() {
+        modal.hide();
+    });*/
+    // Close modal when clicking outside of the modal content
+
 });

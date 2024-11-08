@@ -623,6 +623,7 @@ class Purchase extends Cl_Controller {
                         </button>
                     </td>
                 </tr>';
+                
             }
         }
         echo $table_row;

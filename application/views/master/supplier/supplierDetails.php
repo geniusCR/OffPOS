@@ -48,7 +48,7 @@
                             <tr>
                                 <td class="view_detail_border_right"><strong><?php echo lang('opening_balance');?></strong></td>
                                 <?php if($supplier_due < 0){?>
-                                    <td class="view_detail_border_right"><?php echo abs($supplier_due); ?> (<?php echo lang('Debit');?>)</td> 
+                                    <td class="view_detail_border_right"><?php echo absCustom($supplier_due); ?> (<?php echo lang('Debit');?>)</td> 
                                 <?php }else if($supplier_due > 0) { ?>
                                     <td class="view_detail_border_right"><?php echo $supplier_due; ?> (<?php echo lang('Credit');?>)</td> 
                                 <?php }else { ?>
@@ -73,8 +73,14 @@
             </div>
             <!-- /.box-body -->
             <div class="box-footer">
-                <a href="javascript:void(0)" class="btn bg-blue-btn" id="print_trigger"><?php echo lang('print'); ?></a>
-                <a class="btn bg-blue-btn" href="<?php echo base_url() ?>Supplier/suppliers"><?php echo lang('back'); ?></a>
+                <a href="javascript:void(0)" class="btn bg-blue-btn" id="print_trigger">
+                    <iconify-icon icon="solar:printer-2-broken"></iconify-icon>
+                    <?php echo lang('print'); ?>
+                </a>
+                <a class="btn bg-blue-btn text-decoration-none" href="<?php echo base_url() ?>Supplier/suppliers">
+                    <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
+                    <?php echo lang('back'); ?>
+                </a>
             </div>
         </div>
     </div>

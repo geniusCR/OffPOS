@@ -94,8 +94,9 @@
       padding: 0.49rem 0.75rem;
     }
     label {
-      color: #32363E;
-      font-size: 0.857rem;
+      color: #4b5675;
+      font-size: 14px;
+      font-weight: 500;
       margin-bottom: 4px;
     }
     input[type="file"].form-control {
@@ -103,22 +104,23 @@
     }
     .form-control {
       padding: 0.438rem 1rem;
-      background-color: #fff;
+      background-color: #fcfcfc;
       background-clip: padding-box;
-      border: 1px solid #dfdbdb;
-      border-radius: 4px;
+      border: 1px solid #dbdfe9;
+      border-radius: 6px;
       display: block;
       width: 100%;
-      height: 40px;
-      font-size: 1rem;
-      font-weight: 400;
+      height: 45px;
+      font-size: 14px;
+      font-weight: 500;
       line-height: 1.45;
-      color: #6e6b7b;
+      color: #4b5675;
       transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
       margin-bottom: 4px;
       &::placeholder {
         color: rgba(187, 187, 187, 1) !important;
         font-size: 14px;
+        font-weight: 500;
         transition: all 0.3s;
       }
       &:focus::placeholder {
@@ -148,8 +150,9 @@
     }
     .form-control:focus {
       background-color: #fff;
-      border-color: #8b5cf645;
-      box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.2) !important;
+      border-color: #8b5cf6;
+      // box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.2) !important;
+      box-shadow: none;
     }
     .radio {
       display: flex;
@@ -264,12 +267,12 @@
   */
   .select2-container--default .select2-selection--single,
   .select2-selection .select2-selection--single {
-    height: 40px;
+    height: 45px;
   }
   .select2-container--default
     .select2-selection--single
     .select2-selection__rendered {
-    line-height: 40px;
+    line-height: 45px;
     font-size: 14px;
   }
   .select2-container--default .select2-selection--single {
@@ -309,3 +312,11 @@
       width: auto !important;
     }
   }
+
+  .select2-container--default .select2-selection--single {
+    background-color: #fcfcfc;
+    border: 1px solid #dbdfe9;
+    border-radius: 6px;
+  }
+
+  

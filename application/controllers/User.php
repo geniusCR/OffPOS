@@ -79,9 +79,25 @@ class User extends Cl_Controller {
      * @return void
      */
     public function addEditUser($encrypted_id = "") {
+
         $id = $this->custom->encrypt_decrypt($encrypted_id, 'decrypt');
-        $company_id = $this->session->userdata('company_id');
         $outlet_id = $this->session->userdata('outlet_id');
+        $user_id = $this->session->userdata('user_id');
+        $company_id = $this->session->userdata('company_id');
+
+        if($id == ''){
+            if(isServiceAccess2($user_id, $company_id, 'sGmsJaFJE') == 'Saas Company'){
+                $company_info = getCompanyInfo();
+                $plan_details = $this->Common_model->getDataById($company_info->plan_id, 'tbl_pricing_plans');
+                $user_count = $this->Common_model->getCountUser($company_info->id);
+                if($plan_details->number_of_maximum_users == $user_count){
+                    $this->session->set_flashdata('exception_2', "You can no longer create user, Your limitation is over! Upgrade Now");
+                    redirect('Service/planDetails');
+                }
+            }
+
+        }
+
         if ($id != '') {
             $user_details = $this->Common_model->getDataById($id, "tbl_users");
         }

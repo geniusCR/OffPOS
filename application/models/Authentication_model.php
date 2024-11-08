@@ -58,9 +58,9 @@ class Authentication_model extends CI_Model {
         $this->db->select("*");
         $this->db->from("tbl_users");
         $this->db->where("email_address", $email_address);
+        $this->db->or_where("phone", $email_address);
         $this->db->where("password", $password);
         $this->db->where("del_status", 'Live');
-        $this->db->or_where("phone", $email_address);
         return $this->db->get()->row();
     }
 

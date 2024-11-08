@@ -118,6 +118,34 @@
                             <?php } ?>
                         </div>
                     </div>
+
+                    <div class="row expiry_maintain_wrapper">
+                        <div class="col-md-6 col-lg-4 col-xl-3 mb-3">
+                            <div class="form-group">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label>
+                                        <?php echo lang('expiry_date_maintain'); ?> <span class="required_star">*</span>
+                                    </label>
+                                    <div class="ms-3 op_right op_font_18 op_cursor_pointer mb-4-px">
+                                        <i data-tippy-content="<?php echo lang('expiry_date_maintain_guide'); ?>" class="fa-regular fa-circle-question tippyBtnCall font-16 theme-color"></i>
+                                    </div>
+                                </div>
+                                <select disabled class="form-control select2" id="expiry_date_maintain" name="expiry_date_maintain">
+                                    <option value="Yes" <?php echo set_select('expiry_date_maintain', 'Yes'); ?>>
+                                        <?php echo lang('yes'); ?></option>
+                                    <option value="No" <?php echo set_select('expiry_date_maintain', 'No'); ?>>
+                                        <?php echo lang('no'); ?></option>
+                                </select>
+                            </div>
+                            <?php if (form_error('expiry_date_maintain')) { ?>
+                            <div class="callout callout-danger my-2">
+                                <span class="error_paragraph"><?php echo form_error('expiry_date_maintain'); ?></span>
+                            </div>
+                            <?php } ?>
+                        </div>
+                    </div>
+
+
                     <div class="row">
                         <div class="col-md-6 col-lg-4 col-xl-3 mb-3">
                             <div class="form-group">
@@ -146,6 +174,7 @@
                                     value="<?php echo escape_output($item_details->alternative_name) ?>">
                             </div>
                         </div>
+                        
                         <div class="col-md-6 col-lg-4 col-xl-3 mb-3 rack_no">
                             <div class="form-group">
                                 <label><?php echo lang('rack'); ?></label>
@@ -167,6 +196,7 @@
                                 </div>
                             <?php } ?>
                         </div>
+
                         <div class="col-md-6 col-lg-4 col-xl-3 mb-3 generic_name">
                             <div class="form-group">
                                 <label><?php echo lang('generic_name'); ?></label>
@@ -661,6 +691,7 @@
                             </div>
                         </div>
                     </div>
+                    
                     <div class="row disable_service_field">
                         <div class="col-md-12 variation_div_0" id="variation_wrap">
                             <div class="variation_div_1 op-d-none">
@@ -1060,12 +1091,19 @@
                     </div>
                 </div>
                 <div class="box-footer">
-                    <button type="submit" name="submit" value="submit" class="btn bg-blue-btn"><?php echo lang('submit'); ?></button>
+                    <button type="submit" name="submit" value="submit" class="btn bg-blue-btn">
+                        <iconify-icon icon="solar:upload-minimalistic-broken"></iconify-icon>
+                        <?php echo lang('submit'); ?>
+                    </button>
                     <input type="hidden" id="set_save_and_add_more" name="add_more">
                     <button type="submit" name="submit" value="submit" class="btn bg-blue-btn" id="save_and_add_more">
-                    <?php echo lang('save_and_add_more'); ?>
+                        <iconify-icon icon="solar:undo-right-round-broken"></iconify-icon>
+                        <?php echo lang('save_and_add_more'); ?>
                     </button>
-                        <a href="<?php echo base_url() ?>Item/items"  class="btn bg-blue-btn"><?php echo lang('back'); ?></a>
+                    <a class="btn bg-blue-btn text-decoration-none" href="<?php echo base_url() ?>Item/items">
+                        <iconify-icon icon="solar:undo-left-round-broken"></iconify-icon>
+                        <?php echo lang('back'); ?>
+                    </a>
                 </div>
             <?php echo form_close(); ?>
         </div>

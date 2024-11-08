@@ -133,6 +133,8 @@ $(function () {
             open("print_invoice/" + id, 'Print Invoice', 'width=1600,height=550');
         } else if (print_format == "Letter Head") {
             open("print_invoice/" + id, 'Print Invoice', 'width=1600,height=550');
+        } else if(print_format == 'No Print'){
+            toastr['error'](("Printer is not configured."), '');
         }
     }
 
@@ -142,10 +144,6 @@ $(function () {
 	
 	function  viewChallan(id) {
         open("print_challan/" + id, 'Print Invoice', 'width=1600,height=550');
-        newWindow.focus();
-        newWindow.onload = function() {
-          newWindow.document.body.insertAdjacentHTML('afterbegin');
-        };
     }
 	
     function change_date(id) {

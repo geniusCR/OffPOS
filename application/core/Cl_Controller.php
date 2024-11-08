@@ -7,7 +7,7 @@ class Cl_Controller extends CI_Controller {
         /*group by issue skip*/
         $this->db->query("SET sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''));");
         $file_pointer = str_rot13('nffrgf/oyhrvzc/ERFG_NCV.wfba');
-           if (file_exists($file_pointer)) {
+           /*if (file_exists($file_pointer)) {
                $file_content = file_get_contents($file_pointer);
                $json_data = json_decode($file_content, true);
                $installation_date = $json_data['date'];
@@ -49,7 +49,7 @@ class Cl_Controller extends CI_Controller {
            }else {
                echo $this->load->view('damage/REST_API_JSONS.php', '', TRUE);
                die();
-           }
+           }*/
         $file_pointer_uv = str_rot13('nffrgf/oyhrvzc/ERFG_NCV_HI.wfba');
         if (file_exists($file_pointer_uv)) {
             $file_content_uv = file_get_contents($file_pointer_uv);

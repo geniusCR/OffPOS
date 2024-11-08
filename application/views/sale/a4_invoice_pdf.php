@@ -216,7 +216,7 @@ if($sale_object->sale_vat_objects != ''){
                 <td class="w-50">
                     <?php
                         if($sale_object->previous_due > 0){
-                            $inv_prev_due = abs($sale_object->previous_due);
+                            $inv_prev_due = absCustom($sale_object->previous_due);
                     ?>
                         <table>
                             <tr>
@@ -229,7 +229,7 @@ if($sale_object->sale_vat_objects != ''){
                             </tr>
                         </table>
                     <?php } else if ($sale_object->previous_due < 0){ 
-                        $inv_prev_due = abs($sale_object->previous_due);
+                        $inv_prev_due = absCustom($sale_object->previous_due);
                         ?>
                         <table>
                             <tr>
@@ -429,12 +429,12 @@ if($sale_object->sale_vat_objects != ''){
                     if($sale_object->due_amount < 0) {  
                         $due_reveive  = 0;
                         $advance_receive = 0;
-                        if(abs($sale_object->due_amount) <= $inv_prev_due){
+                        if(absCustom($sale_object->due_amount) <= $inv_prev_due){
                             $due_reveive  = $sale_object->due_amount;
                         }
-                        if(abs($sale_object->due_amount) > $inv_prev_due){
+                        if(absCustom($sale_object->due_amount) > $inv_prev_due){
                             $due_reveive = $inv_prev_due;
-                            $advance_receive = abs($sale_object->due_amount) - $inv_prev_due;
+                            $advance_receive = absCustom($sale_object->due_amount) - $inv_prev_due;
                         } ?>
                         <table>
                             <tr>
@@ -442,7 +442,7 @@ if($sale_object->sale_vat_objects != ''){
                                     <p class="f-w-600"><?php echo lang('due_receive');?></p>
                                 </td>
                                 <td class="w-50 text-right">
-                                    <p><?php echo getAmtCustom($ln_text=="bangla"?banglaNumber(abs($due_reveive) ? abs($due_reveive) : 0 ): (abs($due_reveive) ? abs($due_reveive) : 0)); ?></p>
+                                    <p><?php echo getAmtCustom($ln_text=="bangla"?banglaNumber(absCustom($due_reveive) ? absCustom($due_reveive) : 0 ): (absCustom($due_reveive) ? absCustom($due_reveive) : 0)); ?></p>
                                 </td>
                             </tr>
                         </table>
@@ -452,7 +452,7 @@ if($sale_object->sale_vat_objects != ''){
                                     <p class="f-w-600"><?php echo lang('advance_receive');?></p>
                                 </td>
                                 <td class="w-50 text-right">
-                                    <p><?php echo getAmtCustom($ln_text=="bangla"?banglaNumber(abs($advance_receive) ? abs($advance_receive) : 0 ): (abs($advance_receive) ? abs($advance_receive) : 0)); ?></p>
+                                    <p><?php echo getAmtCustom($ln_text=="bangla"?banglaNumber(absCustom($advance_receive) ? absCustom($advance_receive) : 0 ): (absCustom($advance_receive) ? absCustom($advance_receive) : 0)); ?></p>
                                 </td>
                             </tr>
                         </table>

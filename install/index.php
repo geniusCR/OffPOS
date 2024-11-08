@@ -20,6 +20,9 @@ $base_url = $root;
     <link href="" <?php $destinations = 'writer.php'; ?> rel="stylesheet" type="text/css" />
     <link href="<?php echo $base_url?>css/edit.css" rel="stylesheet" type="text/css" />
     <link href="<?php echo $base_url?>css/font-awesome.css" rel="stylesheet" type="text/css" />
+    <!-- jQuery 3.7.1 -->
+    <script src="<?php echo $base_url?>js/jquery/dist/jquery.min.js"></script>
+    <script src="<?php echo $base_url?>js/custom.js"></script>
     <!-- //need to change -->
     <link rel="shortcut icon" href="<?php echo  $base_url?>img/favicon.ico" type="image/x-icon">
 </head>

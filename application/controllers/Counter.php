@@ -82,8 +82,18 @@ class Counter extends Cl_Controller {
                 $igc_info['user_id'] = $this->session->userdata('user_id');
                 if ($id == "") {
                     $igc_info['added_date'] = date('Y-m-d H:i:s');
-                    $this->Common_model->insertInformation($igc_info, "tbl_counters");
-                    $this->session->set_flashdata('exception', lang('insertion_success'));
+                    if(APPLICATION_L){
+                        if(APPLICATION_LC){
+                            $this->session->set_flashdata('exception_error', lang('insert_err_c'));
+                            redirect('Counter/counters');
+                        } else {
+                            $this->Common_model->insertInformation($igc_info, "tbl_counters");
+                            $this->session->set_flashdata('exception', lang('insertion_success'));
+                        }
+                    } else {
+                        $this->Common_model->insertInformation($igc_info, "tbl_counters");
+                        $this->session->set_flashdata('exception', lang('insertion_success'));
+                    }
                 } else {
                     $this->Common_model->updateInformation($igc_info, $id, "tbl_counters");
                     $this->session->set_flashdata('exception', lang('update_success'));

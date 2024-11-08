@@ -31,6 +31,8 @@ class Outlet extends Cl_Controller {
         $this->load->library('form_validation');
         $this->Common_model->setDefaultTimezone();
         //start check access function
+        // pre(getAllSessionData());
+
         $segment_2 = $this->uri->segment(2);
         $segment_3 = $this->uri->segment(3);
         $controller = "25";
@@ -41,10 +43,12 @@ class Outlet extends Cl_Controller {
             $function = "edit";
         }elseif($segment_2 == "deleteOutlet"){
             $function = "delete";
-        }elseif($segment_2 == "outlets" || $segment_2 == "setOutletSession"){
+        }elseif($segment_2 == "outlets"){
+            $function = "list";
+        }elseif($segment_2 == "setOutletSession"){
             $function = "list";
         }else{
-            $this->session->set_flashdata('exception_1',lang('no_access'));
+            $this->session->set_flashdata('exception_1', lang('no_access'));
             redirect('Authentication/userProfile');
         }
         if(!checkAccess($controller,$function)){
@@ -61,7 +65,20 @@ class Outlet extends Cl_Controller {
     public function addEditOutlet($encrypted_id = "") {
         $encrypted_id = $encrypted_id;
         $id = $this->custom->encrypt_decrypt($encrypted_id, 'decrypt');
+        
+        $user_id = $this->session->userdata('user_id');
         $company_id = $this->session->userdata('company_id');
+        if($id == ''){
+            if(isServiceAccess2($user_id, $company_id, 'sGmsJaFJE') == 'Saas Company'){
+                $company_info = getCompanyInfo();
+                $plan_details = $this->Common_model->getDataById($company_info->plan_id, 'tbl_pricing_plans');
+                $outlet_count = $this->Common_model->getCountOutlet($company_info->id);
+                if($plan_details->number_of_maximum_outlets == $outlet_count){
+                    $this->session->set_flashdata('exception_2', "You can no longer create outlet, Your limitation is over! Upgrade Now");
+                    redirect('Service/planDetails');
+                }
+            }
+        }
         if (htmlspecialcharscustom($this->input->post('submit'))) {
             $this->form_validation->set_rules('outlet_code',lang('outlet_code'), 'required|max_length[50]');
             $this->form_validation->set_rules('outlet_name',lang('outlet_name'), 'required|max_length[50]');
@@ -84,8 +101,18 @@ class Outlet extends Cl_Controller {
                     $outlet_info['company_id'] = $this->session->userdata('company_id');
                     $outlet_info['outlet_code'] = $this->Outlet_model->generateOutletCode();
                     $outlet_info['added_date'] = date('Y-m-d H:i:s');
-                    $outlet_id = $this->Common_model->insertInformation($outlet_info, "tbl_outlets");
-                    $this->session->set_flashdata('exception', lang('insertion_success'));
+                    if(APPLICATION_L){
+                        if(APPLICATION_LO){
+                            $this->session->set_flashdata('exception_2', lang('insert_err_o'));
+                            redirect('Outlet/outlets');
+                        } else {
+                            $outlet_id = $this->Common_model->insertInformation($outlet_info, "tbl_outlets");
+                            $this->session->set_flashdata('exception', lang('insertion_success'));
+                        }
+                    }else{
+                        $outlet_id = $this->Common_model->insertInformation($outlet_info, "tbl_outlets");
+                        $this->session->set_flashdata('exception', lang('insertion_success')); 
+                    }
                 } else {
                     $this->Common_model->updateInformation($outlet_info, $id, "tbl_outlets");
                     $this->session->set_flashdata('exception', lang('update_success'));
@@ -183,6 +210,7 @@ class Outlet extends Cl_Controller {
         $outlet_session['phone'] = $outlet_details->phone;
         $outlet_session['outlet_email'] = $outlet_details->email;
         $this->session->set_userdata($outlet_session);
+        dueInstallmentNotify();
         if (!$this->session->has_userdata('clicked_controller')) {
             if ($this->session->userdata('role') == '1') {
                 redirect('Dashboard/dashboard');

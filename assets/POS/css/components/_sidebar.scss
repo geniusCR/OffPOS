@@ -2,7 +2,7 @@ aside#pos__sidebar {
   position: fixed;
   left: 0;
   top: 0;
-  width: 120px;
+  width: 270px;
   height: 100%;
   background-color: #ffffff;
   box-shadow: 1px 0 5px rgba(0, 0, 0, 0.3);
@@ -28,11 +28,10 @@ aside#pos__sidebar {
       width: 8px !important;
     }
     & > li {
-      border-bottom: 1px solid #d1d5db;
+      // border-bottom: 1px solid #d1d5db;
       & > a {
         position: relative;
         display: flex;
-        flex-direction: column;
         align-items: center;
         color: rgb(63, 63, 63);
         font-size: 14px;
@@ -40,8 +39,7 @@ aside#pos__sidebar {
         text-decoration: none;
         text-transform: capitalize;
         transition: all 0.3s;
-        padding-top: 15px;
-        padding-bottom: 15px;
+        padding: 8px 20px;
         .fa-chevron-left {
           position: absolute;
           right: 0;
@@ -61,6 +59,9 @@ aside#pos__sidebar {
         }
       }
     }
+
+
+
     // li.have_sub_menu.active {
     //   .fa-chevron-left {
     //     transform: rotate(-90deg);
@@ -73,14 +74,27 @@ aside#pos__sidebar {
     //     }
     //   }
     // }
+
+    .sub__menu__list::before {
+        content: '';
+        position: absolute;
+        left: 9px;
+        top: 0;
+        width: 1px;
+        height: 100%;
+        background-color: #f1f1f4;
+    }
+
     .sub__menu__list {
-      margin: 0;
-      padding: 0 0 0 55px;
+      
       list-style-type: none;
       display: none;
+      padding-left: 0px;
+      margin-left: 31px;
+      padding-right: 15px;
+      position: relative;
+
       li {
-        margin-left: -50px;
-        opacity: 0;
         transition: all 0.3s;
         &:nth-child(1) {
           transition-delay: 0.1s;
@@ -125,26 +139,33 @@ aside#pos__sidebar {
           position: relative;
           display: flex;
           align-items: center;
-          color: #ffffff;
           padding: 10px;
           font-size: 14px;
           font-weight: 500;
           text-decoration: none;
           text-transform: capitalize;
           transition: all 0.3s;
-
-
-          &:hover {
-            color: #dddddd;
-          }
+          color: #495057;
+          padding-left: 40px;
           i {
             width: 20px;
             font-size: 13px;
           }
+
+          &:hover {
+            color: #8b5cf6;
+            background-color: #d1c4c42b;
+            border-radius: 8px;
+          }
+
         }
       }
     }
   }
+}
+
+.submenu_active .sub__menu__list{
+  display: block !important;
 }
 
 /* All Icon Color */
