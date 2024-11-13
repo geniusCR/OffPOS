@@ -60,7 +60,7 @@
                     </div>
                     <div class="col-md-4 mb-3">
                         <div class="form-group">
-                            <label><?php echo lang('email'); ?></label>
+                            <label><?php echo lang('email'); ?> <span class="required_star">*</span></label></label>
                             <input  autocomplete="off" type="text" name="email" class="form-control"
                                 placeholder="<?php echo lang('email'); ?>" value="<?php echo set_value('email'); ?>">
                         </div>
@@ -70,6 +70,37 @@
                         </div>
                         <?php } ?>
                     </div>
+
+                    <div class="col-md-4 mb-3">
+                        <div class="form-group">
+                            <label> <?php echo lang('identification_type_id'); ?> <span class="required_star">*</span></label>
+                            <select  class="form-control select2" name="identification_type_id"
+                                    id="identification_type_id">
+                                <option value=""><?php echo lang('select'); ?></option>
+                                <option <?php echo set_select('identification_type_id',1)?> value="1"><?php echo lang('cedula_fisica'); ?></option>
+                                <option <?php echo set_select('identification_type_id',2)?> value="2"><?php echo lang('cedula_juridica'); ?></option>
+                            </select>
+                        </div>
+                        <?php if (form_error('identification_type_id')) { ?>
+                            <div class="callout callout-danger my-2">
+                                <span class="error_paragraph"><?php echo form_error('identification_type_id'); ?></span>
+                            </div>
+                        <?php } ?>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="form-group">
+                            <label><?php echo lang('identification_number'); ?> <span class="required_star">*</span></label></label>
+                            <input  autocomplete="off" type="text" name="identification_number" class="form-control"
+                                placeholder="<?php echo lang('identification_number'); ?>" value="<?php echo set_value('identification_number'); ?>">
+                        </div>
+                        <?php if (form_error('identification_number')) { ?>
+                        <div class="callout callout-danger my-2">
+                            <span class="error_paragraph"><?php echo form_error('identification_number'); ?></span>
+                        </div>
+                        <?php } ?>
+                    </div>
+                    <div class="clearfix"></div>
+
                     <div class="col-md-4 mb-3">
                         <div class="d-flex justify-content-between">
                             <div class="form-group w-100 me-2">

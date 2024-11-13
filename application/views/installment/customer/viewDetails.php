@@ -85,7 +85,7 @@
             </div>
 
             <div class="box-footer">
-                <a  class="btn bg-blue-btn" id="print_trigger">
+                <a  class="btn bg-blue-btn op_margin_right_5" id="print_trigger">
                     <iconify-icon icon="solar:printer-2-broken"></iconify-icon>
                     <?php echo lang('print'); ?>
                 </a>

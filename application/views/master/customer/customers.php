@@ -46,7 +46,7 @@ if ($this->session->flashdata('exception')) {
                             <tr>
                                 <th class="w-5"><?php echo lang('sn'); ?></th>
                                 <th class="w-15"><?php echo lang('customer_name'); ?></th>   
-                                <th class="w-10"><?php echo lang('phone'); ?></th>
+                                <th class="w-10"><?php echo lang('identification_number_list_customer'); ?></th>
                                 <th class="w-10"><?php echo lang('email'); ?></th>
                                 <th class="w-10 text-center"><?php echo lang('opening_balance'); ?></th>
                                 <th class="w-10"><?php echo lang('added_by'); ?></th>
@@ -64,7 +64,7 @@ if ($this->session->flashdata('exception')) {
                                 <tr> 
                                     <td class="op_center"><?php echo $i--; ?></td>
                                     <td><?php echo escape_output($cust->name); ?></td> 
-                                    <td><?php echo escape_output($cust->phone); ?></td> 
+                                    <td><?php echo escape_output($cust->identification_number); ?></td> 
                                     <td><?php echo escape_output($cust->email); ?></td>
 
                                     <?php if($cust->opening_balance == 0){ ?>

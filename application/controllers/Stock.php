@@ -138,10 +138,10 @@ class Stock extends Cl_Controller {
                             $saleUnitSum += $variationStock;
                             $vQtyWithUnit = escape_output(getAmtPCustom($variationStock)) . ' ' . $item->sale_unit;
                         } elseif ($item->unit_type == '2') {
-                            $purchaseUnitSum += ((int)$variationStock % $item->conversion_rate);
-                            $saleUnitSum += (((int)$variationStock) / $item->conversion_rate);
-                            $vPurchaseUnit = getAmtPCustom((int)($variationStock % $item->conversion_rate)) . ' ' . $item->purchase_unit;
-                            $vSaleUnit = getAmtPCustom(((int)$variationStock) / $item->conversion_rate) . ' ' . $item->sale_unit;
+                            $purchaseUnitSum += ((int)$variationStock / $item->conversion_rate);
+                            $saleUnitSum += (((int)$variationStock) % $item->conversion_rate);
+                            $vPurchaseUnit = getAmtPCustom((int)($variationStock / $item->conversion_rate)) . ' ' . $item->purchase_unit;
+                            $vSaleUnit = getAmtPCustom(((int)$variationStock) % $item->conversion_rate) . ' ' . $item->sale_unit;
                             $vQtyWithUnit =  $vPurchaseUnit . ' ' . $vSaleUnit;
                         }
                         $variation .= '<li>
@@ -153,7 +153,7 @@ class Stock extends Cl_Controller {
                             $variation .= $vQtyWithUnit . ' (' . getAmtPCustom($variationStock) . ' ' . $item->sale_unit . ')';
                         }
                         $variation .= '</div>
-                                            <div class="' . $vItemStockAlertCls . '">' . getAmtStock(($variation_d[3]) % $item->conversion_rate) . '</div>
+                                            <div class="' . $vItemStockAlertCls . '">' . getAmtStock(($variation_d[3]) / $item->conversion_rate) . '</div>
                                         </li>';
                     }
                 }
@@ -185,7 +185,7 @@ class Stock extends Cl_Controller {
                 $variation .= '</ul>
                             </div>';
             } elseif (($item->type == 'Medicine_Product' && $item->expiry_date_maintain == 'Yes')) {
-                $purchasePriceSum = ((float)$item->last_three_purchase_avg / (int)$item->conversion_rate) * ((int)$item->stock_qty - (int)$item->out_qty);
+                $purchasePriceSum = ((float)$item->last_three_purchase_avg % (int)$item->conversion_rate) * ((int)$item->stock_qty - (int)$item->out_qty);
                 $variation .= '<div id="stockInnerTable">
                                     <ul>
                                         <li>

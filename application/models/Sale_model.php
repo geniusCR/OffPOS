@@ -185,7 +185,7 @@ class Sale_model extends CI_Model {
    * @return object
    */
   public function getHoldsByOutletAndUserId($outlet_id,$user_id){
-    $this->db->select("tbl_holds.*,tbl_customers.name as customer_name,tbl_customers.phone as customer_phone");
+    $this->db->select("tbl_holds.*,tbl_customers.name as customer_name,tbl_customers.phone as customer_phone,tbl_customers.identification_number");
     $this->db->from('tbl_holds');
     $this->db->join('tbl_customers', 'tbl_customers.id = tbl_holds.customer_id', 'left');
     $this->db->where("tbl_holds.outlet_id", $outlet_id);

@@ -1215,7 +1215,7 @@
                 <form id="add_sale_unit_form">
                     <input type="hidden" id="set_unit_type">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <div class="form-group mb-3">
                                 <label class="control-label"><?php echo lang('unit_name'); ?><span class="op_color_red">
                                         *</span></label>
@@ -1226,6 +1226,23 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="col-md-3 mb-3">
+                        <div class="form-group">
+                            <label> <?php echo lang('unit_code'); ?> <span class="required_star">*</span></label>
+                            <select  class="form-control select2" name="unit_code_sale" id="unit_code_sale">
+                                <option value=""><?php echo lang('select'); ?></option>
+                                <option <?php echo set_select('unit_code','01')?> value="01"><?php echo lang('unit_unit01'); ?></option>
+                                <option <?php echo set_select('unit_code','02')?> value="02"><?php echo lang('unit_unit02'); ?></option>                        
+                            </select>
+                        </div>
+                        <?php if (form_error('unit_code')) { ?>
+                            <div class="callout callout-danger my-2">
+                                <span class="error_paragraph"><?php echo form_error('unit_code'); ?></span>
+                            </div>
+                        <?php } ?>
+                    </div>
+
                         <div class="col-md-6">
                             <div class="form-group mb-3">
                                 <label class="control-label"><?php echo lang('description'); ?></label>

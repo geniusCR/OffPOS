@@ -1513,8 +1513,8 @@ $lang['At_least_1_menu_access_should_be_selected'] = 'Se debe seleccionar al men
 $lang['Not_Available'] = 'No disponible';
 $lang['Your_scanned'] = 'tu escaneo';
 $lang['QR_code_is_not_valid'] = "El código QR no es válido";
-$lang['Tax'] = 'Ejército de reserva';
-$lang['tax'] = 'Ejército de reserva';
+$lang['Tax'] = 'Impuestos';
+$lang['tax'] = 'Impuestos';
 $lang['enter_your_email'] = 'Ingrese su correo electrónico';
 $lang['forgot_password'] = 'Has olvidado tu contraseña';
 $lang['Back_to_Login'] = 'Atrás para iniciar sesión';
@@ -1892,7 +1892,7 @@ $lang['stock_segmentation'] = 'Segmentación de acciones';
 $lang['opening_stock_for_expiry_imei_serial'] = "Stock de apertura por vencimiento/IMEI/Serie";
 $lang['new_quantity'] = 'Nueva cantidad';
 $lang['stock_value_tooltip'] = "Calculado en base al precio de la última compra y no se considera el producto con cantidad/cantidad de stock negativa.";
-$lang['Most_Selling'] = 'Los más vendidos';
+$lang['Most_Selling'] = 'Más vendidos';
 $lang['Has_Promotion'] = 'Tiene promoción';
 $lang['per_unit'] = 'Por unidad de venta';
 $lang['Where_1'] = 'donde 1';
@@ -2487,3 +2487,15 @@ $lang['username'] = 'Nombre de usuario';
 $lang['edit_sale_return'] = 'Editar devolución de venta';
 $lang['how_to_begin_with_off_pos'] = 'Cómo comenzar con Off POS';
 $lang['open_cash_drawer'] = 'Abrir caja registradora';
+
+//FE
+$lang['identification_type_id'] = 'Tipo Identificación';
+$lang['cedula_fisica'] = 'Cédula Física';
+$lang['cedula_juridica'] = 'Cédula Jurídica';
+$lang['identification_number'] = 'Número Identificación';
+$lang['identification_number_list_customer'] = 'Identificación';
+
+//Units
+$lang['unit_code'] = 'Código';
+$lang['unit_unit01'] = 'Unidad';
+$lang['unit_unit02'] = 'Kg';

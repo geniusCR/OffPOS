@@ -297,7 +297,7 @@
             </div>
             <!-- /.box-body -->
             <div class="box-footer">
-                <a href="javascript:void(0)" class="btn bg-blue-btn" id="print_trigger"><?php echo lang('print'); ?></a>
+                <a href="javascript:void(0)" class="btn bg-blue-btn op_margin_right_5" id="print_trigger"><?php echo lang('print'); ?></a>
                 <a class="btn bg-blue-btn" href="<?php echo base_url() ?>Item/items"><?php echo lang('back'); ?></a>
             </div>
         </div>

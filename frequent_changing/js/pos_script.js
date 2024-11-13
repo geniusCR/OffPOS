@@ -5409,7 +5409,7 @@ $(function () {
                     let account_note = $('#pay_amount_note_invoice_modal_input').val();
                     let finalize_previous_due = $('#customer_all_due').text();
                     let payment_method_type = $('#finalie_order_payment_method').val();
-                    let paid_amount = $('#paid_amt').val();           
+                    let paid_amount = $('#finalize_total_paid').text();            
                     let finalize_total_due = $('#finalize_total_due').text();
                     let change_amount_div_ = $('#change_amount_div_').text();
                     let given_amount = $('#hidden_given_amount').val();
@@ -7015,9 +7015,9 @@ $(function () {
 
     function createOrOpenIndexedDB() {
         const databases = [
-            { name: 'off_pos_dev', version: 1, objectStore: 'sales' }, //OHG change off_pos -> off_pos_dev
-            { name: 'off_pos_dev_2', version: 2, objectStore: 'items' }, //OHG change off_pos2 -> off_pos_dev2
-            { name: 'off_pos_dev_3', version: 3, objectStore: 'draft_sales' } //OHG change off_pos3 -> off_pos_dev3
+            { name: 'off_pos', version: 1, objectStore: 'sales' },
+            { name: 'off_pos_2', version: 2, objectStore: 'items' }, 
+            { name: 'off_pos_3', version: 3, objectStore: 'draft_sales' }
         ];
         databases.forEach(db => {
             const request = indexedDB.open(db.name, db.version);

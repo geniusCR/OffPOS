@@ -396,7 +396,9 @@ class Common_model extends CI_Model {
                 - c.opening_balance + COALESCE(sale_sum.due_amount_sum, 0) - COALESCE(due_receive_sum.amount_sum, 0) - COALESCE(return_sum.total_return_amount_sum, 0)
             ELSE 
                 c.opening_balance + COALESCE(sale_sum.due_amount_sum, 0) - COALESCE(due_receive_sum.amount_sum, 0) - COALESCE(return_sum.total_return_amount_sum, 0)
-        END AS opening_balance
+        END AS opening_balance,
+        c.identification_type_id,
+        c.identification_number
         FROM 
             tbl_customers c
         LEFT JOIN 

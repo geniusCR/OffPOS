@@ -1,7 +1,10 @@
 $( document ).ready(function() {
     "use strict";
     
-    let base_url = $("#base_url_custom").val();  
+    let base_url = $("#base_url_custom").val(); 
+    if (base_url === undefined)
+        base_url = '';
+
     window.addEventListener('load', () => {
     registerSW();
     });

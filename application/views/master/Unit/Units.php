@@ -34,8 +34,9 @@ if ($this->session->flashdata('exception')) {
                     <thead>
                         <tr>
                             <th class="w-5"><?php echo lang('sn'); ?></th>
-                            <th class="w-30"><?php echo lang('unit_name'); ?></th>
-                            <th class="w-40"><?php echo lang('description'); ?></th>
+                            <th class="w-25"><?php echo lang('unit_name'); ?></th>
+                            <th class="w-10"><?php echo lang('unit_code'); ?></th>
+                            <th class="w-35"><?php echo lang('description'); ?></th>
                             <th class="w-10"><?php echo lang('added_by'); ?></th>
                             <th class="w-10"><?php echo lang('added_date'); ?></th>
                             <th class="w-5"><?php echo lang('actions'); ?></th>
@@ -51,6 +52,7 @@ if ($this->session->flashdata('exception')) {
                         <tr>
                             <td class="text-center"><?php echo $i--; ?></td>
                             <td><?php echo escape_output($unit->unit_name); ?></td>
+                            <td><?php echo escape_output($unit->unit_code); ?></td>
                             <td><?php echo escape_output($unit->description); ?></td>
                             <td><?php echo escape_output($unit->added_by); ?></td>
                             <td><?php echo date($this->session->userdata('date_format'), strtotime($unit->added_date != '' ? $unit->added_date : '')); ?></td>

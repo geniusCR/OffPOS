@@ -1888,16 +1888,6 @@
             </div>
         </div>
 
-        <!-- Message Mdodal -->
-        <div id="message-modal" class="message-modal">
-            <div class="modal-content">
-                <span class="close" id="closeModalBtn">&times;</span>
-                <h2><iconify-icon icon="solar:shield-warning-broken"></iconify-icon></h2>
-                <h4 class="pb-4">You are using a pirated copy of this software. To avoid future trouble please purchase the original copy from <a href="https://codecanyon.net/item/off-pos-retail-pos-and-stock-software/24326862?srsltid=AfmBOoqMEy1BHa0mFO5WJTa7EynzWWuSHEZLlgyvzM-eAVQVP1Q-OFV7" target="_blank" class="link-color">here</a>.</h4>
-            </div>
-        </div>
-
-
         <!-- ################ Script Start ################ -->
         <?php
         //generating object for access module show/hide

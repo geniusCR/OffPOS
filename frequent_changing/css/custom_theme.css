@@ -2865,3 +2865,7 @@ span {
 .damage_ajax_page thead tr th:nth-child(5), .damage_ajax_page tbody tr td:nth-child(5) {
   text-align: center;
 }
+
+.error_paragraph {
+  font-size: 12px;
+}

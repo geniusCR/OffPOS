@@ -2493,8 +2493,17 @@ $lang['edit_sale_return'] = 'Edit Sale Return';
 $lang['how_to_begin_with_off_pos'] = 'How to begin with Off POS';
 $lang['open_cash_drawer'] = 'Open Chash Drawer';
 
+//FE
+$lang['identification_type_id'] = 'Identification Type';
+$lang['cedula_fisica'] = 'Cedula Fisica';
+$lang['cedula_juridica'] = 'Cedula Juridica';
+$lang['identification_number'] = 'Identification Number';
+$lang['identification_number_list_customer'] = 'Identification';
 
-
+//Units
+$lang['unit_code'] = 'Unit Code';
+$lang['unit_unit01'] = 'Unit';
+$lang['unit_unit02'] = 'Kg';
 
 
 

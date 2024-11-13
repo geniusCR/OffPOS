@@ -78,11 +78,13 @@ class Customer extends Cl_Controller {
             $this->form_validation->set_rules('name', lang('name'), 'required|max_length[50]');
             if($encrypted_id){
                 $this->form_validation->set_rules('phone', lang('phone'), "required|max_length[50]");
-                $this->form_validation->set_rules('email', lang('email_address'), "valid_email|max_length[50]");
+                $this->form_validation->set_rules('email', lang('email_address'), "required|valid_email|max_length[50]");
             }else{
                 $this->form_validation->set_rules('phone', lang('phone'), "required|max_length[50]|is_unique[tbl_customers.phone]");
-                $this->form_validation->set_rules('email', lang('email_address'), "valid_email|is_unique[tbl_customers.email]");
+                $this->form_validation->set_rules('email', lang('email_address'), "required|valid_email|is_unique[tbl_customers.email]");
             }
+            $this->form_validation->set_rules('identification_type_id', lang('identification_type_id'), "required|max_length[20]");
+            $this->form_validation->set_rules('identification_number', lang('identification_number'), 'required|max_length[15]');
             $this->form_validation->set_rules('address', lang('address'), "max_length[255]");
             $this->form_validation->set_rules('discount', lang('discount'), "max_length[11]");
             $this->form_validation->set_rules('credit_limit', lang('credit_limit'), "max_length[11]");
@@ -96,6 +98,8 @@ class Customer extends Cl_Controller {
                 $customer_info['name'] = getPlanText(htmlspecialcharscustom(escapeQuot($this->input->post($this->security->xss_clean('name')))));
                 $customer_info['phone'] = escapeQuot($this->input->post($this->security->xss_clean('phone')));
                 $customer_info['email'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('email')));
+                $customer_info['identification_type_id'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('identification_type_id')));
+                $customer_info['identification_number'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('identification_number')));
                 $customer_info['date_of_birth'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('date_of_birth')));
                 $customer_info['date_of_anniversary'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('date_of_anniversary')));
                 $customer_info['address'] = getPlanText(htmlspecialcharscustom($this->input->post($this->security->xss_clean('address'))));

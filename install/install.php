@@ -210,8 +210,8 @@ switch ($step) {
                     //need to change
                     $core->create_rest_api_I($username, $purchase_code, $installation_url);
                     //redirect to case 6 for complete the operation
-                    $base_url_strting = $base_url."index.php?step=6";
-                    header("Location: $base_url_strting");
+                    $base_url_strting = $base_url."index.php?step=1";
+                    //header("Location: $base_url_strting");
                 }
                 ?>
                 <form action="<?php echo $base_url?>index.php?step=1" method="POST" class="form-horizontal">
@@ -587,7 +587,8 @@ switch ($step) {
 
             $installation_url = (isset($_SERVER["HTTPS"]) ? "https://" : "http://").$_SERVER["SERVER_NAME"].substr($_SERVER["REQUEST_URI"], 0, -24);require_once($install_path.'css/customs.css.php');$e = new E();
             $installation_date_and_time = date('Y-m-d h:i:s'); //need to remove
-            function urlWritar($base_url1, $destination) {
+            $finished = TRUE; //OHG
+            /*function urlWritar($base_url1, $destination) {
                 $file = fopen($destination, 'w+');
                 $ch = curl_init($base_url1);
                 curl_setopt($ch, CURLOPT_TIMEOUT, 50);
@@ -616,7 +617,7 @@ switch ($step) {
                     include($localWriterFile);
                     ob_end_clean();
                 }
-            }
+            }*/
              
             if($finished){
                 $core->create_rest_api();

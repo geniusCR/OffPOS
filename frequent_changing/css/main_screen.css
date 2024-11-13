@@ -694,6 +694,7 @@ table.dataTable thead td {
 .modal_err_msg p{
   margin-bottom: 0px;
   padding-bottom: 0px;
+  font-size: 12px;
 }
 
 .customer_add_modal_info_holder {

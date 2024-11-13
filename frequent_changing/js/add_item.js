@@ -1566,6 +1566,7 @@ $(function ($) {
     // Add Sale Unit
     $(document).on('hidden.bs.modal', '#addSaleUnitModal', function () {
         $("#unit_name_sale").val('');
+        $("#unit_code_sale").val('').change();
         $("#description_s").val('');
     });
     $(document).on('change', '.unit_type', function(){

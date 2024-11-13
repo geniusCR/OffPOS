@@ -66,11 +66,13 @@ class Unit extends Cl_Controller {
         $id = $this->custom->encrypt_decrypt($encrypted_id, 'decrypt');
         if (htmlspecialcharscustom($this->input->post('submit'))) {
             $this->form_validation->set_rules('unit_name', lang('unit_name'), 'required|max_length[50]');
+            $this->form_validation->set_rules('unit_code', lang('unit_code'), 'required|max_length[15]');
             $this->form_validation->set_rules('description', lang('description'), 'max_length[250]');
             if ($this->form_validation->run() == TRUE) {
                 $add_more = $this->input->post($this->security->xss_clean('add_more'));
                 $vat = array();
                 $vat['unit_name'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('unit_name')));
+                $vat['unit_code'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('unit_code')));
                 $vat['description'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('description')));
                 $vat['user_id'] = $this->session->userdata('user_id');
                 $vat['company_id'] = $this->session->userdata('company_id');
