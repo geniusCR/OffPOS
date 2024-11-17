@@ -95,6 +95,7 @@ class Item extends Cl_Controller {
             $this->form_validation->set_rules('alternative_name', lang('alternative_name'), 'max_length[100]');
             $this->form_validation->set_rules('code', lang('code'), 'required|max_length[20]');
             $this->form_validation->set_rules('category_id', lang('category'), 'required|max_length[20]');
+            $this->form_validation->set_rules('cabys_code', lang('cabys_code'), 'required|max_length[20]');
             $this->form_validation->set_rules('rack_id', lang('rack'), 'max_length[20]');
             $this->form_validation->set_rules('description', lang('description'), 'max_length[200]');
             // Set Single Unit And Double Unit
@@ -163,6 +164,7 @@ class Item extends Cl_Controller {
                     $product_info['generic_name'] = escapeQuot(htmlspecialcharscustom($this->input->post('generic_name')));
                     $product_info['type'] = escapeQuot(htmlspecialcharscustom($this->input->post('type')));
                     $product_info['category_id'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('category_id')));
+                    $product_info['cabys_code'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('cabys_code')));
                     $product_info['rack_id'] = htmlspecialcharscustom($this->input->post($this->security->xss_clean('rack_id')));
                     $product_info['code'] = htmlspecialcharscustom($this->input->post('code'));
                     $product_info['brand_id'] = htmlspecialcharscustom($this->input->post('brand_id'));
@@ -370,6 +372,7 @@ class Item extends Cl_Controller {
                     $data = array();
                     $data['units'] = $this->Common_model->getAllByCompanyId($company_id, 'tbl_units');
                     $data['categories'] = $this->Common_model->getAllByCompanyId($company_id, 'tbl_item_categories');
+                    $data['cabys'] = $this->Common_model->getAllByCompanyId($company_id, 'tbl_cabys_codes');
                     // Product Code Generate
                     $generated_code = $this->Master_model->generateItemCode();
                     $product_code_start_from = $this->session->userdata('product_code_start_from');
@@ -393,6 +396,7 @@ class Item extends Cl_Controller {
                     $data['combo_items'] = $this->Common_model->getComboChildItemByComboId($id);
                     $data['units'] = $this->Common_model->getAllByCompanyId($company_id, 'tbl_units');
                     $data['categories'] = $this->Common_model->getAllByCompanyId($company_id, 'tbl_item_categories');
+                    $data['cabys'] = $this->Common_model->getAllByCompanyId($company_id, 'tbl_cabys_codes');
                     $data['suppliers'] = $this->Common_model->getAllByCompanyIdForDropdown($company_id, 'tbl_suppliers');
                     $data['brands'] = $this->Common_model->getAllByCompanyId($company_id, "tbl_brands");
                     $data['racks'] = $this->Common_model->getAllByCompanyIdForDropdownProduct($company_id, 'tbl_racks');
@@ -419,6 +423,7 @@ class Item extends Cl_Controller {
                 $data = array();
                 $data['units'] = $this->Common_model->getAllByCompanyId($company_id, 'tbl_units');
                 $data['categories'] = $this->Common_model->getAllByCompanyId($company_id, 'tbl_item_categories');
+                $data['cabys'] = $this->Common_model->getAllByCompanyId($company_id, 'tbl_cabys_codes');
                 // Product Code Generate
                 $generated_code = $this->Master_model->generateItemCode();
                 $product_code_start_from = $this->session->userdata('product_code_start_from');
@@ -442,6 +447,7 @@ class Item extends Cl_Controller {
                 $data['combo_items'] = $this->Common_model->getComboChildItemByComboId($id);
                 $data['units'] = $this->Common_model->getAllByCompanyId($company_id, 'tbl_units');
                 $data['categories'] = $this->Common_model->getAllByCompanyId($company_id, 'tbl_item_categories');
+                $data['cabys'] = $this->Common_model->getAllByCompanyId($company_id, 'tbl_cabys_codes');
                 $data['suppliers'] = $this->Common_model->getAllByCompanyIdForDropdown($company_id, 'tbl_suppliers');
                 $data['brands'] = $this->Common_model->getAllByCompanyId($company_id, "tbl_brands");
                 $data['racks'] = $this->Common_model->getAllByCompanyIdForDropdownProduct($company_id, 'tbl_racks');
@@ -723,10 +729,14 @@ class Item extends Cl_Controller {
      * @return void
      */
     public function bulkDelete(){
-        foreach($_POST['bulk_item'] as $item){
-            $this->Common_model->bulkItemDeleteWithVariationAndOpeningStock($item);
+        if ($_POST['bulk_item'] == null) 
+            $this->session->set_flashdata('exception_error', lang('No_items_selected'));
+        else {
+            foreach($_POST['bulk_item'] as $item){
+                $this->Common_model->bulkItemDeleteWithVariationAndOpeningStock($item);
+            }
+            $this->session->set_flashdata('exception', lang('delete_success'));
         }
-        $this->session->set_flashdata('exception', lang('delete_success'));
         redirect('Item/items');
     }
 
@@ -831,10 +841,10 @@ class Item extends Cl_Controller {
                 foreach ($variations as $variation){
                 $var_htl.="<tr><td>".escape_output($variation->name) . "(" . $variation->code . ")</td><td>". getAmtCustom($variation->sale_price)."</td><td>". (isset($variation->purchase_price) && $variation->purchase_price ? getAmtCustom($variation->purchase_price):'0.00'). "</td></tr>";
                 }
-                $sub_array[] = '<span class="get_variation_name">' . $value->name. '</span>' . '<br><button id="view_variation" type="button" class="new-btn"><i class="far fa-eye"></i>'."<table class='table d-none' id='variation_html'>".$var_htl."</table>";
+                $sub_array[] = '<span class="get_variation_name">' . $value->name. '</span>' . "</br><span class='cabys_code_sub'>" .lang('cabys'). ": " . $value->cabys_code. "</span>" . '<br><button id="view_variation" type="button" class="new-btn"><i class="far fa-eye"></i>'."<table class='table d-none' id='variation_html'>".$var_htl."</table>";
             
             }else{
-                $sub_array[] = $value->name . " " . "(" . $value->code . ")";
+                $sub_array[] = $value->name . " " . "(" . $value->code . ")" . "</br><span class='cabys_code_sub'>" .lang('cabys'). ": " . $value->cabys_code. "</span>";
             }
             $sub_array[] = escape_output(checkSingleItemType($value->type));
             $sub_array[] = escape_output($value->category_name);

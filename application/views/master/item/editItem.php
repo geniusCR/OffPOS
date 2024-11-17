@@ -1075,6 +1075,31 @@
                             <?php } ?>
                         <?php } ?>
                     </div>
+
+                    <div class="col-md-12 col-lg-8 col-xl-6 mb-3" id="cabys_code_group">
+                        <div class="form-group">
+                            <label><?php echo lang('cabys_code'); ?> <span class="required_star">*</span></label>
+                            <div class="d-flex">
+                                <div class="op_webkit_fill_available"> 
+                                    <select  class="form-control select2 op_width_100_p"  id="cabys_code" name="cabys_code">
+                                        <option value=""><?php echo lang('select'); ?></option>
+                                        <?php foreach ($cabys as $ctry) { ?>
+                                        <option value="<?php echo escape_output($ctry->cabys_code) ?>" <?php echo set_select('cabys_code', $ctry->cabys_code); ?>  <?php echo isset($item_details->cabys_code) && $item_details->cabys_code==$ctry->cabys_code?'selected':'' ?>> <?php echo escape_output($ctry->cabys_code) . " - " . escape_output($ctry->cabys_code_description) ?></option>
+                                        <?php } ?>
+                                    </select>
+                                    <div class="alert alert-error error-msg cabys_code_err_msg_contnr ">
+                                        <p id="cabys_code_err_msg"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <?php if (form_error('cabys_code')) { ?>
+                            <div class="callout callout-danger my-2">
+                                <span class="error_paragraph"><?php echo form_error('cabys_code'); ?></span>
+                            </div>
+                        <?php } ?>
+                    </div>
+
                     <div class="item_append">
                         <?php 
                         if(isset($_POST['outlets'])){

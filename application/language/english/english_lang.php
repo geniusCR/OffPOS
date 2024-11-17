@@ -1712,7 +1712,7 @@ $lang['Default_Purchase_Price'] = 'Purchase Price';
 $lang['Default_Whole_Sale_Price'] = 'Whole Sale Price';
 $lang['attention_variation'] = 'Are you sure? -Previous added data will be deleted when generate again';
 $lang['tax_percent'] = 'Tax Percent';
-$lang['Name_or_Code_or_Category'] = 'Name or Generic Name or Code or Category';
+$lang['Name_or_Code_or_Category'] = 'Search by name, code or category...'; //'Name or Generic Name or Code or Category';
 $lang['stock_qty_amount_p'] = 'Stock(Pur. Unit)';
 $lang['stock_qty_amount_s'] = 'Stock(Sale. Unit)';
 $lang['filter_by'] = 'Filter By';
@@ -2502,9 +2502,15 @@ $lang['identification_number_list_customer'] = 'Identification';
 
 //Units
 $lang['unit_code'] = 'Unit Code';
-$lang['unit_unit01'] = 'Unit';
-$lang['unit_unit02'] = 'Kg';
+$lang['unit_unidad'] = 'Unit';
+$lang['unit_kg'] = 'Kg';
 
+//Items
+$lang['cabys_code'] = 'Cabys Code';
+$lang['cabys'] = 'Cabys';
 
-
+//POS
+$lang['Search_by_Generic_Name'] = 'Search by generic name...';
+$lang['Search_by_Generic_Name_Checkbox'] = 'Keep Selected to Search By Generic Name';
+$lang['over_selling_not_allowed_medicine_product'] = 'Over selling is not allowed for medicine product!';
 

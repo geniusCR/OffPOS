@@ -54,8 +54,8 @@
                             <label> <?php echo lang('unit_code'); ?> <span class="required_star">*</span></label>
                             <select  class="form-control select2" name="unit_code" id="unit_code">
                                 <option value=""><?php echo lang('select'); ?></option>
-                                <option <?php echo escape_output($Units->unit_code) == "01" ? 'selected' : '' ?> value="01"><?php echo lang('unit_unit01'); ?></option>
-                                <option <?php echo escape_output($Units->unit_code) == "02" ? 'selected' : '' ?> value="02"><?php echo lang('unit_unit02'); ?></option>                          
+                                <option <?php echo escape_output($Units->unit_code) == "Unid" ? 'selected' : '' ?> value="Unid"><?php echo lang('unit_unidad'); ?></option>
+                                <option <?php echo escape_output($Units->unit_code) == "Kg" ? 'selected' : '' ?> value="Kg"><?php echo lang('unit_kg'); ?></option>                          
                             </select>
                         </div>
                         <?php if (form_error('unit_code')) { ?>

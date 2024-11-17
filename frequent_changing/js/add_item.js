@@ -1254,6 +1254,7 @@ $(function ($) {
         let sale_unit_id =  $('#sale_unit_id').find(":selected").val();
         let conversion_rate =  $('#conversion_rate').val();
         let category_id =  $('#category_id').val();
+        let cabys_code =  $('#cabys_code').val();
         let opening_stock = $('#opening_stock').val();
 
         if(item_type == 'General_Product' || item_type == 'IMEI_Product' || item_type == 'Serial_Product' || item_type == 'Medicine_Product' || item_type == 'Installment_Product'){
@@ -1306,13 +1307,18 @@ $(function ($) {
         }
 
         if (name == "") {
-            $("#name_err_msg").text('The Name field is requied');
+            $("#name_err_msg").text('The Name field is required');
             $(".name_err_msg_contnr").show(200);
             error = true;
         }
         if (category_id == "") {
-            $("#category_id_err_msg").text('The Category field is requied');
+            $("#category_id_err_msg").text('The Category field is required');
             $(".category_id_err_msg_contnr").show(200);
+            error = true;
+        }
+        if (cabys_code == "") {
+            $("#cabys_code_err_msg").text('The Cabys Code field is required');
+            $(".cabys_code_err_msg_contnr").show(200);
             error = true;
         }
 
@@ -1320,7 +1326,7 @@ $(function ($) {
             if (select_unit_type == 1) {
                 if(item_type != 'Service_Product'){
                     if (unit_id == "") {
-                        $("#unit_id_err_msg").text('The Unit field is requied');
+                        $("#unit_id_err_msg").text('The Unit field is required');
                         $(".unit_id_err_msg_contnr").show(200);
                         error = true;
                     }
@@ -1328,17 +1334,17 @@ $(function ($) {
             }else if(select_unit_type == 2){
                 if(item_type != 'Service_Product'){
                     if (purchase_unit_id == "") {
-                        $("#purchase_unit_id_err_msg").text('The Unit field is requied');
+                        $("#purchase_unit_id_err_msg").text('The Unit field is required');
                         $(".purchase_unit_id_err_msg_contnr").show(200);
                         error = true;
                     }
                     if (sale_unit_id == "") {
-                        $("#sale_unit_id_err_msg").text('The Unit field is requied');
+                        $("#sale_unit_id_err_msg").text('The Unit field is required');
                         $(".sale_unit_id_err_msg_contnr").show(200);
                         error = true;
                     }
                     if (conversion_rate == "") {
-                        $("#conversion_rate_err_msg").text('The Unit field is requied');
+                        $("#conversion_rate_err_msg").text('The Unit field is required');
                         $(".conversion_rate_err_msg_contnr").show(200);
                         error = true;
                     }
@@ -1349,12 +1355,12 @@ $(function ($) {
                     let stockCount = $('#opening_stock').val();
                     let purchase_price = $('#purchase_price').val();
                     if(stockCount && purchase_price == ''){
-                        $("#purchase_price_err_msg").text('The Purchase Price field is requied');
+                        $("#purchase_price_err_msg").text('The Purchase Price field is required');
                         $(".purchase_price_err_msg_contnr").show(200);
                         error = true;
                     }
                     if (sale_price == "") {
-                        $("#sale_price_err_msg").text('The Sale Price field is requied');
+                        $("#sale_price_err_msg").text('The Sale Price field is required');
                         $(".sale_price_err_msg_contnr").show(200);
                         error = true;
                     }

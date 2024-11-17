@@ -202,11 +202,11 @@ $outlet_info = getOutletInfoById($quotation_details->outlet_id);
             </div> 
             <div class="box-footer"> 
                 <a href="<?php echo base_url() ?>Quotation/printInvoice/<?php echo $encrypted_id; ?>"
-                class="btn bg-blue-btn"><?php echo lang('print'); ?></a>
+                class="btn bg-blue-btn op_margin_right_5"><?php echo lang('print'); ?></a>
                 <a href="<?php echo base_url() ?>Quotation/addEditQuotation/<?php echo $encrypted_id; ?>"
-                class="btn bg-blue-btn"><?php echo lang('edit'); ?></a>
+                class="btn bg-blue-btn op_margin_right_5"><?php echo lang('edit'); ?></a>
                 <a href="<?php echo base_url() ?>Quotation/quotations"
-                    class="btn bg-blue-btn"><?php echo lang('back'); ?></a>
+                    class="btn bg-blue-btn op_margin_right_5"><?php echo lang('back'); ?></a>
             </div>
         </div>
     </div>

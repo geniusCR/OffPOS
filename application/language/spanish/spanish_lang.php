@@ -2496,6 +2496,6 @@ $lang['identification_number'] = 'Número Identificación';
 $lang['identification_number_list_customer'] = 'Identificación';
 
 //Units
-$lang['unit_code'] = 'Código';
-$lang['unit_unit01'] = 'Unidad';
-$lang['unit_unit02'] = 'Kg';
+$lang['unit_code'] = 'Unidad de medida';
+$lang['unit_unidad'] = 'Unidad';
+$lang['unit_kg'] = 'Kg';
