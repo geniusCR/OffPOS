@@ -132,7 +132,10 @@ class Report extends Cl_Controller {
      */
     public function registerReport(){
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id'] ? $_POST['outlet_id'] : '';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id'] ? $_POST['outlet_id'] : '';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         if (htmlspecialcharscustom($this->input->post('submit'))) {
             $data['report_generate_time'] = generatedOnCurrentDateTime();
@@ -175,7 +178,10 @@ class Report extends Cl_Controller {
      */
     public function customerDueReceiveReport() {
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id'] ? $_POST['outlet_id'] : '';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id'] ? $_POST['outlet_id'] : '';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         if (htmlspecialcharscustom($this->input->post('submit'))) {
             $data['report_generate_time'] = generatedOnCurrentDateTime();
@@ -201,7 +207,10 @@ class Report extends Cl_Controller {
      */
     public function dailySummaryReport() {
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id'] ? $_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id'] ? $_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         if (htmlspecialcharscustom($this->input->post('submit'))) {
             $data['report_generate_time'] = generatedOnCurrentDateTime();
@@ -229,7 +238,10 @@ class Report extends Cl_Controller {
      */
     public function printDailySummaryReport($selectedDate = ''){
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id'] ? $_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id'] ? $_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         $data['result'] = $this->Report_model->dailySummaryReport($selectedDate,$outlet_id);
         $data['selectedDate'] = $selectedDate;
@@ -244,7 +256,10 @@ class Report extends Cl_Controller {
      */
     public function saleReport() {
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         if (htmlspecialcharscustom($this->input->post('submit'))) {
             $data['report_generate_time'] = generatedOnCurrentDateTime();
@@ -266,7 +281,10 @@ class Report extends Cl_Controller {
      */
     public function serviceSaleReport() {
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         if (htmlspecialcharscustom($this->input->post('submit'))) {
             $data['report_generate_time'] = generatedOnCurrentDateTime();
@@ -289,7 +307,10 @@ class Report extends Cl_Controller {
      */
     public function comboServiceReport() {
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         if (htmlspecialcharscustom($this->input->post('submit'))) {
             $data['report_generate_time'] = generatedOnCurrentDateTime();
@@ -312,7 +333,10 @@ class Report extends Cl_Controller {
      */
     public function employeeSaleReport() {
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         $data['product_invoice'] = '';
         if (htmlspecialcharscustom($this->input->post('submit'))) {
@@ -349,7 +373,10 @@ class Report extends Cl_Controller {
      */
     public function productSaleReport() {
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         if (htmlspecialcharscustom($this->input->post('submit'))) {
             $data['report_generate_time'] = generatedOnCurrentDateTime();
@@ -378,7 +405,10 @@ class Report extends Cl_Controller {
      */
     public function detailedSaleReport() {
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         if (htmlspecialcharscustom($this->input->post('submit'))) {
             $data['report_generate_time'] = generatedOnCurrentDateTime();
@@ -444,7 +474,10 @@ class Report extends Cl_Controller {
      */
     public function getStockAlertList() {
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         $company_id = $this->session->userdata('company_id');
         if (htmlspecialcharscustom($this->input->post('submit'))) {
@@ -482,7 +515,10 @@ class Report extends Cl_Controller {
      */
     public function profitLossReport(){
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $calculation_formula  = isset($_POST['calculation_formula']) && $_POST['calculation_formula']?$_POST['calculation_formula']:'';
         $data['calculation_formula'] = $calculation_formula;
         $data['outlet_id'] = $outlet_id;
@@ -514,7 +550,10 @@ class Report extends Cl_Controller {
      */
     public function productProfitReport() {
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $calculation_formula  = isset($_POST['calculation_formula']) && $_POST['calculation_formula']?$_POST['calculation_formula']:'';
         $data['calculation_formula'] = $calculation_formula;
         $data['outlet_id'] = $outlet_id;
@@ -542,7 +581,10 @@ class Report extends Cl_Controller {
      */
     public function attendanceReport() {
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         if (htmlspecialcharscustom($this->input->post('submit'))) {
             $data['report_generate_time'] = generatedOnCurrentDateTime();
@@ -569,7 +611,10 @@ class Report extends Cl_Controller {
      */
     public function purchaseReportByDate() {
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         if (htmlspecialcharscustom($this->input->post('submit'))) {
             $data['report_generate_time'] = generatedOnCurrentDateTime();
@@ -594,7 +639,10 @@ class Report extends Cl_Controller {
      */
     public function productPurchaseReport() {
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         if (htmlspecialcharscustom($this->input->post('submit'))) {
             $data['report_generate_time'] = generatedOnCurrentDateTime();
@@ -625,7 +673,10 @@ class Report extends Cl_Controller {
      */
     public function expenseReport() {
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         if (htmlspecialcharscustom($this->input->post('submit'))) {
             $data['report_generate_time'] = generatedOnCurrentDateTime();
@@ -652,7 +703,10 @@ class Report extends Cl_Controller {
      */
     public function incomeReport() {
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         if (htmlspecialcharscustom($this->input->post('submit'))) {
             $data['report_generate_time'] = generatedOnCurrentDateTime();
@@ -678,7 +732,10 @@ class Report extends Cl_Controller {
      */
     public function salaryReport() {
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         if (htmlspecialcharscustom($this->input->post('submit'))) {
             $data['report_generate_time'] = generatedOnCurrentDateTime();
@@ -707,7 +764,10 @@ class Report extends Cl_Controller {
      */
     public function purchaseReturnReport() {
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         if (htmlspecialcharscustom($this->input->post('submit'))) {
             $data['report_generate_time'] = generatedOnCurrentDateTime();
@@ -735,7 +795,10 @@ class Report extends Cl_Controller {
      */
     public function saleReturnReport() {
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         if (htmlspecialcharscustom($this->input->post('submit'))) {
             $data['report_generate_time'] = generatedOnCurrentDateTime();
@@ -762,7 +825,10 @@ class Report extends Cl_Controller {
      */
     public function damageReport() {
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         if (htmlspecialcharscustom($this->input->post('submit'))) {
             $data['report_generate_time'] = generatedOnCurrentDateTime();
@@ -793,7 +859,10 @@ class Report extends Cl_Controller {
         $installment_encrypt_id = $this->input->post($this->security->xss_clean('installment_id'));
         $installment_id = $this->custom->encrypt_decrypt($installment_encrypt_id, 'decrypt');
         $paid_status = $this->input->post($this->security->xss_clean('paid_status'));
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         $data['customer_id'] = $customer_id;
         $data['paid_status'] = $paid_status;
@@ -816,7 +885,10 @@ class Report extends Cl_Controller {
         $data = array();
         $company_id = $this->session->userdata('company_id');
         $customer_id = $this->input->post($this->security->xss_clean('customer_id'));
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         $data['customers'] = $this->Common_model->getCustomerByType($company_id, "tbl_customers","installment");
         $data['customer_id'] = $customer_id;
@@ -839,6 +911,9 @@ class Report extends Cl_Controller {
         if (htmlspecialcharscustom($this->input->post('submit'))) {
             $data['report_generate_time'] = generatedOnCurrentDateTime();
             $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id'] ? $_POST['outlet_id'] : '';
+            if(!$outlet_id){
+                $outlet_id = $this->session->userdata('outlet_id');
+            }
             $data['outlet_id'] = $outlet_id;
             $start_date = htmlspecialcharscustom($this->input->post($this->security->xss_clean('startDate')));
             $data['start_date'] = $start_date;
@@ -858,7 +933,10 @@ class Report extends Cl_Controller {
      */
     public function servicingReport() {
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         if (htmlspecialcharscustom($this->input->post('submit'))) {
             $data['report_generate_time'] = generatedOnCurrentDateTime();
@@ -884,7 +962,10 @@ class Report extends Cl_Controller {
      */
     public function itemMoving() {
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         if (htmlspecialcharscustom($this->input->post('submit'))) {
             $data['report_generate_time'] = generatedOnCurrentDateTime();
@@ -914,7 +995,10 @@ class Report extends Cl_Controller {
      */
     public function priceHistory() {
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        if(!$outlet_id){
+            $outlet_id = $this->session->userdata('outlet_id');
+        }
         $data['outlet_id'] = $outlet_id;
         if (htmlspecialcharscustom($this->input->post('submit'))) {
             $data['report_generate_time'] = generatedOnCurrentDateTime();
@@ -942,7 +1026,7 @@ class Report extends Cl_Controller {
      */
     public function zReport() {
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id']?$_POST['outlet_id']:'';
         if(!$outlet_id){
             $outlet_id = $this->session->userdata('outlet_id');
         }
@@ -991,7 +1075,7 @@ class Report extends Cl_Controller {
      */
     public function availableLoyaltyPointReport() {
         $data = array();
-        $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id'] ? $_POST['outlet_id'] : '';
+        $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id'] ? $_POST['outlet_id'] : '';
         if(!$outlet_id){
             $outlet_id = $this->session->userdata('outlet_id');
         }
@@ -1016,7 +1100,7 @@ class Report extends Cl_Controller {
             $start_date = $this->input->post($this->security->xss_clean('startDate'));
             $end_date = $this->input->post($this->security->xss_clean('endDate'));
             $customer_id = htmlspecialcharscustom($this->input->post($this->security->xss_clean('customer_id')));
-            $outlet_id  = isset($_POST['outlet_id']) && $_POST['outlet_id'] ? $_POST['outlet_id'] : '';
+            $outlet_id = isset($_POST['outlet_id']) && $_POST['outlet_id'] ? $_POST['outlet_id'] : '';
             if(!$outlet_id){
                 $outlet_id = $this->session->userdata('outlet_id');
             }
