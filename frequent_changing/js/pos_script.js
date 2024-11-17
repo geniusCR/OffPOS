@@ -5409,7 +5409,7 @@ $(function () {
                     let account_note = $('#pay_amount_note_invoice_modal_input').val();
                     let finalize_previous_due = $('#customer_all_due').text();
                     let payment_method_type = $('#finalie_order_payment_method').val();
-                    let paid_amount = $('#finalize_total_paid').text();            
+                    let paid_amount = $('#paid_amt').val();           
                     let finalize_total_due = $('#finalize_total_due').text();
                     let change_amount_div_ = $('#change_amount_div_').text();
                     let given_amount = $('#hidden_given_amount').val();

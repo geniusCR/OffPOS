@@ -147,19 +147,19 @@
                                 $saleUnitSum = 0;
                                 $itemStockAlertCls = '';
                                 if($item->type != 'Variation_Product'){
-                                    if(((int)$item->stock_qty - (int)$item->out_qty) > $item->alert_quantity){
+                                    if(((int)$item->stock_qty - (int)$item->out_qty) < $item->alert_quantity){
                                         $itemStockAlertCls = '';
                                         $alertQtySum ++;
                                     }
                                 }
                                 if($item->type == 'General_Product' || $item->type == 'Installment_Product' || ($item->type == 'Medicine_Product' && $item->expiry_date_maintain == 'No')){
                                     $generalStock = ((int)$item->stock_qty - (int)$item->out_qty);
-                                    $genConvertedPrice = (float)$item->last_three_purchase_avg % (int)$item->conversion_rate;
+                                    $genConvertedPrice = (float)$item->last_three_purchase_avg / (int)$item->conversion_rate;
                                     $purchasePriceSum = ($genConvertedPrice) * $generalStock;
                                     if($item->unit_type == '1'){
                                         $saleUnitSum = (int)$generalStock;
                                     } else if($item->unit_type == '2'){
-                                        $purchaseUnitSum = (int)((int)$generalStock % $item->conversion_rate);
+                                        $purchaseUnitSum = (int)((int)$generalStock / $item->conversion_rate);
                                         $saleUnitSum = ((int)$generalStock) % $item->conversion_rate;
                                     }
                                 }
@@ -184,7 +184,7 @@
                                                     $variation_d = explode("|", $variations[$m]);
                                                     $variationStock = ((int)$variation_d[4] - (int)$variation_d[5]); /* $variation_d[4]Stock In - $variation_d[5]Stock Out = Current Stock  */
                                                     $variationAlert = (int)($variation_d[2]); /* $variation_d[2] = Aleart Quantity */
-                                                    $variationConvertedPrice = ($variation_d[3] % $item->conversion_rate); /* $variation_d[3] = Last 3 Purchase AVG */
+                                                    $variationConvertedPrice = ($variation_d[3] / $item->conversion_rate); /* $variation_d[3] = Last 3 Purchase AVG */
                                                     $purchasePriceSum +=  $variationConvertedPrice * $variationStock; /* Unit Price * Stock = Stock Amount */
                                                     $vItemStockAlertCls = '';
                                                     if($variationStock < $variationAlert){
@@ -196,10 +196,10 @@
                                                             $saleUnitSum += $variationStock;
                                                             $vQtyWithUnit = escape_output(getAmtPCustom($variationStock)) . ' ' . $item->sale_unit;
                                                         } else if($item->unit_type == '2'){
-                                                            $purchaseUnitSum += ((int)$variationStock % $item->conversion_rate);
-                                                            $saleUnitSum += (((int)$variationStock) / $item->conversion_rate);
-                                                            $vPurchaseUnit = getAmtPCustom((int)($variationStock % $item->conversion_rate)) . ' ' . $item->purchase_unit;
-                                                            $vSaleUnit = getAmtPCustom(((int)$variationStock) / $item->conversion_rate) . ' ' . $item->sale_unit;
+                                                            $purchaseUnitSum += ((int)$variationStock / $item->conversion_rate);
+                                                            $saleUnitSum += (((int)$variationStock) % $item->conversion_rate);
+                                                            $vPurchaseUnit = getAmtPCustom((int)($variationStock / $item->conversion_rate)) . ' ' . $item->purchase_unit;
+                                                            $vSaleUnit = getAmtPCustom(((int)$variationStock) % $item->conversion_rate) . ' ' . $item->sale_unit;
                                                             $vQtyWithUnit =  $vPurchaseUnit . ' ' . $vSaleUnit;
                                                         }
                                             ?>
@@ -214,7 +214,7 @@
                                                     }
                                                     ?>
                                                 </div>
-                                                <div class="<?php echo $vItemStockAlertCls; ?>"><?php echo getAmtStock(($variation_d[3]) % $item->conversion_rate) ?></div>
+                                                <div class="<?php echo $vItemStockAlertCls; ?>"><?php echo getAmtStock(($variation_d[3]) / $item->conversion_rate) ?></div>
                                             </li>
                                             <?php }} }?>
                                         </ul>
@@ -229,7 +229,7 @@
 
                                     <?php
                                     $expStock = ((int)$item->stock_qty - (int)$item->out_qty);
-                                    $expConvertedPrice = (float)$item->last_three_purchase_avg % (int)$item->conversion_rate;
+                                    $expConvertedPrice = (float)$item->last_three_purchase_avg / (int)$item->conversion_rate;
                                     $purchasePriceSum = ($expConvertedPrice) * $expStock;
                                     $purchaseUnitSum = (int)$expStock;
                                     $saleUnitSum = (int)$expStock;
@@ -248,7 +248,7 @@
                                         </ul>
                                     </div>
                                 <?php } else if($item->type == 'Medicine_Product' && $item->expiry_date_maintain == 'Yes'){ 
-                                    $purchasePriceSum = ((float)$item->last_three_purchase_avg % (int)$item->conversion_rate) * ((int)$item->stock_qty - (int)$item->out_qty);
+                                    $purchasePriceSum = ((float)$item->last_three_purchase_avg / (int)$item->conversion_rate) * ((int)$item->stock_qty - (int)$item->out_qty);
                                 ?>
                                     <div id="stockInnerTable">
                                         <ul>
@@ -269,10 +269,10 @@
                                                             $saleUnitSum += (int)$expiry_d[1]; /* $expiry_d[1] = Expiry Quantity  */
                                                             $expQtyWithUnit = escape_output(getAmtPCustom((int)$expiry_d[1])) . ' ' . $item->sale_unit;
                                                         } else if($item->unit_type == '2'){
-                                                            $purchaseUnitSum += ((int)$expiry_d[1] % $item->conversion_rate);
+                                                            $purchaseUnitSum += ((int)$expiry_d[1] / $item->conversion_rate);
                                                             $saleUnitSum += ((int)$expiry_d[1] % $item->conversion_rate);
-                                                            $expPurchaseUnit = getAmtPCustom((int)$expiry_d[1] % $item->conversion_rate) . ' ' . $item->purchase_unit;
-                                                            $expSaleUnit = getAmtPCustom(((int)$expiry_d[1] / $item->conversion_rate)) . ' ' . $item->sale_unit;
+                                                            $expPurchaseUnit = getAmtPCustom((int)$expiry_d[1] / $item->conversion_rate) . ' ' . $item->purchase_unit;
+                                                            $expSaleUnit = getAmtPCustom(((int)$expiry_d[1] % $item->conversion_rate)) . ' ' . $item->sale_unit;
                                                             $expQtyWithUnit =  $expPurchaseUnit . ' ' . $expSaleUnit;
                                                         }
                                             ?>
@@ -306,7 +306,7 @@
                             <td class="<?php echo $itemStockAlertCls; ?>">
                                 <?php 
                                 if($saleUnitSum || $purchaseUnitSum){
-                                    echo getAmtStock((int)$item->last_three_purchase_avg % (int)($item->conversion_rate));
+                                    echo getAmtStock((int)$item->last_three_purchase_avg / (int)($item->conversion_rate));
                                 }else {
                                     echo getAmtStock(0);
                                 }

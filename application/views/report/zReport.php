@@ -1,5 +1,5 @@
-<link rel="stylesheet" href="<?php echo base_url(); ?>assets/dist/css/custom/report.css">
-<link rel="stylesheet" href="<?php echo base_url(); ?>frequent_changing/css/datatable.css">
+<!--<link rel="stylesheet" href="<?php echo base_url(); ?>assets/dist/css/custom/report.css">
+<link rel="stylesheet" href="<?php echo base_url(); ?>frequent_changing/css/datatable.css">-->
 <link rel="stylesheet" href="<?php echo base_url(); ?>frequent_changing/css/report.css">
 
 <section class="main-content-wrapper">
