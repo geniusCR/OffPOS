@@ -44,14 +44,14 @@ if ($this->session->flashdata('exception')) {
                     <table id="datatable" class="table">
                         <thead>
                             <tr>
+                                <th class="w-5 text-center"><?php echo lang('actions'); ?></th>
                                 <th class="w-5"><?php echo lang('sn'); ?></th>
                                 <th class="w-15"><?php echo lang('customer_name'); ?></th>   
                                 <th class="w-10"><?php echo lang('identification_number_list_customer'); ?></th>
                                 <th class="w-10"><?php echo lang('email'); ?></th>
                                 <th class="w-10 text-center"><?php echo lang('opening_balance'); ?></th>
                                 <th class="w-10"><?php echo lang('added_by'); ?></th>
-                                <th class="w-10"><?php echo lang('added_date'); ?></th>
-                                <th class="w-5 text-center"><?php echo lang('actions'); ?></th>
+                                <th class="w-10"><?php echo lang('added_date'); ?></th>                                
                             </tr>
                         </thead>
                         <tbody>
@@ -62,20 +62,6 @@ if ($this->session->flashdata('exception')) {
                             foreach ($customers as $cust) {
                                 ?>                       
                                 <tr> 
-                                    <td class="op_center"><?php echo $i--; ?></td>
-                                    <td><?php echo escape_output($cust->name); ?></td> 
-                                    <td><?php echo escape_output($cust->identification_number); ?></td> 
-                                    <td><?php echo escape_output($cust->email); ?></td>
-
-                                    <?php if($cust->opening_balance == 0){ ?>
-                                        <td class="text-center"><?php echo getAmtCustom(0); ?></td>
-                                    <?php }else if($cust->opening_balance > 0){ ?>
-                                        <td class="text-center"><?php echo getAmtCustom($cust->opening_balance); ?>(Debit)</td>
-                                    <?php }else{ ?>
-                                        <td class="text-center"><?php echo getAmtCustom(absCustom($cust->opening_balance)); ?>(Credit)</td>
-                                    <?php } ?>
-                                    <td><?php echo escape_output($cust->added_by); ?></td>
-                                    <td><?php echo dateFormat($cust->added_date); ?></td>
                                     <td>
                                         <?php if ($cust->name != "Walk-in Customer") { ?> 
                                             <div class="btn_group_wrap">
@@ -93,6 +79,20 @@ if ($this->session->flashdata('exception')) {
                                             </div>
                                         <?php } ?>
                                     </td>
+                                    <td class="op_center"><?php echo $i--; ?></td>
+                                    <td><?php echo escape_output($cust->name); ?></td> 
+                                    <td><?php echo escape_output($cust->identification_number); ?></td> 
+                                    <td><?php echo escape_output($cust->email); ?></td>
+
+                                    <?php if($cust->opening_balance == 0){ ?>
+                                        <td class="text-center"><?php echo getAmtCustom(0); ?></td>
+                                    <?php }else if($cust->opening_balance > 0){ ?>
+                                        <td class="text-center"><?php echo getAmtCustom($cust->opening_balance); ?>(Debit)</td>
+                                    <?php }else{ ?>
+                                        <td class="text-center"><?php echo getAmtCustom(absCustom($cust->opening_balance)); ?>(Credit)</td>
+                                    <?php } ?>
+                                    <td><?php echo escape_output($cust->added_by); ?></td>
+                                    <td><?php echo dateFormat($cust->added_date); ?></td>
                                 </tr>
                             <?php
                             }

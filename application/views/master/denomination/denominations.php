@@ -39,12 +39,12 @@
                 <table id="datatable" class="table">
                     <thead>
                         <tr>
+                            <th class="w-5 text-center"><?php echo lang('actions'); ?></th>
                             <th class="w-5"> <?php echo lang('sn'); ?></th>
                             <th class="w-20 text-center"><?php echo lang('amount'); ?></th>
                             <th class="w-50"><?php echo lang('description'); ?></th>
                             <th class="w-10"><?php echo lang('added_by'); ?></th>
-                            <th class="w-10"><?php echo lang('added_date'); ?></th>
-                            <th class="w-5 text-center"><?php echo lang('actions'); ?></th>
+                            <th class="w-10"><?php echo lang('added_date'); ?></th>                   
                         </tr>
                     </thead>
                     <tbody>
@@ -55,12 +55,6 @@
                         foreach ($denominations as $value) {
                             ?>
                         <tr>
-                            
-                            <td class="text-center"><?php echo escape_output($i--); ?></td>
-                            <td class="text-center"><?php echo getAmtCustom($value->amount) ?></td>
-                            <td><?php echo escape_output($value->description) ?></td>
-                            <td><?php echo escape_output($value->added_by) ?></td>
-                            <td><?php echo date($this->session->userdata('date_format'), strtotime($value->added_date != '' ? $value->added_date : '')); ?></td>
                             <td class="text-center">
                                 <div class="btn_group_wrap">
                                     <a class="btn btn-warning" href="<?php echo base_url() ?>denomination/addEditDenomination/<?php echo escape_output($this->custom->encrypt_decrypt($value->id, 'encrypt')); ?>" data-bs-toggle="tooltip" data-bs-placement="top"
@@ -71,8 +65,12 @@
                                         <i class="fa-regular fa-trash-can"></i>
                                     </a>
                                 </div>
-
                             </td>
+                            <td class="text-center"><?php echo escape_output($i--); ?></td>
+                            <td class="text-center"><?php echo getAmtCustom($value->amount) ?></td>
+                            <td><?php echo escape_output($value->description) ?></td>
+                            <td><?php echo escape_output($value->added_by) ?></td>
+                            <td><?php echo date($this->session->userdata('date_format'), strtotime($value->added_date != '' ? $value->added_date : '')); ?></td>                           
                         </tr>
                         <?php
                         }

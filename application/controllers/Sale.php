@@ -865,14 +865,6 @@ class Sale extends Cl_Controller {
                 </div>
             </div>';
             $sub_array =  array();
-            $sub_array[] = $i--;
-            $sub_array[] = $value->sale_no;
-            $sub_array[] = dateFormat($value->date_time);
-            $sub_array[] = $value->customer_name;
-            $sub_array[] = getAmtCustom($value->total_payable);
-            $sub_array[] = $delivery_html;
-            $sub_array[] = $value->full_name;
-            $sub_array[] = dateFormat($value->added_date);
             $sub_array[] =  '
             <div class="btn_group_wrap">
                 <a class="btn btn-deep-purple view_challan" href="javascript:void(0)" sale_id="'. $this->custom->encrypt_decrypt($value->id, 'encrypt') .'" data-bs-toggle="tooltip" data-bs-placement="top"
@@ -893,6 +885,14 @@ class Sale extends Cl_Controller {
                 </a>
                 '.$html.'
             </div>';
+            $sub_array[] = $i--;
+            $sub_array[] = $value->sale_no;
+            $sub_array[] = dateFormat($value->date_time);
+            $sub_array[] = $value->customer_name;
+            $sub_array[] = getAmtCustom($value->total_payable);
+            $sub_array[] = $delivery_html;
+            $sub_array[] = $value->full_name;
+            $sub_array[] = dateFormat($value->added_date);
             $data[] = $sub_array;
         }
         $output = array(

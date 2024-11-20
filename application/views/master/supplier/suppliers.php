@@ -44,14 +44,14 @@ if ($this->session->flashdata('exception')) {
                     <table id="datatable" class="table table-bordered table-striped">
                         <thead>
                             <tr>
+                                <th class="w-5"><?php echo lang('actions'); ?></th>
                                 <th class="w-5"><?php echo lang('sn'); ?></th>
                                 <th class="w-20"><?php echo lang('name'); ?></th>
                                 <th class="w-10"><?php echo lang('contact_person'); ?></th>
                                 <th class="w-15"><?php echo lang('phone'); ?></th>
                                 <th class="w-15 text-center"><?php echo lang('current_balance'); ?></th>
                                 <th class="w-10"><?php echo lang('added_by'); ?></th>
-                                <th class="w-15"><?php echo lang('added_date'); ?></th>
-                                <th class="w-5"><?php echo lang('actions'); ?></th>
+                                <th class="w-15"><?php echo lang('added_date'); ?></th>                                
                             </tr>
                         </thead>
                         <tbody>
@@ -64,6 +64,21 @@ if ($this->session->flashdata('exception')) {
                             foreach ($suppliers as $si) {
                                 ?>                       
                                 <tr> 
+                                    <td class="text-center">
+                                        <div class="btn_group_wrap">
+                                            <a class="btn btn-cyan" href="<?php echo base_url() ?>Supplier/supplierDetails/<?php echo $this->custom->encrypt_decrypt($si->id, 'encrypt'); ?>" data-bs-toggle="tooltip" data-bs-placement="top"
+                                            data-bs-original-title="<?php echo lang('view_details'); ?>">
+                                            <i class="far fa-eye"></i>
+                                            </a>
+                                            <a class="btn btn-warning" href="<?php echo base_url() ?>Supplier/addEditSupplier/<?php echo $this->custom->encrypt_decrypt($si->id, 'encrypt'); ?>" data-bs-toggle="tooltip" data-bs-placement="top"
+                                            data-bs-original-title="<?php echo lang('edit'); ?>">
+                                                <i class="far fa-edit"></i>
+                                            </a>
+                                            <a class="delete btn btn-danger" href="<?php echo base_url() ?>Supplier/deleteSupplier/<?php echo $this->custom->encrypt_decrypt($si->id, 'encrypt'); ?>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php echo lang('delete'); ?>">
+                                                <i class="fa-regular fa-trash-can"></i>
+                                            </a>
+                                        </div>
+                                    </td>
                                     <td class="op_center"><?php echo $i--; ?></td>
                                     <td><?php echo escape_output($si->name); ?></td> 
                                     <td><?php echo escape_output($si->contact_person); ?></td> 
@@ -80,22 +95,7 @@ if ($this->session->flashdata('exception')) {
                                         <td class="text-center"><?php echo escape_output($si->opening_balance) == 0 ? '' : ''; ?></td> 
                                     <?php } ?>
                                     <td><?php echo escape_output($si->added_by); ?></td>  
-                                    <td><?php echo date($this->session->userdata('date_format'), strtotime($si->added_date != '' ? $si->added_date : '')); ?></td>  
-                                    <td class="text-center">
-                                        <div class="btn_group_wrap">
-                                            <a class="btn btn-cyan" href="<?php echo base_url() ?>Supplier/supplierDetails/<?php echo $this->custom->encrypt_decrypt($si->id, 'encrypt'); ?>" data-bs-toggle="tooltip" data-bs-placement="top"
-                                            data-bs-original-title="<?php echo lang('view_details'); ?>">
-                                            <i class="far fa-eye"></i>
-                                            </a>
-                                            <a class="btn btn-warning" href="<?php echo base_url() ?>Supplier/addEditSupplier/<?php echo $this->custom->encrypt_decrypt($si->id, 'encrypt'); ?>" data-bs-toggle="tooltip" data-bs-placement="top"
-                                            data-bs-original-title="<?php echo lang('edit'); ?>">
-                                                <i class="far fa-edit"></i>
-                                            </a>
-                                            <a class="delete btn btn-danger" href="<?php echo base_url() ?>Supplier/deleteSupplier/<?php echo $this->custom->encrypt_decrypt($si->id, 'encrypt'); ?>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php echo lang('delete'); ?>">
-                                                <i class="fa-regular fa-trash-can"></i>
-                                            </a>
-                                        </div>
-                                    </td>
+                                    <td><?php echo date($this->session->userdata('date_format'), strtotime($si->added_date != '' ? $si->added_date : '')); ?></td>                                     
                                 </tr>
                                 <?php
                             }

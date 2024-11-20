@@ -34,10 +34,10 @@ if ($this->session->flashdata('exception')) {
                 <table id="datatable" class="table table-bordered table-striped">
                     <thead>
                         <tr>
+                            <th class="w-5 text-center"><?php echo lang('actions'); ?></th>
                             <th class="w-5"><?php echo lang('sn'); ?></th>
                             <th class="w-80"><?php echo lang('role_name'); ?></th>
-                            <th class="w-10"><?php echo lang('added_date'); ?></th>
-                            <th class="w-5 text-center"><?php echo lang('actions'); ?></th>
+                            <th class="w-10"><?php echo lang('added_date'); ?></th>                           
                         </tr>
                     </thead>
                     <tbody>
@@ -45,9 +45,6 @@ if ($this->session->flashdata('exception')) {
                         $i = 1;
                         foreach ($roles as $role) {  ?>
                             <tr>
-                                <td class="op_center"><?php echo $i++; ?></td>
-                                <td><?php echo escape_output($role->role_name); ?></td>
-                                <td><?php echo dateFormat($role->added_date); ?></td>
                                 <td class="text-center">
                                     <div class="btn_group_wrap">
                                         <?php if($role->id != '1'): ?>
@@ -62,8 +59,10 @@ if ($this->session->flashdata('exception')) {
                                         </a>
                                         <?php endif; ?>
                                     </div>
-
                                 </td>
+                                <td class="op_center"><?php echo $i++; ?></td>
+                                <td><?php echo escape_output($role->role_name); ?></td>
+                                <td><?php echo dateFormat($role->added_date); ?></td>                               
                             </tr>
                         <?php
                         }

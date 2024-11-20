@@ -35,10 +35,10 @@
                 <table id="datatable" class="table">
                     <thead>
                     <tr>
+                        <th class="w-5"><?php echo lang('actions'); ?></th>
                         <th class="w-5"> <?php echo lang('sn'); ?></th>
                         <th class="w-15 "><?php echo lang('currency'); ?></th>
-                        <th class="w-75 "><?php echo lang('conversion_rate'); ?></th>
-                        <th class="w-5"><?php echo lang('actions'); ?></th>
+                        <th class="w-75 "><?php echo lang('conversion_rate'); ?></th>                        
                     </tr>
                     </thead>
                     <tbody>
@@ -49,9 +49,6 @@
                     foreach ($multipleCurrencies as $multipleCurrency) {
                         ?>
                         <tr>
-                            <td class="text-start"><?php echo escape_output($i--); ?></td>
-                            <td><?php echo escape_output($multipleCurrency->currency); ?></td>
-                            <td><?php echo escape_output($multipleCurrency->conversion_rate); ?></td>
                             <td class="text-center">
                                 <div class="btn_group_wrap">
                                     <a class="btn btn-warning" href="<?php echo base_url() ?>MultipleCurrency/addEditMultipleCurrency/<?php echo $this->custom->encrypt_decrypt($multipleCurrency->id, 'encrypt'); ?>" data-bs-toggle="tooltip" data-bs-placement="top"
@@ -63,6 +60,9 @@
                                     </a>
                                 </div>
                             </td>
+                            <td class="text-start"><?php echo escape_output($i--); ?></td>
+                            <td><?php echo escape_output($multipleCurrency->currency); ?></td>
+                            <td><?php echo escape_output($multipleCurrency->conversion_rate); ?></td>                           
                         </tr>
                         <?php
                     }

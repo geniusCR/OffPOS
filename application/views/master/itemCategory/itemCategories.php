@@ -38,12 +38,12 @@
                 <table id="datatable" class="table table-bordered table-striped">
                     <thead>
                         <tr>
+                            <th class="w-5"><?php echo lang('actions'); ?></th>
                             <th class="w-5"><?php echo lang('sn'); ?></th>
                             <th class="w-30"><?php echo lang('category_name'); ?></th>
                             <th class="w-40"><?php echo lang('description'); ?></th>
                             <th class="w-10"><?php echo lang('added_by'); ?></th>
-                            <th class="w-10"><?php echo lang('added_date'); ?></th>
-                            <th class="w-5"><?php echo lang('actions'); ?></th>
+                            <th class="w-10"><?php echo lang('added_date'); ?></th>                           
                         </tr>
                     </thead>
                     <tbody>
@@ -54,11 +54,6 @@
                         foreach ($itemCategories as $fmc) {
                             ?>
                             <tr>
-                                <td class="op_center"><?php echo $i--; ?></td>
-                                <td><?php echo escape_output($fmc->name); ?></td>
-                                <td><?php echo escape_output($fmc->description); ?></td>
-                                <td><?php echo escape_output($fmc->added_by); ?></td>
-                                <td><?php echo date($this->session->userdata('date_format'), strtotime($fmc->added_date != '' ? $fmc->added_date : '')); ?></td>
                                 <td class="text-center">
                                     <div class="btn_group_wrap">
                                         <a class="btn btn-warning" href="<?php echo base_url() ?>Category/addEditItemCategory/<?php echo $this->custom->encrypt_decrypt($fmc->id, 'encrypt'); ?>" data-bs-toggle="tooltip" data-bs-placement="top"
@@ -70,6 +65,11 @@
                                         </a>
                                     </div>
                                 </td>
+                                <td class="op_center"><?php echo $i--; ?></td>
+                                <td><?php echo escape_output($fmc->name); ?></td>
+                                <td><?php echo escape_output($fmc->description); ?></td>
+                                <td><?php echo escape_output($fmc->added_by); ?></td>
+                                <td><?php echo date($this->session->userdata('date_format'), strtotime($fmc->added_date != '' ? $fmc->added_date : '')); ?></td>                               
                             </tr>
                             <?php
                         }

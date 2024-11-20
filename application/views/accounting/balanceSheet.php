@@ -55,10 +55,10 @@
                                 <td><?php echo escape_output($value->debit_balance == 0 ? '' : getAmtCustom($value->debit_balance))?></td>
                                 <td  class="text-right">
                                     <?php if($balance > 0){ 
-                                        echo getAmtCustom($balance) . ' (Credit)';
+                                        echo getAmtCustom($balance) . ' ' .lang('Credit');
                                     }?>
                                     <?php if($balance < 0){ 
-                                        echo getAmtCustom(absCustom($balance)) . ' (Debit)';
+                                        echo getAmtCustom(absCustom($balance)) . ' ' .lang('Debit');
                                     }?>
                                 </td>
                             </tr>
@@ -74,10 +74,10 @@
                         <th class="w-25"><?php echo escape_output($total_debit == 0 ? '' : getAmtCustom($total_debit))?></th>
                         <th>
                             <?php if($total_balance > 0){ 
-                                echo getAmtCustom($total_balance) . ' (Credit)';
+                                echo getAmtCustom($total_balance) . ' ' .lang('Credit');
                             }?>
                             <?php if($total_balance < 0){ 
-                                echo getAmtCustom(absCustom($total_balance)) . ' (Debit)';
+                                echo getAmtCustom(absCustom($total_balance)) . ' ' .lang('Debit');
                             }?>
                         </th>
                     </tr>

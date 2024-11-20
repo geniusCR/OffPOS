@@ -829,6 +829,10 @@ class Item extends Cl_Controller {
                 endif;
             $sub_array =  array();
             $sub_array[] = '
+            <div class="btn_group_wrap">
+                '. $html .'
+            </div>';
+            $sub_array[] = '
                 <td>
                     <label class="container">' . lang('select') . '
                         <input type="checkbox" class="checkbox_item" value="'.$value->id.'" name="bulk_item[]">
@@ -852,10 +856,7 @@ class Item extends Cl_Controller {
             $sub_array[] = getAmtCustom($value->sale_price);
             $sub_array[] = escape_output($value->full_name);
             $sub_array[] = date($this->session->userdata('date_format'), strtotime($value->added_date != '' ? $value->added_date : ''));
-            $sub_array[] = '
-            <div class="btn_group_wrap">
-                '. $html .'
-            </div>';
+            
             $data[] = $sub_array;
             endif;
         }

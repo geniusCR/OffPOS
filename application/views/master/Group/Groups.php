@@ -37,12 +37,12 @@ if ($this->session->flashdata('exception')) {
                     <table id="datatable" class="table table-bordered table-striped">
                         <thead>
                             <tr>
+                                <th class="op_width_6_p text-center"><?php echo lang('actions'); ?></th>
                                 <th class="w-5"><?php echo lang('sn'); ?></th>
                                 <th class="w-25"><?php echo lang('group_name'); ?></th>
                                 <th class="w-16"><?php echo lang('description'); ?></th>
                                 <th class="w-20"><?php echo lang('added_by'); ?></th>
-                                <th class="w-20"><?php echo lang('added_date'); ?></th>
-                                <th class="op_width_6_p text-center"><?php echo lang('actions'); ?></th>
+                                <th class="w-20"><?php echo lang('added_date'); ?></th>                              
                             </tr>
                         </thead>
                         <tbody>
@@ -53,11 +53,6 @@ if ($this->session->flashdata('exception')) {
                                     foreach ($Groups as $group) {
                                         ?>
                             <tr>
-                                <td class="op_center"><?php echo $i--; ?></td>
-                                <td><?php echo escape_output($group->group_name); ?></td>
-                                <td><?php echo escape_output($group->description); ?></td>
-                                <td><?php echo escape_output($group->added_by); ?></td>
-                                <td><?php echo date($this->session->userdata('date_format'), strtotime($group->added_date != '' ? $group->added_date : '')); ?></td>
                                 <td>
                                     <div class="btn_group_wrap">
                                         <a class="btn btn-warning" href="<?php echo base_url() ?>Group/addEditGroup/<?php echo $this->custom->encrypt_decrypt($group->id, 'encrypt'); ?>" data-bs-toggle="tooltip" data-bs-placement="top"
@@ -69,6 +64,11 @@ if ($this->session->flashdata('exception')) {
                                         </a>
                                     </div>
                                 </td>
+                                <td class="op_center"><?php echo $i--; ?></td>
+                                <td><?php echo escape_output($group->group_name); ?></td>
+                                <td><?php echo escape_output($group->description); ?></td>
+                                <td><?php echo escape_output($group->added_by); ?></td>
+                                <td><?php echo date($this->session->userdata('date_format'), strtotime($group->added_date != '' ? $group->added_date : '')); ?></td>                              
                             </tr>
                             <?php
                                 }

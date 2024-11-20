@@ -30,6 +30,7 @@ if ($this->session->flashdata('exception')) {
                 <table id="datatable" class="table table-responsive table-bordered table-striped purchase_ajax_page">
                     <thead>
                         <tr>
+                            <th class="w-5"><?php echo lang('actions'); ?></th>
                             <th class="w-5"><?php echo lang('sn'); ?></th>
                             <th class="w-10"><?php echo lang('ref_no'); ?></th>
                             <th class="w-10"><?php echo lang('invoice_no'); ?></th>
@@ -39,8 +40,7 @@ if ($this->session->flashdata('exception')) {
                             <th class="w-9"><?php echo lang('paid'); ?></th>
                             <th class="w-9"><?php echo lang('due'); ?></th>
                             <th class="w-10"><?php echo lang('added_by'); ?></th>
-                            <th class="w-10"><?php echo lang('added_date'); ?></th>
-                            <th class="w-5"><?php echo lang('actions'); ?></th>
+                            <th class="w-10"><?php echo lang('added_date'); ?></th>                            
                         </tr>
                     </thead>
                     </tbody>

@@ -47,6 +47,7 @@
                     <table id="datatable" class="table">
                         <thead>
                             <tr>
+                                <th class="w-5 text-center"><?php echo lang('actions'); ?></th>
                                 <th class="w-5"> <?php echo lang('sn'); ?></th>
                                 <th class="w-10"><?php echo lang('title'); ?></th>
                                 <th class="w-8"><?php echo lang('type'); ?></th>
@@ -57,8 +58,7 @@
                                 <th class="w-8 text-center"><?php echo lang('discount'); ?></th>
                                 <th class="w-8"><?php echo lang('status'); ?></th>
                                 <th class="w-10"><?php echo lang('added_by'); ?></th>
-                                <th class="w-10"><?php echo lang('added_date'); ?></th>
-                                <th class="w-5 text-center"><?php echo lang('actions'); ?></th>
+                                <th class="w-10"><?php echo lang('added_date'); ?></th>                               
                             </tr>
                         </thead>
                         <tbody>
@@ -69,6 +69,17 @@
                             foreach ($promotions as $promo) {
                                 ?>
                             <tr>
+                                <td>
+                                    <div class="btn_group_wrap">
+                                        <a class="btn btn-warning" href="<?php echo base_url() ?>Promotion/addEditPromotion/<?php echo $this->custom->encrypt_decrypt($promo->id, 'encrypt'); ?>" data-bs-toggle="tooltip" data-bs-placement="top"
+                                        data-bs-original-title="<?php echo lang('edit'); ?>">
+                                        <i class="far fa-edit"></i>
+                                        </a>
+                                        <a class="delete btn btn-danger" href="<?php echo base_url() ?>Promotion/deletePromotion/<?php echo $this->custom->encrypt_decrypt($promo->id, 'encrypt'); ?>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php echo lang('delete'); ?>">
+                                            <i class="fa-regular fa-trash-can"></i>
+                                        </a>
+                                    </div>
+                                </td>
                                 <td class="ir_txt_center"><?php echo escape_output($i--); ?></td>
                                 <td><?php echo escape_output($promo->title) ?></td>
                                 <td>
@@ -108,18 +119,7 @@
                                 <?php endif;?>
                                 <td><?php echo escape_output($promo->status==1?lang('Active'):lang('Inactive')) ?></td>
                                 <td><?php echo escape_output($promo->added_by); ?></td>
-                                <td><?php echo date($this->session->userdata('date_format'), strtotime($promo->added_date != '' ? $promo->added_date : '')); ?></td>
-                                <td>
-                                    <div class="btn_group_wrap">
-                                        <a class="btn btn-warning" href="<?php echo base_url() ?>Promotion/addEditPromotion/<?php echo $this->custom->encrypt_decrypt($promo->id, 'encrypt'); ?>" data-bs-toggle="tooltip" data-bs-placement="top"
-                                        data-bs-original-title="<?php echo lang('edit'); ?>">
-                                        <i class="far fa-edit"></i>
-                                        </a>
-                                        <a class="delete btn btn-danger" href="<?php echo base_url() ?>Promotion/deletePromotion/<?php echo $this->custom->encrypt_decrypt($promo->id, 'encrypt'); ?>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php echo lang('delete'); ?>">
-                                            <i class="fa-regular fa-trash-can"></i>
-                                        </a>
-                                    </div>
-                                </td>
+                                <td><?php echo date($this->session->userdata('date_format'), strtotime($promo->added_date != '' ? $promo->added_date : '')); ?></td>                              
                             </tr>
                             <?php
                             }

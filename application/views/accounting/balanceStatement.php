@@ -80,8 +80,8 @@
                                 <td><?php echo date($this->session->userdata('date_format'), strtotime($balance->date)) ?></td>
                                 <td><?php echo escape_output($balance->type) ?></td>
                                 <td><?php echo escape_output($balance->note) ?></td>
-                                <td class="text-center"><?php echo escape_output($balance->credit) != 0 ? $balance->credit : '' ?></td>
-                                <td class="text-center"><?php echo escape_output($balance->debit) != 0 ? $balance->debit : '' ?></td>
+                                <td class="text-center"><?php echo escape_output($balance->credit) != 0 ? getAmtCustom($balance->credit) : '' ?></td>
+                                <td class="text-center"><?php echo escape_output($balance->debit) != 0 ? getAmtCustom($balance->debit) : '' ?></td>
                             </tr>
                         <?php }  ?>
                         <tr>

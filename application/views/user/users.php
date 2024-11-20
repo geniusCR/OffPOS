@@ -34,6 +34,7 @@ if ($this->session->flashdata('exception')) {
                 <table id="datatable" class="table table-bordered table-striped">
                     <thead>
                         <tr>
+                            <th class="w-5 text-center"><?php echo lang('actions'); ?></th>
                             <th class="w-5"><?php echo lang('sn'); ?></th>
                             <th class="w-15"><?php echo lang('name'); ?></th>
                             <th class="w-10"><?php echo lang('designation'); ?></th>
@@ -41,8 +42,7 @@ if ($this->session->flashdata('exception')) {
                             <th class="w-20"><?php echo lang('email'); ?></th>
                             <th class="w-10"><?php echo lang('status'); ?></th>
                             <th class="w-15"><?php echo lang('outlet_name'); ?></th>
-                            <th class="w-10"><?php echo lang('added_date'); ?></th>
-                            <th class="w-5 text-center"><?php echo lang('actions'); ?></th>
+                            <th class="w-10"><?php echo lang('added_date'); ?></th>                           
                         </tr>
                     </thead>
                     <tbody>
@@ -50,26 +50,6 @@ if ($this->session->flashdata('exception')) {
                         $i = 1;
                         foreach ($users as $usrs) {  ?>
                                 <tr>
-                                    <td class="op_center"><?php echo $i++; ?></td>
-                                    <td><?php echo escape_output($usrs->full_name); ?></td>
-                                    <td><?php echo escape_output($usrs->role_name);?></td>
-                                    <td><?php echo escape_output($usrs->phone); ?></td>
-                                    <td><?php echo escape_output($usrs->email_address); ?></td>
-                                    <td><?php echo escape_output($usrs->active_status); ?></td>
-                                    <td>
-                                        <?php 
-                                        if($usrs->outlet_id != ""){
-                                        $outlets = explode(",",$usrs->outlet_id);
-                                        foreach($outlets as $key=>$oulte){ ?>
-                                            <span>
-                                                <?php echo escape_output(getOutletName($oulte)); ?>
-                                                <?php if ($key !== array_key_last($outlets)) {
-                                                    echo "<strong>,</strong>";
-                                                } ?>
-                                            </span><br>
-                                        <?php }} ?>
-                                    </td>
-                                    <td><?php echo date($this->session->userdata('date_format'), strtotime($usrs->account_creation_date != '' ? $usrs->account_creation_date : '')); ?></td>
                                     <td class="text-center">
                                         <div class="btn_group_wrap">
                                             <?php if ($usrs->id != '1') { ?>
@@ -96,6 +76,26 @@ if ($this->session->flashdata('exception')) {
                                             <?php endif; ?>
                                         </div>
                                     </td>
+                                    <td class="op_center"><?php echo $i++; ?></td>
+                                    <td><?php echo escape_output($usrs->full_name); ?></td>
+                                    <td><?php echo escape_output($usrs->role_name);?></td>
+                                    <td><?php echo escape_output($usrs->phone); ?></td>
+                                    <td><?php echo escape_output($usrs->email_address); ?></td>
+                                    <td><?php echo escape_output($usrs->active_status); ?></td>
+                                    <td>
+                                        <?php 
+                                        if($usrs->outlet_id != ""){
+                                        $outlets = explode(",",$usrs->outlet_id);
+                                        foreach($outlets as $key=>$oulte){ ?>
+                                            <span>
+                                                <?php echo escape_output(getOutletName($oulte)); ?>
+                                                <?php if ($key !== array_key_last($outlets)) {
+                                                    echo "<strong>,</strong>";
+                                                } ?>
+                                            </span><br>
+                                        <?php }} ?>
+                                    </td>
+                                    <td><?php echo date($this->session->userdata('date_format'), strtotime($usrs->account_creation_date != '' ? $usrs->account_creation_date : '')); ?></td>                                   
                                 </tr>
                                 <?php
                         }

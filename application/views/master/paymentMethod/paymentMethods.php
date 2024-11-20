@@ -59,7 +59,7 @@
                                 <td class="op_center"><?php echo $i--; ?></td>
                                 <td><?php echo escape_output($value->name); ?></td>
                                 <td><?php echo escape_output($value->account_type) ?></td>
-                                <td><?php echo escape_output($value->status); ?></td>
+                                <td><?php echo escape_output(lang($value->status)); ?></td>
                                 <td class="text-center"><?php echo getAmtCustom($balance); ?></td>
                                 <td><?php echo userName($value->user_id); ?></td>
                                 <td><?php echo dateFormat($value->added_date); ?></td>

@@ -50,14 +50,14 @@
                 <table id="datatable" class="table">
                     <thead>
                         <tr>
+                            <th class="w-5 text-center"><?php echo lang('actions'); ?></th>
                             <th class="w-5"> <?php echo lang('sn'); ?></th>
                             <th class="w-20"><?php echo lang('counter_name'); ?></th>
                             <th class="w-15"><?php echo lang('printer'); ?></th>
                             <th class="w-15"><?php echo lang('outlet'); ?></th>
                             <th class="w-20"><?php echo lang('description'); ?></th>
                             <th class="w-10"><?php echo lang('added_by'); ?></th>
-                            <th class="w-10"><?php echo lang('added_date'); ?></th>
-                            <th class="w-5 text-center"><?php echo lang('actions'); ?></th>
+                            <th class="w-10"><?php echo lang('added_date'); ?></th>                          
                         </tr>
                     </thead>
                     <tbody>
@@ -68,14 +68,6 @@
                         foreach ($counters as $value) {
                             ?>
                         <tr>
-                            
-                            <td class="text-center"><?php echo escape_output($i--); ?></td>
-                            <td><?php echo escape_output($value->counter_name) ?></td>
-                            <td><?php echo escape_output($value->printer) ?></td>
-                            <td><?php echo escape_output($value->outlet_name) ?></td>
-                            <td><?php echo escape_output($value->description) ?></td>
-                            <td><?php echo escape_output($value->added_by) ?></td>
-                            <td><?php echo dateFormat($value->added_date); ?></td>
                             <td class="text-center">
                                 <div class="btn_group_wrap">
                                     <a class="btn btn-warning" href="<?php echo base_url() ?>Counter/addEditCounter/<?php echo escape_output($this->custom->encrypt_decrypt($value->id, 'encrypt')); ?>" data-bs-toggle="tooltip" data-bs-placement="top"
@@ -88,6 +80,13 @@
                                 </div>
 
                             </td>
+                            <td class="text-center"><?php echo escape_output($i--); ?></td>
+                            <td><?php echo escape_output($value->counter_name) ?></td>
+                            <td><?php echo escape_output($value->printer) ?></td>
+                            <td><?php echo escape_output($value->outlet_name) ?></td>
+                            <td><?php echo escape_output($value->description) ?></td>
+                            <td><?php echo escape_output($value->added_by) ?></td>
+                            <td><?php echo dateFormat($value->added_date); ?></td>                           
                         </tr>
                         <?php
                         }

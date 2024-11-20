@@ -99,13 +99,14 @@
                 <div class="table-responsive">
                     <table id="datatable" class="table table-bordered table-striped items_ajax_page">
                         <thead>
-                            <tr>
+                            <tr>                               
+                                <th class="w-5 text-center"><?php echo lang('actions'); ?></th>
                                 <th class="w-5" data-orderable="false">
                                     <label  class="container "> <?php echo lang('select_all'); ?>
                                         <input class="checkbox_itemAll" type="checkbox" id="checkbox_itemAll">
                                         <span class="checkmark"></span>
                                     </label>
-                                </th>
+                                </th>                             
                                 <th class="w-5 text-left"><?php echo lang('sn'); ?></th>
                                 <th class="w-20"><?php echo lang('name'); ?> (<?php echo lang('code'); ?>)</th>
                                 <th class="w-10"><?php echo lang('type'); ?></th>
@@ -113,8 +114,7 @@
                                 <th class="w-12"><?php echo lang('purchase_price'); ?></th>
                                 <th class="w-12"><?php echo lang('sale_price'); ?></th>
                                 <th class="w-11"><?php echo lang('added_by'); ?></th>
-                                <th class="w-10"><?php echo lang('added_date'); ?></th>
-                                <th class="w-5 text-center"><?php echo lang('actions'); ?></th>
+                                <th class="w-10"><?php echo lang('added_date'); ?></th>                             
                             </tr>
                         </thead>
                         <tbody>

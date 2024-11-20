@@ -33,12 +33,12 @@ if ($this->session->flashdata('exception')) {
                 <table id="datatable" class="table table-bordered table-striped">
                     <thead>
                         <tr>
+                            <th class="w-5"><?php echo lang('actions');?></th>
                             <th class="w-5"><?php echo lang('sn'); ?></th>
                             <th class="w-30"><?php echo lang('variation_name'); ?></th>
                             <th class="w-40"><?php echo lang('variation_value'); ?></th>
                             <th class="w-10"><?php echo lang('added_by'); ?></th>
-                            <th class="w-10"><?php echo lang('added_date'); ?></th>
-                            <th class="w-5"><?php echo lang('actions');?></th>
+                            <th class="w-10"><?php echo lang('added_date'); ?></th>                            
                         </tr>
                     </thead>
                     <tbody>
@@ -49,6 +49,17 @@ if ($this->session->flashdata('exception')) {
                         foreach ($Variations as $vari) {
                             ?>                       
                             <tr>
+                                <td>
+                                    <div class="btn_group_wrap">
+                                        <a class="btn btn-warning" href="<?php echo base_url() ?>Variation/addEditVariation/<?php echo $this->custom->encrypt_decrypt($vari->id, 'encrypt'); ?>" data-bs-toggle="tooltip" data-bs-placement="top"
+                                        data-bs-original-title="<?php echo lang('edit'); ?>">
+                                            <i class="far fa-edit"></i>
+                                        </a>
+                                        <a class="delete btn btn-danger" href="<?php echo base_url() ?>Variation/deleteVariation/<?php echo $this->custom->encrypt_decrypt($vari->id, 'encrypt'); ?>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php echo lang('delete'); ?>">
+                                            <i class="fa-regular fa-trash-can"></i>
+                                        </a>
+                                    </div>
+                                </td>
                                 <td><?php echo escape_output($i--); ?></td>
                                 <td><?php echo escape_output($vari->variation_name); ?></td>
                                 <td><?php
@@ -63,18 +74,7 @@ if ($this->session->flashdata('exception')) {
                                     }
                                     ?></td>
                                 <td><?php echo escape_output($vari->added_by); ?></td>
-                                <td><?php echo date($this->session->userdata('date_format'), strtotime($vari->added_date != '' ? $vari->added_date : '')); ?></td>
-                                <td>
-                                    <div class="btn_group_wrap">
-                                        <a class="btn btn-warning" href="<?php echo base_url() ?>Variation/addEditVariation/<?php echo $this->custom->encrypt_decrypt($vari->id, 'encrypt'); ?>" data-bs-toggle="tooltip" data-bs-placement="top"
-                                        data-bs-original-title="<?php echo lang('edit'); ?>">
-                                            <i class="far fa-edit"></i>
-                                        </a>
-                                        <a class="delete btn btn-danger" href="<?php echo base_url() ?>Variation/deleteVariation/<?php echo $this->custom->encrypt_decrypt($vari->id, 'encrypt'); ?>" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="<?php echo lang('delete'); ?>">
-                                            <i class="fa-regular fa-trash-can"></i>
-                                        </a>
-                                    </div>
-                                </td>
+                                <td><?php echo date($this->session->userdata('date_format'), strtotime($vari->added_date != '' ? $vari->added_date : '')); ?></td>                               
                             </tr>
                             <?php
                         }

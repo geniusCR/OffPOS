@@ -373,16 +373,6 @@ class Purchase extends Cl_Controller {
         $data = array();
         foreach($purchases as $purchase){
             $sub_array = array();
-            $sub_array[] = $i--;
-            $sub_array[] = $purchase->reference_no;
-            $sub_array[] = $purchase->invoice_no;
-            $sub_array[] = dateFormat($purchase->added_date);
-            $sub_array[] = ($purchase->supplier_name);
-            $sub_array[] = getAmtCustom($purchase->grand_total);
-            $sub_array[] = getAmtCustom($purchase->paid);
-            $sub_array[] = getAmtCustom($purchase->due_amount);
-            $sub_array[] = ($purchase->added_by);
-            $sub_array[] = dateFormat($purchase->added_date);
             $html = '';
             $html .= '<a class="btn btn-unique print_barcode" href="javascript:void(0)" data-id="'. $this->custom->encrypt_decrypt($purchase->id, 'encrypt') .'" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="' . lang('print_barcode') . '">
                 <i class="fas fa-print"></i>
@@ -416,6 +406,17 @@ class Purchase extends Cl_Controller {
             <div class="btn_group_wrap">
             '.$html.'
             </div>';
+            
+            $sub_array[] = $i--;
+            $sub_array[] = $purchase->reference_no;
+            $sub_array[] = $purchase->invoice_no;
+            $sub_array[] = dateFormat($purchase->added_date);
+            $sub_array[] = ($purchase->supplier_name);
+            $sub_array[] = getAmtCustom($purchase->grand_total);
+            $sub_array[] = getAmtCustom($purchase->paid);
+            $sub_array[] = getAmtCustom($purchase->due_amount);
+            $sub_array[] = ($purchase->added_by);
+            $sub_array[] = dateFormat($purchase->added_date);            
             $data[] = $sub_array;
         }
         $output = array(
