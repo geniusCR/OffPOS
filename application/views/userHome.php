@@ -710,6 +710,8 @@
                                     </li>
                                 </ul>
                             </li>
+
+                            <?php if(!moduleIsHideCheck('Customer Receive-YES')){ ?>
                             <li class="treeview parent-menu">
                                 <a href="javascript:void(0)">
                                     <iconify-icon icon="solar:card-recive-broken" width="22"></iconify-icon>
@@ -729,6 +731,9 @@
                                     </li>
                                 </ul>
                             </li>
+                            <?php } ?>
+
+                            <?php if(!moduleIsHideCheck('Supplier Payment-YES')){ ?>
                             <li class="treeview parent-menu">
                                 <a href="javascript:void(0)">
                                     <iconify-icon icon="solar:card-send-broken" width="22"></iconify-icon>
@@ -748,6 +753,9 @@
                                     </li>
                                 </ul>
                             </li>
+                            <?php } ?>
+
+                            <?php if(!moduleIsHideCheck('Accounting-YES')){ ?>
                             <li class="treeview parent-menu">
                                 <a href="javascript:void(0)">
                                     <iconify-icon icon="solar:wallet-money-broken" width="22"></iconify-icon>
@@ -792,6 +800,9 @@
                                     </li>
                                 </ul>
                             </li>
+                            <?php } ?>
+
+                            <?php if(!moduleIsHideCheck('Attendance-YES')){ ?>
                             <li class="treeview parent-menu">
                                 <a href="javascript:void(0)">
                                     <iconify-icon icon="solar:clock-square-broken" width="22"></iconify-icon>
@@ -811,6 +822,8 @@
                                     </li>
                                 </ul>
                             </li>
+                            <?php } ?>
+
                             <li class="treeview parent-menu">
                                 <a href="javascript:void(0)">
                                     <iconify-icon icon="solar:diagram-down-broken" width="22"></iconify-icon>
@@ -894,7 +907,7 @@
                                             <?php echo lang('customer_balance_report'); ?>
                                         </a>
                                     </li>
-                                    <?php if(!moduleIsHideCheck('Servicing-YES')){ ?>
+                                    <?php if(!moduleIsHideCheck('Servicing Report-YES')){ ?>
                                     <li data-access="servicing_report-249" class="menu_assign_class" module-is-hide="Servicing Report-YES">
                                         <a class="child-menu " href="<?php echo base_url(); ?>Report/servicingReport">
                                             <?php echo lang('servicing_report'); ?>
@@ -973,7 +986,7 @@
                                         </a>
                                     </li>
                                     <?php } ?>
-                                    <?php if(!moduleIsHideCheck('Installment-YES')){ ?>
+                                    <?php if(!moduleIsHideCheck('Installment Report-YES')){ ?>
                                     <li data-access="installment_report-249" class="menu_assign_class " module-is-hide="Installment Report-YES"> 
                                         <a class="child-menu " href="<?php echo base_url(); ?>Report/installmentReport">
                                             <?php echo lang('Installment Report'); ?>
@@ -1012,6 +1025,8 @@
                                     </li>
                                 </ul>
                             </li>
+
+                            <?php if(!moduleIsHideCheck('Expense-YES')){ ?>
                             <li class="treeview parent-menu">
                                 <a href="javascript:void(0)">
                                     <iconify-icon icon="solar:rewind-forward-broken" width="22"></iconify-icon>
@@ -1041,6 +1056,9 @@
                                     </li>
                                 </ul>
                             </li>
+                            <?php } ?>
+
+                            <?php if(!moduleIsHideCheck('Income-YES')){ ?>
                             <li class="treeview parent-menu">
                                 <a href="javascript:void(0)">
                                     <iconify-icon icon="solar:rewind-back-broken" width="22"></iconify-icon>
@@ -1070,6 +1088,9 @@
                                     </li>
                                 </ul>
                             </li>
+                            <?php } ?>
+
+                            <?php if(!moduleIsHideCheck('Sale Return-YES')){ ?>
                             <li class="treeview parent-menu ">
                                 <a href="javascript:void(0)">
                                     <iconify-icon icon="solar:multiple-forward-left-broken" width="22"></iconify-icon>
@@ -1089,6 +1110,9 @@
                                     </li>
                                 </ul>
                             </li>
+                            <?php } ?>
+
+                            <?php if(!moduleIsHideCheck('Purchase Return-YES')){ ?>
                             <li class="treeview parent-menu ">
                                 <a href="javascript:void(0)">
                                     <iconify-icon icon="solar:multiple-forward-right-broken" width="22"></iconify-icon>
@@ -1110,6 +1134,8 @@
                                     </li>
                                 </ul>
                             </li>
+                            <?php } ?>
+
                             <li class="treeview parent-menu">
                                 <a href="javascript:void(0)" class="child-menu ">
                                     <iconify-icon icon="solar:settings-broken" width="22"></iconify-icon>
@@ -1132,11 +1158,13 @@
                                             <?php echo lang('setting'); ?>
                                         </a>
                                     </li>
+                                    <?php if(!moduleIsHideCheck('Management-YES')){ ?>
                                     <li data-access="edit-1" class="menu_assign_class">
                                         <a class="child-menu" href="<?php echo base_url(); ?>Setting/moduleManagement">
                                             <?php echo lang('module_management'); ?>
                                         </a>
                                     </li>
+                                    <?php } ?>
                                     <li data-access="whatsappSetting-327" class="menu_assign_class " module-is-hide="Whatsapp Setting-YES">
                                         <a class="child-menu " href="<?php echo base_url(); ?>Setting/whatsappSetting">
                                             <?php echo lang('whatsapp_setting'); ?>
@@ -1144,12 +1172,12 @@
                                     </li>
                                     <li data-access="add-3" class="menu_assign_class" module-is-hide="Denomination-YES">
                                         <a class="child-menu " href="<?php echo base_url(); ?>Denomination/addEditDenomination">
-                                            <?php echo lang('add'); ?> <?php echo lang('denomination'); ?>
+                                            <!--<?php echo lang('add'); ?>--> <?php echo lang('add_denomination'); ?>
                                         </a>
                                     </li>
                                     <li data-access="list-3" class="menu_assign_class" module-is-hide="Denomination-YES">
                                         <a class="child-menu " href="<?php echo base_url(); ?>Denomination/denominations"> 
-                                            <?php echo lang('list'); ?> <?php echo lang('denomination'); ?>
+                                            <!--<?php echo lang('list'); ?>--> <?php echo lang('list_denominations'); ?>
                                         </a>
                                     </li>
                                     <li data-access="add-340" class="menu_assign_class" module-is-hide="Counter-YES">
@@ -1278,6 +1306,7 @@
                                 </ul>
                             </li>
                             
+                            <?php if(!moduleIsHideCheck('Installment-YES')){ ?>
                             <?php
                             $i_sale = $this->session->userdata('i_sale');
                             if(isset($i_sale) && $i_sale=="Yes"){ ?>
@@ -1321,6 +1350,9 @@
                                     </ul>
                                 </li>
                             <?php } ?>
+                            <?php } ?>
+
+                            <?php if(!moduleIsHideCheck('Salary_Payroll-YES')){ ?>
                             <li class="treeview parent-menu">
                                 <a href="javascript:void(0)">
                                     <iconify-icon icon="solar:sunset-broken" width="22"></iconify-icon>
@@ -1355,6 +1387,9 @@
                                     </li>
                                 </ul>
                             </li>
+                            <?php } ?>
+
+                            <?php if(!moduleIsHideCheck('Purchase Return-YES')){ ?>
                             <li class="treeview parent-menu ">
                                 <a href="javascript:void(0)">
                                     <iconify-icon icon="solar:transmission-broken" width="22"></iconify-icon>
@@ -1369,6 +1404,9 @@
                                     </li>
                                 </ul>
                             </li>
+                            <?php } ?>
+
+                            <?php if(!moduleIsHideCheck('Fixed Assets-YES')){ ?>
                             <li class="treeview parent-menu ">
                                 <a href="javascript:void(0)" class="align-middle">
                                     <iconify-icon icon="solar:cassette-broken" width="22"></iconify-icon>
@@ -1413,6 +1451,9 @@
                                     </li>
                                 </ul>
                             </li>
+                            <?php } ?>
+                            
+                            <?php if(!moduleIsHideCheck('Quotation-YES')){ ?>
                             <li class="treeview parent-menu ">
                                 <a href="javascript:void(0)">
                                     <iconify-icon icon="solar:ruler-pen-broken" width="22"></iconify-icon>
@@ -1432,6 +1473,9 @@
                                     </li>
                                 </ul>
                             </li>
+                            <?php } ?>
+
+                            <?php if(!moduleIsHideCheck('Transfer-YES')){ ?>
                             <li class="treeview parent-menu ">
                                 <a href="javascript:void(0)">
                                     <iconify-icon icon="solar:bicycling-round-broken" width="22"></iconify-icon>
@@ -1451,6 +1495,9 @@
                                     </li>
                                 </ul>
                             </li>
+                            <?php } ?>
+
+                            <?php if(!moduleIsHideCheck('Damage-YES')){ ?>
                             <li class="treeview parent-menu ">
                                 <a href="javascript:void(0)">
                                     <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="22"></iconify-icon>
@@ -1470,6 +1517,8 @@
                                     </li>
                                 </ul>
                             </li>
+                            <?php } ?>
+
                             <?php 
                             $company_id = $this->session->userdata('company_id');
                             $user_id = $this->session->userdata('user_id');
@@ -1887,6 +1936,16 @@
                 </div>
             </div>
         </div>
+
+        <!-- Message Mdodal -->
+        <div id="message-modal" class="message-modal">
+            <div class="modal-content">
+                <span class="close" id="closeModalBtn">&times;</span>
+                <h2><iconify-icon icon="solar:shield-warning-broken"></iconify-icon></h2>
+                <h4 class="pb-4">You are using a pirated copy of this software. To avoid future trouble please purchase the original copy from <a href="https://codecanyon.net/item/off-pos-retail-pos-and-stock-software/24326862?srsltid=AfmBOoqMEy1BHa0mFO5WJTa7EynzWWuSHEZLlgyvzM-eAVQVP1Q-OFV7" target="_blank" class="link-color">here</a>.</h4>
+            </div>
+        </div>
+
 
         <!-- ################ Script Start ################ -->
         <?php

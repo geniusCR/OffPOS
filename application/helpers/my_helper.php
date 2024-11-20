@@ -5826,6 +5826,10 @@ if (!function_exists('getItemParentName')) {
     if (!function_exists('moduleIsHideCheck')) {
         function moduleIsHideCheck($module_name){
             $CI = & get_instance();
+            //OHG - Solo para el role y usuario Admin no se ocultan los modulos
+            if ($CI->session->userdata('role') == '1' && $CI->session->userdata('user_id') == '1')
+                return false;
+
             if (in_array($module_name, $CI->session->userdata('module_show_hide'))) {
                 return true;
             } else {

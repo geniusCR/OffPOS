@@ -37,10 +37,10 @@ class Outlet extends Cl_Controller {
         $segment_3 = $this->uri->segment(3);
         $controller = "25";
         $function = ""; 
-        if($segment_2=="addEditOutlet"){
-            $function = "add";
-        }elseif($segment_2 == "addEditOutlet" && $segment_3){
+        if($segment_2 == "addEditOutlet" && $segment_3){
             $function = "edit";
+        }elseif($segment_2=="addEditOutlet"){
+            $function = "add";
         }elseif($segment_2 == "deleteOutlet"){
             $function = "delete";
         }elseif($segment_2 == "outlets"){

@@ -788,7 +788,7 @@ abstract class CI_DB_driver {
 				return FALSE;
 			}
 		}
-
+		log_message('info', $sql);
 		return $this->_execute($sql);
 	}
 

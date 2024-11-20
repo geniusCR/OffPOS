@@ -70,7 +70,7 @@
                                 <?php echo lang('delete'); ?>
                             </a>
                             <div data-status="<?php echo isset($is_collapse) && $is_collapse == "No" ? '2' : '1'?>" class="outlet_responsive outlet_large <?php echo isset($is_collapse) && $is_collapse == "No" ? 'd-none' : 'd-block'?>">
-                                <a class="bg-blue-btn btn" href="<?php echo base_url(); ?>Outlet/setOutletSession/<?php echo escape_output($this->custom->encrypt_decrypt($value->id, 'encrypt')); ?>">  
+                                <a class="bg-green-btn btn" href="<?php echo base_url(); ?>Outlet/setOutletSession/<?php echo escape_output($this->custom->encrypt_decrypt($value->id, 'encrypt')); ?>">  
                                     <div class="d-flex align-items-center justify-content-center">
                                         <iconify-icon icon="solar:forward-2-broken" class="me-2"></iconify-icon>
                                     <?php echo lang('enter'); ?>
@@ -79,7 +79,7 @@
                             </div>
                         </div>
                         <div data-status="<?php echo isset($is_collapse) && $is_collapse == "No" ? '2' : '1'?>" class="outlet_responsive outlet_small op_margin_top_10 <?php echo isset($is_collapse) && $is_collapse == "No" ? 'd-block' : 'd-none'?>">
-                            <a class="bg-blue-btn btn" href="<?php echo base_url(); ?>Outlet/setOutletSession/<?php echo escape_output($this->custom->encrypt_decrypt($value->id, 'encrypt')); ?>">
+                            <a class="bg-green-btn btn" href="<?php echo base_url(); ?>Outlet/setOutletSession/<?php echo escape_output($this->custom->encrypt_decrypt($value->id, 'encrypt')); ?>">
                                 <d class="flex align-items-center justify-content-center">
                                 <iconify-icon icon="solar:forward-2-broken" class="me-2"></iconify-icon>
                                 <?php echo lang('enter'); ?>
