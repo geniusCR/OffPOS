@@ -35,7 +35,7 @@
             echo form_open_multipart(base_url('Setting/moduleManagement'), $attributes); ?>
             <div class="box-body">
                 <div class="row" id="will_login_section">
-                    <label class="col-md-2 col-form-label">Menu Show <span class="required_star">*</span></label>
+                    <label class="col-md-2 col-form-label"><?php echo lang('menu_show'); ?> <span class="required_star">*</span></label>
                     <div class="col-md-3">
                         <label class="container op_margin_top_6 op_color_dim_grey"> <?php echo lang('select_all'); ?>
                             <input class="checkbox_userAll" type="checkbox" id="checkbox_userAll">
@@ -55,7 +55,7 @@
                                         <hr class="op_border_bottom_nobel">
                                     </td>
                                     <td width="10%" class="op_center"><b
-                                        class="op_font_weight_b"><?= escape_output($value->module_name)?></b></td>
+                                        class="op_font_weight_b"><?= escape_output(lang($value->module_name))?></b></td>
                                     <td width="30%">
                                         <hr class="op_border_bottom_nobel">
                                     </td>

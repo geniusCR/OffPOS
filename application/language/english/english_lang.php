@@ -2511,3 +2511,6 @@ $lang['Search_by_Generic_Name'] = 'Search by generic name...';
 $lang['Search_by_Generic_Name_Checkbox'] = 'Keep Selected to Search By Generic Name';
 $lang['over_selling_not_allowed_medicine_product'] = 'Over selling is not allowed for medicine product!';
 
+//Module Management
+$lang['menu_show'] = 'Show/Hide Menu';
+$lang['Installment Module'] = 'Installment Module';
