@@ -63,7 +63,8 @@ class Authentication extends Cl_Controller {
                         redirect("Sale/POS");
                     }
                 }
-                redirect("Authentication/userProfile");
+                //redirect("Authentication/userProfile");
+                redirect("Outlet/outlets");
             }
         }else{
             $this->load->view('authentication/login');
@@ -756,7 +757,8 @@ class Authentication extends Cl_Controller {
                 if ($user_information->role == '1') {
                     redirect("Outlet/outlets");
                 } else {
-                    redirect("Authentication/userProfile");
+                    //redirect("Authentication/userProfile");
+                    redirect("Outlet/outlets");
                 }
             }else {
                 $this->session->set_flashdata('exception_1', lang('incorrect_email_password_or_user_not_active'));

@@ -309,8 +309,8 @@ class Update extends Cl_Controller {
     }
 
     public function upgradeLicense(){
-
-        if (htmlspecialcharscustom($this->input->post('submit'))) {
+        
+        /*if (htmlspecialcharscustom($this->input->post('submit'))) {
             $this->form_validation->set_rules('username', lang('username'), 'required|max_length[50]');
             $this->form_validation->set_rules('purchase_code', lang('purchase_code'), 'required|max_length[100]');
             $this->form_validation->set_rules('upgrade_code', lang('upgrade_code'), 'required|max_length[100]');
@@ -383,7 +383,7 @@ class Update extends Cl_Controller {
             $data['txt_return']= "";
             $data['main_content'] = $this->load->view('updater/package_upgrade', $data, TRUE);
             $this->load->view('userHome', $data);
-        }
+        }*/
 
     }
      /**

@@ -723,7 +723,7 @@ class Stock_model extends CI_Model {
         LEFT JOIN tbl_item_categories c ON p.category_id = c.id
         LEFT JOIN tbl_units pu ON pu.id = p.purchase_unit_id
         LEFT JOIN tbl_units su ON su.id = p.sale_unit_id
-        WHERE /*p.type != 'Service_Product' AND*/ p.company_id='$company_id' AND p.enable_disable_status = 'Enable' AND p.del_status = 'Live' $where ORDER BY p.name ASC")->row();
+        WHERE p.type != 'Service_Product' AND p.company_id='$company_id' AND p.enable_disable_status = 'Enable' AND p.del_status = 'Live' $where ORDER BY p.name ASC")->row();
         $count = (int)$data->count;
         return $count;
     }

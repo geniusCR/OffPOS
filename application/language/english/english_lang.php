@@ -2510,7 +2510,16 @@ $lang['cabys'] = 'Cabys';
 $lang['Search_by_Generic_Name'] = 'Search by generic name...';
 $lang['Search_by_Generic_Name_Checkbox'] = 'Keep Selected to Search By Generic Name';
 $lang['over_selling_not_allowed_medicine_product'] = 'Over selling is not allowed for medicine product!';
+$lang['smtp_not_configured'] = 'Your SMTP is not configured yet!, configure first.';
+$lang['sms_not_configured'] = 'Your SMS is not configured yet!, configure first.';
 
 //Module Management
 $lang['menu_show'] = 'Show/Hide Menu';
 $lang['Installment Module'] = 'Installment Module';
+
+$lang['E-Billing'] = 'E-Billing';
+
+//EBilling Menu
+$lang['ebilling_menu'] = 'E-Billing';
+$lang['list_ebilling'] = 'List e-billing';
+$lang['clave_fe'] = 'CLAVE';

@@ -160,8 +160,7 @@ $company_short_name =  $getCompanyInfo->short_name;
     <input type="hidden" id="view_purchase_price" value="<?php echo escape_output($this->session->userdata('view_purchase_price')); ?>">
     <input type="hidden" id="paid_amt" value="<?php echo company();?>">
     <input type="hidden" id="tax_type" value="<?php echo escape_output($this->session->userdata('tax_type')); ?>">
-    <input type="hidden" id="stripe_publish_key" value="<?php echo $payment_info->stripe_publishable_key; ?>">
-    <input type="hidden" id="scrollwindow" value="<?php echo base_url()?>">
+    <input type="hidden" id="stripe_publish_key" value="<?php echo $payment_info->stripe_publishable_key; ?>"><input type="hidden" id="scrollwindow" value="<?php echo base_url()?>">
     <input type="hidden" id="grocery_experience" value="<?php echo escape_output($this->session->userdata('grocery_experience')); ?>">
     <input type="hidden" id="generic_name_search_option" value="<?php echo escape_output($this->session->userdata('generic_name_search_option')); ?>">
     <input type="hidden" id="business_name" value="<?php echo escape_output($this->session->userdata('business_name')); ?>">

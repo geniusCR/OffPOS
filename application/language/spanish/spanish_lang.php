@@ -187,7 +187,7 @@ $lang['payment_method'] = 'Método de pago';
 $lang['view_invoice'] = 'Mirar la factura';
 $lang['change_date'] = 'Cambiar fecha';
 $lang['save_changes'] = 'Guardar cambios';
-$lang['close'] = 'Cerca';
+$lang['close'] = 'Cerrar';
 $lang['modified'] = 'Modificado';
 $lang['modifiers'] = 'Modificadores';
 $lang['date'] = 'Fecha';
@@ -1659,7 +1659,7 @@ $lang['edit_denomination'] = 'Editar denominación';
 $lang['add_denomination'] = 'Agregar denominación';
 $lang['denomination'] = 'Denominación';
 $lang['denominations'] = 'Denominaciones';
-$lang['Clear'] = 'Claro';
+$lang['Clear'] = 'Limpiar';
 $lang['Payable'] = 'Pagadero';
 $lang['Cart_Details'] = 'Detalles del carrito';
 $lang['Send_SMS'] = 'Enviar SMS';
@@ -2496,6 +2496,34 @@ $lang['unit_code'] = 'Unidad de medida';
 $lang['unit_unidad'] = 'Unidad';
 $lang['unit_kg'] = 'Kg';
 
+//Items
+$lang['cabys_code'] = 'Código Cabys';
+$lang['cabys'] = 'Cabys';
+
+//POS
+$lang['Search_by_Generic_Name'] = '...';
+$lang['Search_by_Generic_Name_Checkbox'] = '...';
+$lang['over_selling_not_allowed_medicine_product'] = '';
+$lang['smtp_not_configured'] = 'El SMTP no está configurado aún!, primero debe configurarlo.';
+$lang['sms_not_configured'] = 'El SMS no está configurado aún!, primero debe configurarlo.';
+
 //Module Management
 $lang['menu_show'] = 'Mostrar/Ocultar Menú';
-$lang['Installment Module'] = 'Modúlo A Plazos';
+$lang['Installment Module'] = 'Módulo a plazos';
+
+$lang['E-Billing'] = 'Factura Electrónica';
+
+//EBilling Menu
+$lang['ebilling_menu'] = 'Factura Electrónica';
+$lang['list_ebilling'] = 'Listar factura electrónica';
+$lang['fe_clave'] = 'Clave';
+$lang['fe_document_type'] = 'Tipo documento';
+$lang['fe_total'] = 'Total';
+$lang['fe_fecha_emision'] = 'Fecha emisión';
+$lang['fe_customer'] = 'Receptor';
+$lang['fe_status'] = 'Estado Hacienda';
+$lang['fe_detail'] = 'Detalle';
+$lang['fe_forward_email'] = 'Reenviar por correo';
+
+//EBilling Detail Modal
+$lang['fe_detail_title'] = 'Detalle de factura electrónica';

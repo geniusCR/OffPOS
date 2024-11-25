@@ -843,7 +843,7 @@ class Item extends Cl_Controller {
             if(isset($variations) && $variations){
                 $var_htl = '<tr><th>'.lang('name').'('.lang('code').')</th><th>'.lang('sale_price').'</th><th>'.lang('purchase_price').'</th></tr>';
                 foreach ($variations as $variation){
-                $var_htl.="<tr><td>".escape_output($variation->name) . "(" . $variation->code . ")</td><td>". getAmtCustom($variation->sale_price)."</td><td>". (isset($variation->purchase_price) && $variation->purchase_price ? getAmtCustom($variation->purchase_price):'0.00'). "</td></tr>";
+                    $var_htl.="<tr><td>".escape_output($variation->name) . "(" . $variation->code . ")</td><td>". getAmtCustom($variation->sale_price)."</td><td>". (isset($variation->purchase_price) && $variation->purchase_price ? getAmtCustom($variation->purchase_price):'0.00'). "</td></tr>";
                 }
                 $sub_array[] = '<span class="get_variation_name">' . $value->name. '</span>' . "</br><span class='cabys_code_sub'>" .lang('cabys'). ": " . $value->cabys_code. "</span>" . '<br><button id="view_variation" type="button" class="new-btn"><i class="far fa-eye"></i>'."<table class='table d-none' id='variation_html'>".$var_htl."</table>";
             

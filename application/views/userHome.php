@@ -582,6 +582,24 @@
                                     </li>
                                 </ul>
                             </li>
+
+                            <?php if(!moduleIsHideCheck('EBilling-YES')){ ?>
+                            <li class="treeview parent-menu">
+                            <a href="javascript:void(0)">
+                                    <iconify-icon icon="stash:invoice" width="22"></iconify-icon>
+                                    <span><?php echo lang('ebilling_menu'); ?></span>
+                                </a>
+
+                                <ul class="treeview-menu">
+                                    <li data-access="list-350" class="menu_assign_class" module-is-hide="EBilling-YES">
+                                        <a class="child-menu " href="<?php echo base_url(); ?>EBilling/ebillings">
+                                            <?php echo lang('list_ebilling'); ?>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <?php } ?>
+                            
                             <li class="treeview parent-menu">
                                 <a href="javascript:void(0)" class="align-middle">
                                     <iconify-icon icon="solar:list-heart-broken" width="22"></iconify-icon>
@@ -1352,7 +1370,7 @@
                             <?php } ?>
                             <?php } ?>
 
-                            <?php if(!moduleIsHideCheck('Salary_Payroll-YES')){ ?>
+                            <?php if(!moduleIsHideCheck('Salary Payroll-YES')){ ?>
                             <li class="treeview parent-menu">
                                 <a href="javascript:void(0)">
                                     <iconify-icon icon="solar:sunset-broken" width="22"></iconify-icon>
