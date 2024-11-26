@@ -72,15 +72,16 @@
                 </span>
             </button>
         </header>
-        <?php echo form_open(base_url() . 'Sale/sales') ?>
+        <?php echo form_open(base_url() . 'EBilling/ebillings') ?>
         <div class="row">
             <div class="col-sm-12 mb-2">
                 <div class="form-group">
                     <select name="delivery_status" id="delivery_status_filter" class="form-control  select2 width_100_p" >
                         <option value=""><?php echo lang('select'); ?></option>
-                        <option value="Sent" <?php echo set_select('delivery_status', 'Sent'); ?>><?php echo lang('Sent'); ?></option>
-                        <option value="Returned" <?php echo set_select('delivery_status', 'Returned'); ?>><?php echo lang('Returned'); ?></option>
-                        <option value="Cash Received" <?php echo set_select('delivery_status', 'Cash Received'); ?>><?php echo lang('Cash_Received'); ?></option>
+                        <option value="Pending" <?php echo set_select('delivery_status', 'Pending'); ?>><?php echo lang('fe_pending'); ?></option>
+                        <option value="Sent" <?php echo set_select('delivery_status', 'Sent'); ?>><?php echo lang('fe_sent'); ?></option>
+                        <option value="Accepted" <?php echo set_select('delivery_status', 'Accepted'); ?>><?php echo lang('fe_accepted'); ?></option>
+                        <option value="Rejected" <?php echo set_select('delivery_status', 'Rejected'); ?>><?php echo lang('fe_rejected'); ?></option>
                     </select>
                 </div>
             </div>
@@ -88,7 +89,7 @@
             <div class="col-sm-12 col-md-6">
                 <button type="submit" name="submit" value="submit" class="new-btn">
                     <iconify-icon icon="solar:hourglass-broken" width="22"></iconify-icon>
-                    <?php echo lang('submit'); ?>
+                    <?php echo lang('submit_filter'); ?>
                 </button>
             </div>
         </div>

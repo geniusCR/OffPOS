@@ -2522,4 +2522,23 @@ $lang['E-Billing'] = 'E-Billing';
 //EBilling Menu
 $lang['ebilling_menu'] = 'E-Billing';
 $lang['list_ebilling'] = 'List e-billing';
-$lang['clave_fe'] = 'CLAVE';
+$lang['fe_clave'] = 'Clave';
+$lang['fe_document_type'] = 'Document type';
+$lang['fe_total'] = 'Total';
+$lang['fe_fecha_emision'] = 'Issue date';
+$lang['fe_customer'] = 'Receiver';
+$lang['fe_status'] = 'Hacienda status';
+$lang['fe_detail'] = 'Detail';
+$lang['fe_forward_email'] = 'Resend by email';
+
+//EBilling Detail Modal
+$lang['fe_detail_title'] = 'E-Billing detail';
+
+//FE Status
+$lang['fe_pending'] = 'Pending';
+$lang['fe_sent'] = 'Sent';
+$lang['fe_accepted'] = 'Accepted';
+$lang['fe_rejected'] = 'Rejected';
+
+//Filters
+$lang['submit_filter'] = 'Search';

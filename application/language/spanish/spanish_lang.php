@@ -2510,7 +2510,6 @@ $lang['sms_not_configured'] = 'El SMS no está configurado aún!, primero debe c
 //Module Management
 $lang['menu_show'] = 'Mostrar/Ocultar Menú';
 $lang['Installment Module'] = 'Módulo a plazos';
-
 $lang['E-Billing'] = 'Factura Electrónica';
 
 //EBilling Menu
@@ -2527,3 +2526,12 @@ $lang['fe_forward_email'] = 'Reenviar por correo';
 
 //EBilling Detail Modal
 $lang['fe_detail_title'] = 'Detalle de factura electrónica';
+
+//FE Status
+$lang['fe_pending'] = 'Pendiente';
+$lang['fe_sent'] = 'Enviado';
+$lang['fe_accepted'] = 'Aceptado';
+$lang['fe_rejected'] = 'Rechazado';
+
+//Filters
+$lang['submit_filter'] = 'Buscar';

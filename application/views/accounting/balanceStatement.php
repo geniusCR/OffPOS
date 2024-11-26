@@ -175,7 +175,7 @@
             <div class="col-sm-12 col-md-6 mb-2">
                 <button type="submit" name="submit" value="submit" class="new-btn">
                     <iconify-icon icon="solar:hourglass-broken" width="22"></iconify-icon>
-                    <?php echo lang('submit'); ?>
+                    <?php echo lang('submit_filter'); ?>
                 </button>
             </div>
         </div>
