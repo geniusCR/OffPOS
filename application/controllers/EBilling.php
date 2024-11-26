@@ -133,7 +133,7 @@ class EBilling extends Cl_Controller {
             $sub_array[] = $value->customer_name . "</br><span class='clave_fe_sub'>" . "3101987654" . "</span>";
             $sub_array[] = getAmtCustom($value->total_payable);
             $sub_array[] = dateFormat($value->date_time);
-            $sub_array[] = "<span class='label-status-fe label-status-fe-success'>" . "FACTURA" . "</span>"; // $delivery_html;
+            $sub_array[] = "<span class='badge-fe rounded-pill badge-soft-success'>" . "FACTURA" . "</span>"; // $delivery_html;
             $sub_array[] = "<span class='label-status-fe label-status-fe-success'>" . "ACEPTADO" . "</span>";
             //$sub_array[] = dateFormat($value->added_date);
             $data[] = $sub_array;

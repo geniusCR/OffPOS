@@ -1082,7 +1082,7 @@ if (!function_exists('getAmtStock')) {
         if($precision == ''){
             $precision = 0;
         }else{
-            $precision = 3;
+            $precision = $getCompanyInfo->precision;
         }
         $decimals_separator = isset($getCompanyInfo->decimals_separator) && $getCompanyInfo->decimals_separator?$getCompanyInfo->decimals_separator:'.';
         $thousands_separator = isset($getCompanyInfo->thousands_separator) && $getCompanyInfo->thousands_separator?$getCompanyInfo->thousands_separator:'';

@@ -31,7 +31,7 @@
 
 
     <div class="row">
-        <div class="col-sm-12 col-md-12 col-lg-5 col-xl-3 mt-2">
+        <!--<div class="col-sm-12 col-md-12 col-lg-5 col-xl-3 mt-2">
             <div class="user-profile-card">
                 <div class="d-flex align-items-center">
                     <div class="media-size-email">
@@ -50,10 +50,10 @@
                             <?php echo escape_output($this->session->userdata('email_address')); ?>
                         </p>
                     </div>
-                </div>
+                </div>-->
                 <!-- End User Profile Info -->
 
-                <ul class="menu-list">
+                <!--<ul class="menu-list">
                     <li class="item">
                         <a href="<?php echo base_url();?>User/changeProfile">
                             <span class="iconbg badge-light-primary">
@@ -94,11 +94,11 @@
                             </span>
                         </a>
                     </li>
-                </ul>
-            </div>
-        </div>
+                </ul>-->
+            <!--</div>
+        </div>-->
         <!-- End User Profile -->
-        <div class="col-sm-12 col-md-12 col-lg-7 col-xl-9 mt-2">
+        <div class="col-sm-12 col-md-12 col-lg-1 col-xl-12 mt-2">
             <div class="table-card">
                 <h2 class="top-left-header mb-0 mt-2 ms-3"><?php echo lang('list_sale'); ?></h2>
                 <div class="card-body table-responsive profile_min_height">
