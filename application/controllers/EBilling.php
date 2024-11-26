@@ -69,7 +69,7 @@ class EBilling extends Cl_Controller {
     public function ebillings() {
         $data = array();
         //$data['ebillings'] = $this->Common_model->getAllCustomersWithOpeningBalance();
-        $data['main_content'] = $this->load->view('EBilling/ebillings', $data, TRUE);
+        $data['main_content'] = $this->load->view('ebilling/ebillings', $data, TRUE);
         $this->load->view('userHome', $data);
     }
 
