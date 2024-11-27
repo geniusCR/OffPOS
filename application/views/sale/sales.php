@@ -45,7 +45,7 @@
                     <thead>
                         <tr>
                             <th class="w-5"><?php echo lang('actions'); ?></th>
-                            <th class="op_width_1_p op_center"><?php echo lang('sn'); ?></th>
+                            <!--<th class="op_width_1_p op_center"><?php echo lang('sn'); ?></th>-->
                             <th class="w-10"><?php echo lang('ref_no'); ?></th>
                             <th class="w-15"><?php echo lang('date'); ?> (<?php echo lang('time'); ?>)</th>
                             <th class="w-13"><?php echo lang('customer'); ?></th>

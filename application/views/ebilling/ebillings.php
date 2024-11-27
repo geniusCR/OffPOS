@@ -65,7 +65,7 @@
 <div id="product-filter" class="filter-modal">
     <div class="filter-modal-body">
         <header>
-            <h3 class="filter-modal-title"><span><?php echo lang('FilterOptions'); ?></span></h3>
+            <h3 class="filter-modal-title"><span><?php echo lang('fe_FilterOptions'); ?></span></h3>
             <button type="button" class="close-filter-modal" data-bs-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">
                     <i data-feather="x"></i>
@@ -98,7 +98,7 @@
 </div>
 
 <div class="modal fade" id="view_fe_detail_modal">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title"><?php echo lang('fe_detail_title');?></h4>
@@ -106,9 +106,71 @@
                         aria-hidden="true"><i data-feather="x"></i></span></button>
             </div>
             <div class="modal-body">
-                <table class="table" id="modal_view_fe_html_set">
-
-                </table>
+                <div class="hold_sale_right fix">
+                    <div class="top">
+                        <div class="top_middle">
+                            <h1><?php echo lang('order_details'); ?></h1>
+                            <div class="waiter_customer_table">
+                                <div class="customer fix"><span class="op_font_weight_b"><?php echo lang('customer'); ?>: </span><span class="op_display_none" id="hold_customer_id"></span><span id="hold_customer_name"></span></div>
+                                <div class="customer fix"><span class="op_font_weight_b"><?php echo lang('fe_customer_email'); ?>: </span><span class="op_display_none" id="hold_customer_id"></span><span id="hold_customer_name"></span></div>
+                            </div>
+                            <div class="item_modifier_details item_modifier_body">
+                                <div class="modifier_item_header">
+                                    <div class="first_column_header column_hold"><?php echo lang('item'); ?></div>
+                                    <div class="second_column_header column_hold text-center"><?php echo lang('price'); ?></div>
+                                    <div class="third_column_header column_hold text-center"><?php echo lang('qty'); ?></div>
+                                    <div class="forth_column_header column_hold text-center"><?php echo lang('discount'); ?></div>
+                                    <div class="fifth_column_header column_hold text-right"><?php echo lang('total'); ?></div>
+                                </div>
+                                <div class="modifier_item_details_holder hold_sale_height">
+                                </div>
+                            </div>
+                            <div class="item_modifier_details">
+                                <div class="bottom_total_calculation_hold footer-content-hold">
+                                    <div class="item">
+                                        <span><?php echo lang('sub_total')?>: </span>
+                                        <span id="sub_total_show_hold"><?php echo getAmtPre(0)?></span>
+                                    </div>
+                                    <div class="item">
+                                        <span><?php echo lang('total_item')?>: </span>
+                                        <span id="total_items_in_cart_hold">0</span> (<span id="total_items_qty_in_cart_hold">0</span>)
+                                        <span id="sub_total_hold" class="ir_display_none"><?php echo getAmtPre(0)?></span>
+                                        <span id="total_item_discount_hold" class="ir_display_none"><?php echo getAmtPre(0)?></span>
+                                        <span id="discounted_sub_total_amount_hold" class="ir_display_none"><?php echo getAmtPre(0)?></span>
+                                    </div>
+                                    <div class="item">
+                                        <span><?php echo lang('tax')?>: </span>
+                                        <span id="hold_all_tax_amount"></span>
+                                    </div>
+                                    <div class="item">
+                                        <span><?php echo lang('charge')?>: </span>
+                                        <span id="delivery_charge_hold"> <?php echo getAmtPre(0)?></span>
+                                    </div>
+                                    <div class="item">
+                                        <span><?php echo lang('discount')?>: </span>
+                                        <span>
+                                            <span id="sub_total_discount_hold"><?php echo getAmtPre(0) ?? 0?></span> (<span id="all_items_discount_hold"><?php echo getAmtPre(0)?></span>)
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="bottom_total_calculation_hold_fe footer-content-hold">
+                                    <div class="item">
+                                        <span><?php echo lang('fe_clave')?>: </span>
+                                        <span id="fe_clave">5062222222222222222222222222222222222222222</span>
+                                    </div>
+                                    <div class="item">
+                                        <span><?php echo lang('fe_consecutive')?>: </span>
+                                        <span id="fe_consecutive">222222222222222222222</span>
+                                    </div>
+                                </div>
+                                <h1 class="modal_payable">
+                                    <span><?php echo lang('total_payable')?>: </span>
+                                    <span id="total_payable_hold"><?php echo getAmtPre(0)?></span>
+                                </h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="new-btn" data-bs-dismiss="modal">

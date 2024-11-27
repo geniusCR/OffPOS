@@ -98,3 +98,97 @@ input[type=number]::-webkit-inner-spin-button {
   font-size: 10px;
 }
 
+/*******************Clases para modal de ver factura****************/
+#view_fe_detail_modal .hold_sale_right .top .top_middle h1 {
+  background-color: rgba(139, 92, 246, 0.1);
+  color: #333333;
+  font-weight: 600;
+  font-size: 14px;
+  text-align: center;
+  margin: 0px 0px 8px 0px;
+  padding: 7px 5px;
+  line-height: 19px;
+}
+
+#view_fe_detail_modal .hold_sale_right .top .top_middle .waiter_customer_table {
+  width: 100%;
+  font-size: 13px;
+  margin: 0px 0px 5px 0px;
+}
+
+.hold_sale_right .top .top_middle .item_modifier_details {
+  overflow: auto;
+}
+.hold_sale_right .top .top_middle .item_modifier_body {
+  border-left: 1px solid rgba(169, 189, 204, 0.425);
+  border-right: 1px solid rgba(169, 189, 204, 0.425);
+  border-bottom: 1px solid rgba(169, 189, 204, 0.425);
+}
+
+#view_fe_detail_modal .hold_sale_right .modifier_item_header, #view_fe_detail_modal .hold_sale_right .modifier_item_details_holder .single_item_modifier .first_portion {
+  display: grid;
+  grid-template-columns: 42% 14% 10% 17% 17%;
+}
+.hold_sale_right .top .top_middle .item_modifier_details .modifier_item_header, .order_detail_modal_info_holder .top .top_middle .item_modifier_details .modifier_item_header {
+  font-weight: 600;
+  color: #333333;
+  line-height: 30px;
+  font-size: 14px;
+}
+
+#view_fe_detail_modal .modifier_item_header .first_column_header {
+  padding-left: 5px;
+}
+.hold_sale_right .top .top_middle .item_modifier_details .modifier_item_header .column_hold, .order_detail_modal_info_holder .top .top_middle .item_modifier_details .modifier_item_header .column_hold {
+  background-color: rgba(139, 92, 246, 0.1);
+}
+
+.hold_sale_right .top .top_middle .item_modifier_details .modifier_item_header .column_hold, .order_detail_modal_info_holder .top .top_middle .item_modifier_details .modifier_item_header .column_hold {
+  background-color: rgba(139, 92, 246, 0.1);
+}
+.text-center {
+  text-align: center !important;
+}
+
+#view_fe_detail_modal .modifier_item_header .fifth_column_header {
+  padding-right: 5px;
+}
+
+.hold_sale_right .top .top_middle .item_modifier_details .modifier_item_header .column_hold, .order_detail_modal_info_holder .top .top_middle .item_modifier_details .modifier_item_header .column_hold {
+  background-color: rgba(139, 92, 246, 0.1);
+}
+.text-right {
+  text-align: right;
+}
+
+.hold_sale_right .top .top_middle .item_modifier_details .modifier_item_details_holder {
+  font-size: 13px;
+  line-height: 20px;
+}
+.hold_sale_height {
+  height: 175px !important;
+}
+
+.hold_sale_right .top .top_middle .item_modifier_details {
+  overflow: auto;
+}
+
+.hold_sale_right .top .top_middle .item_modifier_details .bottom_total_calculation_hold, .order_detail_modal_info_holder .top .top_middle .item_modifier_details .bottom_total_calculation_hold {
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 500;
+  padding: 5px;
+}
+
+.footer-content-hold {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(124px, 1fr));
+  gap: 15px;
+}
+
+.hold_sale_right .top .top_middle .item_modifier_details .bottom_total_calculation_hold_fe {
+  font-size: 14px;
+  line-height: 20px;
+  /*font-weight: 500;*/
+  padding: 5px;
+}

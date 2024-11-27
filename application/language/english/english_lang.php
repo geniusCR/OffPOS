@@ -2516,13 +2516,13 @@ $lang['sms_not_configured'] = 'Your SMS is not configured yet!, configure first.
 //Module Management
 $lang['menu_show'] = 'Show/Hide Menu';
 $lang['Installment Module'] = 'Installment Module';
-
 $lang['E-Billing'] = 'E-Billing';
 
 //EBilling Menu
 $lang['ebilling_menu'] = 'E-Billing';
 $lang['list_ebilling'] = 'List e-billing';
-$lang['fe_clave'] = 'Clave';
+$lang['fe_clave'] = 'E-Billing number';
+$lang['fe_consecutive'] = 'Consecutive';
 $lang['fe_document_type'] = 'Document type';
 $lang['fe_total'] = 'Total';
 $lang['fe_fecha_emision'] = 'Issue date';
@@ -2533,8 +2533,10 @@ $lang['fe_forward_email'] = 'Resend by email';
 
 //EBilling Detail Modal
 $lang['fe_detail_title'] = 'E-Billing detail';
+$lang['fe_customer_email'] = 'Email';
 
 //FE Status
+$lang['fe_FilterOptions'] = 'Filter by status';
 $lang['fe_pending'] = 'Pending';
 $lang['fe_sent'] = 'Sent';
 $lang['fe_accepted'] = 'Accepted';

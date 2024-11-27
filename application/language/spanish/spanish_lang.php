@@ -314,7 +314,7 @@ $lang['list_item'] = 'Listar artículos';
 $lang['barcode'] = 'Código de barras';
 $lang['payment'] = 'Pago';
 $lang['open_after_sales'] = 'Ventas abiertas en espera';
-$lang['after_sale'] = 'Mantener ventas';
+$lang['after_sale'] = 'Ventas en espera';
 $lang['delete_all_after_sale'] = 'Eliminar todas las ventas retenidas';
 $lang['delete_all_after_sales'] = 'Eliminar todas las ventas retenidas';
 $lang['date_of_birth'] = 'Fecha de nacimiento';
@@ -1447,7 +1447,7 @@ $lang['Indian'] = 'indio';
 $lang['Japanese'] = 'japonés';
 $lang['Maxiacan'] = 'Maxiacán';
 $lang['Chinese'] = 'Chino';
-$lang['Open_Draft_Sales'] = 'Abrir borrador de ventas';
+$lang['Open_Draft_Sales'] = 'Abrir ventas en espera';
 $lang['Recent_Sales'] = 'Ventas recientes';
 $lang['Future_Sales'] = 'Ventas futuras';
 $lang['print_last_invoice'] = 'Imprimir última factura';
@@ -2516,6 +2516,7 @@ $lang['E-Billing'] = 'Factura Electrónica';
 $lang['ebilling_menu'] = 'Factura Electrónica';
 $lang['list_ebilling'] = 'Listar factura electrónica';
 $lang['fe_clave'] = 'Clave';
+$lang['fe_consecutive'] = 'Consecutivo';
 $lang['fe_document_type'] = 'Tipo documento';
 $lang['fe_total'] = 'Total';
 $lang['fe_fecha_emision'] = 'Fecha emisión';
@@ -2526,8 +2527,10 @@ $lang['fe_forward_email'] = 'Reenviar por correo';
 
 //EBilling Detail Modal
 $lang['fe_detail_title'] = 'Detalle de factura electrónica';
+$lang['fe_customer_email'] = 'Correo';
 
 //FE Status
+$lang['fe_FilterOptions'] = 'Filtrar por estado';
 $lang['fe_pending'] = 'Pendiente';
 $lang['fe_sent'] = 'Enviado';
 $lang['fe_accepted'] = 'Aceptado';

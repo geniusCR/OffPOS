@@ -885,7 +885,7 @@ class Sale extends Cl_Controller {
                 </a>
                 '.$html.'
             </div>';
-            $sub_array[] = $i--;
+            //$sub_array[] = $i--;
             $sub_array[] = $value->sale_no;
             $sub_array[] = dateFormat($value->date_time);
             $sub_array[] = $value->customer_name;
