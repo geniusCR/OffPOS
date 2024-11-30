@@ -173,7 +173,7 @@ class Promotion extends Cl_Controller {
                     $data['encrypted_id'] = $encrypted_id;
                     $data['items'] = $this->Common_model->getAllItemNameCodeWithoutVariation();
                     $data['promotion_details'] = $this->Common_model->getDataById($id, "tbl_promotions");
-                    $data['main_content'] = $this->load->view('promotion/editPromotion', $data, TRUE);
+                    $data['main_content'] = $this->load->view('promotion/EditPromotion', $data, TRUE);
                     $this->load->view('userHome', $data);
                 }
             }
@@ -188,7 +188,7 @@ class Promotion extends Cl_Controller {
                 $data['encrypted_id'] = $encrypted_id;
                 $data['items'] = $this->Common_model->getAllItemNameCodeWithoutVariation();
                 $data['promotion_details'] = $this->Common_model->getDataById($id, "tbl_promotions");
-                $data['main_content'] = $this->load->view('promotion/editPromotion', $data, TRUE);
+                $data['main_content'] = $this->load->view('promotion/EditPromotion', $data, TRUE);
                 $this->load->view('userHome', $data);
             }
         }

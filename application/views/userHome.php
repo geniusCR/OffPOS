@@ -1369,8 +1369,8 @@
                                 </li>
                             <?php } ?>
                             <?php } ?>
-
-                            <?php if(!moduleIsHideCheck('Salary Payroll-YES')){ ?>
+                         
+                            <?php if(!moduleIsHideCheck('Warranty Servicing-YES')){ ?>
                             <li class="treeview parent-menu">
                                 <a href="javascript:void(0)">
                                     <iconify-icon icon="solar:sunset-broken" width="22"></iconify-icon>
@@ -1407,7 +1407,7 @@
                             </li>
                             <?php } ?>
 
-                            <?php if(!moduleIsHideCheck('Purchase Return-YES')){ ?>
+                            <?php if(!moduleIsHideCheck('Salary Payroll-YES')){ ?>
                             <li class="treeview parent-menu ">
                                 <a href="javascript:void(0)">
                                     <iconify-icon icon="solar:transmission-broken" width="22"></iconify-icon>
@@ -1564,7 +1564,7 @@
                             <li data-access="uninstall-318" class="menu_assign_class parent-menu treeview2" module-is-hide="Uninstall Licence-YES">
                                 <a class="child-menu " href="<?php echo base_url(); ?>Update/UninstallLicense">
                                     <iconify-icon icon="solar:cloud-cross-broken" width="22"></iconify-icon>
-                                    <span><?php echo lang('UninstallLicense') ?></span>
+                                    <span><?php echo lang('UninstallLicense'); ?></span>
                                 </a>
                             </li>
                             <?php if((defined('FCCPATH') && FCCPATH != 'Bangladesh')){?>

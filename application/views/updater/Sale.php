@@ -1925,7 +1925,7 @@ class Sale extends Cl_Controller {
                 <tbody>
                     <tr>
                         <th>'.lang('Time_Range').'</th>
-                        <th class="font-normal">'.(date("Y-m-d h:m:s A",strtotime($opening_date_time))).' to '.(date("Y-m-d h:i:s A")).'</th>
+                        <th colspan="2" class="font-normal">'.(date("Y-m-d h:m:s A",strtotime($opening_date_time))).' - '.(date("Y-m-d h:i:s A")).'</th>
                         <th></th>
                         <th></th>
                     </tr>

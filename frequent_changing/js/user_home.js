@@ -390,11 +390,11 @@ $(function($) {
         if(register_status == '1'){
             Swal.fire({
                 title: "Warning!",
-                text: "Your Register is not close!",
+                text: "No se ha cerrado la caja aún!",
                 showDenyButton: true,
                 showCancelButton: false,
-                confirmButtonText: "Not Now!",
-                denyButtonText: `Close Now?`
+                confirmButtonText: "Cancelar",
+                denyButtonText: `Finalizar?`
             }).then((result) => {
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {

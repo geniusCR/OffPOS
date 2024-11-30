@@ -2517,6 +2517,23 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </ul>
             </li>
 
+            <?php if(!moduleIsHideCheck('EBilling-YES')){ ?>
+            <li class="have_sub_menu">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="stash:invoice" width="22"></iconify-icon>
+                    <span><?php echo lang('ebilling_menu'); ?></span>
+                </a>
+
+                <ul class="sub__menu__list">
+                    <li data-access="list-350" class="menu_assign_class" >
+                        <a href="<?php echo base_url()?>EBilling/ebillings">                         
+                            <?php echo lang('list_ebilling'); ?>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <?php } ?>
+
             <li class="have_sub_menu">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:list-heart-broken" width="22"></iconify-icon>
@@ -2654,6 +2671,7 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </ul>
             </li>
 
+            <?php if(!moduleIsHideCheck('Customer Receive-YES')){ ?>
             <li class="have_sub_menu">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:card-recive-broken" width="22"></iconify-icon>
@@ -2675,7 +2693,9 @@ $company_short_name =  $getCompanyInfo->short_name;
                     </li>
                 </ul>
             </li>
+            <?php } ?>
 
+            <?php if(!moduleIsHideCheck('Supplier Payment-YES')){ ?>
             <li class="have_sub_menu">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:card-send-broken" width="22"></iconify-icon>
@@ -2697,7 +2717,9 @@ $company_short_name =  $getCompanyInfo->short_name;
                     </li>
                 </ul>
             </li>
+            <?php } ?>
 
+            <?php if(!moduleIsHideCheck('Accounting-YES')){ ?>
             <li class="have_sub_menu">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:wallet-money-broken" width="22"></iconify-icon>
@@ -2746,6 +2768,9 @@ $company_short_name =  $getCompanyInfo->short_name;
                     </li>
                 </ul>
             </li>
+            <?php } ?>
+
+            <?php if(!moduleIsHideCheck('Attendance-YES')){ ?>
             <li class="have_sub_menu">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:clock-square-broken" width="22"></iconify-icon>
@@ -2767,6 +2792,7 @@ $company_short_name =  $getCompanyInfo->short_name;
                     </li>
                 </ul>
             </li>
+            <?php } ?>
 
             <li class="have_sub_menu">
                 <a href="javascript:void(0)">
@@ -2851,11 +2877,14 @@ $company_short_name =  $getCompanyInfo->short_name;
                             <?php echo lang('customer_balance_report'); ?>
                         </a>
                     </li>
+                    <?php if(!moduleIsHideCheck('Servicing Report-YES')){ ?>
                     <li data-access="servicing_report-249" class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/servicingReport">
                             <?php echo lang('servicing_report'); ?>
                         </a>
                     </li>
+                    <?php } ?>
+
                     <li data-access="product_sale_report-249" class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/productSaleReport">
                             <?php echo lang('productSaleReport'); ?>
@@ -2924,16 +2953,20 @@ $company_short_name =  $getCompanyInfo->short_name;
                             <?php echo lang('sale_return_report'); ?>
                         </a>
                     </li>
+                    <?php if(!moduleIsHideCheck('Damage-YES')){ ?>
                     <li data-access="damage_report-249" class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/damageReport">
                             <?php echo lang('damage_report'); ?>
                         </a>
                     </li>
+                    <?php } ?>
+                    <?php if(!moduleIsHideCheck('Installment Report-YES')){ ?>
                     <li data-access="installment_report-249" class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/installmentReport">
                             <?php echo lang('Installment Report'); ?>
                         </a>
                     </li>
+                    <?php } ?>
                     <li data-access="installment_due_report-249" class="menu_assign_class">
                         <a href="<?php echo base_url(); ?>Report/installmentDueReport">
                             <?php echo lang('installmentDueReport'); ?>
@@ -2968,6 +3001,7 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </ul>
             </li>
 
+            <?php if(!moduleIsHideCheck('Expense-YES')){ ?>
             <li class="have_sub_menu">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:rewind-forward-broken" width="22"></iconify-icon>
@@ -3001,6 +3035,9 @@ $company_short_name =  $getCompanyInfo->short_name;
                     </li>
                 </ul>
             </li>
+            <?php } ?>
+
+            <?php if(!moduleIsHideCheck('Income-YES')){ ?>
             <li class="have_sub_menu">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:rewind-back-broken" width="22"></iconify-icon>
@@ -3034,8 +3071,9 @@ $company_short_name =  $getCompanyInfo->short_name;
                     </li>
                 </ul>
             </li>
+            <?php } ?>
 
-
+            <?php if(!moduleIsHideCheck('Sale Return-YES')){ ?>
             <li class="have_sub_menu">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:multiple-forward-left-broken" width="22"></iconify-icon>
@@ -3057,6 +3095,9 @@ $company_short_name =  $getCompanyInfo->short_name;
                     </li>
                 </ul>
             </li>
+            <?php } ?>
+
+            <?php if(!moduleIsHideCheck('Purchase Return-YES')){ ?>
             <li class="have_sub_menu">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:multiple-forward-right-broken" width="22"></iconify-icon>
@@ -3078,7 +3119,7 @@ $company_short_name =  $getCompanyInfo->short_name;
                     </li>
                 </ul>
             </li>
-
+            <?php } ?>
 
             <li class="have_sub_menu">
                 <a href="javascript:void(0)">
@@ -3255,6 +3296,7 @@ $company_short_name =  $getCompanyInfo->short_name;
                 </ul>
             </li>
 
+            <?php if(!moduleIsHideCheck('Installment-YES')){ ?>
             <li class="have_sub_menu">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:layers-broken" width="22"></iconify-icon>
@@ -3298,7 +3340,9 @@ $company_short_name =  $getCompanyInfo->short_name;
                     </li>
                 </ul>
             </li>
+            <?php } ?>
 
+            <?php if(!moduleIsHideCheck('Warranty Servicing-YES')){ ?>
             <li class="have_sub_menu">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:sunset-broken" width="22"></iconify-icon>
@@ -3338,7 +3382,9 @@ $company_short_name =  $getCompanyInfo->short_name;
                     </li>
                 </ul>
             </li>
+            <?php } ?>
 
+            <?php if(!moduleIsHideCheck('Salary Payroll-YES')){ ?>
             <li class="have_sub_menu">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:transmission-broken" width="22"></iconify-icon>
@@ -3353,7 +3399,9 @@ $company_short_name =  $getCompanyInfo->short_name;
                     </li>
                 </ul>
             </li>
+            <?php } ?>
 
+            <?php if(!moduleIsHideCheck('Fixed Assets-YES')){ ?>
             <li class="have_sub_menu">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:cassette-broken" width="22"></iconify-icon>
@@ -3404,7 +3452,9 @@ $company_short_name =  $getCompanyInfo->short_name;
                     </li>
                 </ul>
             </li>
+            <?php } ?>
 
+            <?php if(!moduleIsHideCheck('Quotation-YES')){ ?>
             <li class="have_sub_menu">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:ruler-pen-broken" width="22"></iconify-icon>
@@ -3426,7 +3476,9 @@ $company_short_name =  $getCompanyInfo->short_name;
                     </li>
                 </ul>
             </li>
+            <?php } ?>
 
+            <?php if(!moduleIsHideCheck('Transfer-YES')){ ?>
             <li class="have_sub_menu">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:bicycling-round-broken" width="22"></iconify-icon>
@@ -3448,7 +3500,9 @@ $company_short_name =  $getCompanyInfo->short_name;
                     </li>
                 </ul>
             </li>
+            <?php } ?>
 
+            <?php if(!moduleIsHideCheck('Damage-YES')){ ?>
             <li class="have_sub_menu">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:trash-bin-minimalistic-broken" width="22"></iconify-icon>
@@ -3470,45 +3524,49 @@ $company_short_name =  $getCompanyInfo->short_name;
                     </li>
                 </ul>
             </li>
-            <?php 
+            <?php } ?>
+
+            <!-- Para no tener acceso desde el POS de venta<?php 
             $company_id = $this->session->userdata('company_id');
             $user_id = $this->session->userdata('user_id');
-            if(isServiceAccess2($user_id, $company_id,'sGmsJaFJE') == 'Saas Super Admin'){ 
-            ?>
-            <li data-access="update-247" class="have_sub_menu2">
-                <a href="<?php echo base_url(); ?>Update/index">
-                    <iconify-icon icon="solar:cloud-download-broken" width="22"></iconify-icon>
-                    <span><?php echo lang('update_software'); ?></span>
-                </a>
-            </li>
-            <li data-access="uninstall-318" class="have_sub_menu2">
-                <a href="<?php echo base_url(); ?>Update/UninstallLicense">
-                    <iconify-icon icon="solar:cloud-cross-broken" width="22"></iconify-icon>
-                    <span><?php echo lang('UninstallLicense'); ?></span>
-                </a>
-            </li>
+            if(isServiceAccess2($user_id, $company_id,'sGmsJaFJE') == 'Saas Super Admin'){ ?>
+            <ul class="sub__menu__list">
+                <li data-access="update-247" class="have_sub_menu2">
+                    <a href="<?php echo base_url(); ?>Update/index">
+                        <iconify-icon icon="solar:cloud-download-broken" width="22"></iconify-icon>
+                        <span><?php echo lang('update_software'); ?></span>
+                    </a>
+                </li>
+                <li data-access="uninstall-318" class="have_sub_menu2">
+                    <a href="<?php echo base_url(); ?>Update/UninstallLicense">
+                        <iconify-icon icon="solar:cloud-cross-broken" width="22"></iconify-icon>
+                        <span><?php echo lang('UninstallLicense'); ?></span>
+                    </a>
+                </li>
+            </ul>
             <?php } else if((isServiceAccess2($user_id, $company_id,'sGmsJaFJE') == 'Not SaaS')){ ?>
-            <li data-access="update-247" class="have_sub_menu2">
-                <a href="<?php echo base_url(); ?>Update/index">
-                    <iconify-icon icon="solar:cloud-download-broken" width="22"></iconify-icon>
-                    <span><?php echo lang('update_software'); ?></span>
-                </a>
-            </li>
-            <li data-access="update-318" class="have_sub_menu2">
-                <a href="<?php echo base_url(); ?>Update/UninstallLicense">
-                    <iconify-icon icon="solar:cloud-cross-broken" width="22"></iconify-icon>
-                    <span><?php echo lang('UninstallLicense'); ?></span>
-                </a>
-            </li>
-            <?php if((defined('FCCPATH') && FCCPATH != 'Bangladesh')){?>
-                <li data-access="update-318" class="have_sub_menu2">
-                <a href="<?php echo base_url(); ?>Update/upgradeLicense">
-                    <iconify-icon icon="solar:cloud-download-broken" width="22"></iconify-icon>
-                    <span><?php echo lang('upgrade_package'); ?></span>
-                </a>
-            
-            </li>
-            <?php } } ?>
+            <ul class="sub__menu__list">
+                <li data-access="update-247" class="have_sub_menu2">
+                    <a href="<?php echo base_url(); ?>Update/index">
+                        <iconify-icon icon="solar:cloud-download-broken" width="22"></iconify-icon>
+                        <span><?php echo lang('update_software'); ?></span>
+                    </a>
+                </li>
+                <li data-access="uninstall-318" class="have_sub_menu2">
+                    <a href="<?php echo base_url(); ?>Update/UninstallLicense">
+                        <iconify-icon icon="solar:cloud-cross-broken" width="22"></iconify-icon>
+                        <span><?php echo lang('UninstallLicense'); ?></span>
+                    </a>
+                </li>
+                <?php if((defined('FCCPATH') && FCCPATH != 'Bangladesh')){?>
+                    <li data-access="uninstall-318" class="have_sub_menu2">
+                        <a href="<?php echo base_url(); ?>Update/upgradeLicense">
+                            <iconify-icon icon="solar:cloud-download-broken" width="22"></iconify-icon>
+                            <span><?php echo lang('upgrade_package'); ?></span>
+                        </a>        
+                    </li>
+                <?php } } ?>
+            </ul>-->
         </ul>
     </aside>
 

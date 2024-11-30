@@ -308,8 +308,16 @@ $(function () {
     });
 
     $(document).on('click', '.have_sub_menu', function(){
-        $('.have_sub_menu').removeClass('submenu_active')
-        $(this).addClass('submenu_active')
+        if (!$(this).hasClass('submenu_active')) {
+            $('.have_sub_menu').removeClass('submenu_active');
+            $(this).addClass('submenu_active');  
+            $(this).children(".sub__menu__list").slideDown();        
+        }
+        else {
+            $(this).removeClass('submenu_active');
+            if ($('.sub__menu__list').is(':visible')) 
+                $('.have_sub_menu').children(".sub__menu__list").slideUp();
+        }      
     });
 
     // Left Sidebar Menu End
@@ -11088,11 +11096,11 @@ $(function () {
             if(register_status == '1'){
                 Swal.fire({
                     title: warning + "!",
-                    text: "Your Register is not close!",
+                    text: "No se ha cerrado la caja aún!",
                     showDenyButton: true,
                     showCancelButton: false,
-                    confirmButtonText: "Not Now!",
-                    denyButtonText: `Close Now?`
+                    confirmButtonText: "Cancelar",
+                    denyButtonText: `Finalizar?`
                 }).then((result) => {
                     /* Read more about isConfirmed, isDenied below */
                     if (result.isConfirmed) {

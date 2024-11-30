@@ -2449,6 +2449,7 @@ class Common_model extends CI_Model {
         $this->db->where('s.user_id', $user_id);
         $this->db->where('s.company_id', $company_id);
 		$this->db->where('s.del_status','Live');
+        $this->db->order_by('s.id', 'DESC');
         $result = $this->db->get()->result();
         return $result;
     }
