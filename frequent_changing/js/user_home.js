@@ -389,7 +389,7 @@ $(function($) {
         let register_status = $('#register_status').val();
         if(register_status == '1'){
             Swal.fire({
-                title: "Warning!",
+                title: "Alerta!",
                 text: "No se ha cerrado la caja aún!",
                 showDenyButton: true,
                 showCancelButton: false,

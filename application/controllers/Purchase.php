@@ -78,12 +78,12 @@ class Purchase extends Cl_Controller {
 
         $register_content = json_decode($this->session->userdata('register_content'));
         $register_status = $this->session->userdata('register_status');
-        if ($register_content->register_purchase != '' && $register_status == 2) {
+        /*if ($register_content->register_purchase != '' && $register_status == 2) {
             $this->session->set_flashdata('exception', lang('please_open_register'));
             $this->session->set_userdata("clicked_controller", $this->uri->segment(1));
             $this->session->set_userdata("clicked_method", $this->uri->segment(2));
             redirect('Register/openRegister');
-        }
+        }*/
     }
 
 

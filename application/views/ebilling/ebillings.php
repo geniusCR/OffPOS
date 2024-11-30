@@ -110,9 +110,25 @@
                     <div class="top">
                         <div class="top_middle">
                             <h1><?php echo lang('order_details'); ?></h1>
-                            <div class="waiter_customer_table">
-                                <div class="customer fix"><span class="op_font_weight_b"><?php echo lang('customer'); ?>: </span><span class="op_display_none" id="hold_customer_id"></span><span id="hold_customer_name"></span></div>
-                                <div class="customer fix"><span class="op_font_weight_b"><?php echo lang('fe_customer_email'); ?>: </span><span class="op_display_none" id="hold_customer_id"></span><span id="hold_customer_name"></span></div>
+                            <div class="waiter_customer_table fix">
+                                <div class="fix op_sale_details_info">
+                                    <span class="op_font_weight_b"><?php echo lang('invoice_no'); ?>: </span>
+                                    <span id="last_10_order_invoice_no"></span>
+                                </div>
+                                <div class="fix op_sale_details_info">
+                                    <span class="op_font_weight_b"><?php echo lang('date_time'); ?>: </span>
+                                    <span id="last_10_order_date_time"></span>
+                                </div>
+                            </div>
+                            <div class="waiter_customer_table fix">
+                                <div class="fix op_sale_details_info">
+                                    <span class="op_font_weight_b"><?php echo lang('customer'); ?>: </span>
+                                    <span id="last_10_order_invoice_no"></span>
+                                </div>
+                                <div class="fix op_sale_details_info">
+                                    <span class="op_font_weight_b"><?php echo lang('fe_customer_email'); ?>: </span>
+                                    <span id="last_10_order_date_time"></span>
+                                </div>
                             </div>
                             <div class="item_modifier_details item_modifier_body">
                                 <div class="modifier_item_header">
@@ -156,11 +172,13 @@
                                 <div class="bottom_total_calculation_hold_fe footer-content-hold">
                                     <div class="item">
                                         <span><?php echo lang('fe_clave')?>: </span>
-                                        <span id="fe_clave">5062222222222222222222222222222222222222222</span>
+                                        <span id="fe_clave">50622222222222222222222222222222222222222224547855</span>
                                     </div>
+                                </div>
+                                <div class="bottom_total_calculation_hold_fe footer-content-hold">
                                     <div class="item">
                                         <span><?php echo lang('fe_consecutive')?>: </span>
-                                        <span id="fe_consecutive">222222222222222222222</span>
+                                        <span id="fe_consecutive">22222222222222222223</span>
                                     </div>
                                 </div>
                                 <h1 class="modal_payable">

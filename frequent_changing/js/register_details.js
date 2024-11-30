@@ -176,12 +176,12 @@ $(function () {
         let csrf_name_ = $("#csrf_name_").val();
         let csrf_value_ = $("#csrf_value_").val();
         Swal.fire({
-            title: 'Alert' + "!",
-            text: 'Are you sure to close register?',
+            title: 'Alerta' + "!",
+            text: 'Está seguro que desea cerrar la caja?',
             showDenyButton: true,
             showCancelButton: false,
-            confirmButtonText: `Yes`,
-            denyButtonText: `Cancel`,
+            confirmButtonText: `Sí`,
+            denyButtonText: `Cancelar`,
         }).then((result) => {
             if (result.value == true) {
                 $.ajax({
