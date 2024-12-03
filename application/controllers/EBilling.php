@@ -112,6 +112,10 @@ class EBilling extends Cl_Controller {
                 data-bs-original-title="'. lang('print_invoice') .'">
                     <i class="fas fa-print"></i>
                 </a>
+                <a class="btn btn-cyan detail_invoice" href="javascript:void(0)" onclick="view_fe_detail();" sale_id="'. $this->custom->encrypt_decrypt($value->id, 'encrypt') .'" data-bs-toggle="tooltip" data-bs-placement="top"
+                data-bs-original-title="'. lang('details') .'">
+                    <i class="far fa-eye"></i>
+                </a>
                 <a class="btn btn-cyan pdf_invoice" href="javascript:void(0)" sale_id="'. $this->custom->encrypt_decrypt($value->id, 'encrypt') .'" data-bs-toggle="tooltip" data-bs-placement="top"
                 data-bs-original-title="'. lang('download_invoice') .'">
                     <i class="fas fa-download"></i>
@@ -127,7 +131,7 @@ class EBilling extends Cl_Controller {
             //$sub_array[] = '<br><button id="view_fe" type="button" class="new-btn"><i class="far fa-eye"></i>'."<table class='table d-none' id='email_status_html'>".$var_htl."</table>";
 
             //$sub_array[] = $i--;
-            $sub_array[] = '<button id="view_fe_detail" type="button" class="new-btn"><i class="far fa-eye"></i>'."<table class='table d-none' id='email_status_html'>".$var_htl."</table>";
+            //$sub_array[] = '<button id="view_fe_detail" type="button" class="new-btn"><i class="far fa-eye"></i>'."<table class='table d-none' id='email_status_html'>".$var_htl."</table>";
             $sub_array[] = $value->sale_no . "</br><span class='clave_fe_sub'>" . "00100001010000000004" . "</span>";           
             //$sub_array[] = $value->sale_no;          
             $sub_array[] = $value->customer_name . "</br><span class='clave_fe_sub'>" . "3101987654" . "</span>";

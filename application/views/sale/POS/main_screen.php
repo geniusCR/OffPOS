@@ -1561,8 +1561,8 @@ $company_short_name =  $getCompanyInfo->short_name;
                             <!--<button id="last_ten_sales_edit_buttons" class="bg_hold"><?php echo lang('edit'); ?></button>-->
                             <button id="last_ten_print_invoice_button" class="bg__grey"><?php echo lang('print_invoice'); ?></button>
                             <button id="last_ten_print_challan_button" class="bg__grey"><?php echo lang('print_challan'); ?></button>
-                            <button class="bg__red px-25 cancel_customer_modal"><?php echo lang('cancel'); ?></button>                         
-                            <!--<button id="last_ten_delete_button" class="bg__red"><?php echo lang('delete'); ?></button>-->
+                            <!--<button id="last_ten_sales_edit_buttons" class="bg_hold"><?php echo lang('edit'); ?></button>                         
+                            <button id="last_ten_delete_button" class="bg__red"><?php echo lang('delete'); ?></button>-->
                         </div>
                     </div>
                 </div>

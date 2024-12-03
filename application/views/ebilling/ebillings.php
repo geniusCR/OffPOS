@@ -42,7 +42,7 @@
                     <thead>
                         <tr>
                             <th class="w-5"><?php echo lang('actions'); ?></th>
-                            <th class="w-5" data-orderable="false"><?php echo lang('fe_detail'); ?></th>  
+                            <!--<th class="w-5" data-orderable="false"><?php echo lang('fe_detail'); ?></th>--> 
                             <th class="w-15"><?php echo lang('ref_no'); ?></th>                          
                             <th class="w-25"><?php echo lang('fe_customer'); ?></th>
                             <th class="w-10"><?php echo lang('fe_total'); ?></th>

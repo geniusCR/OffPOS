@@ -89,13 +89,13 @@ class Stock extends Cl_Controller {
             $saleUnitSum = 0;
             $itemStockAlertCls = '';
             if($item->type != 'Variation_Product'){
-                if(((int)$item->out_qty - (int)$item->stock_qty) < $item->alert_quantity){
+                if(((int)$item->stock_qty - (int)$item->out_qty) < $item->alert_quantity){
                     $itemStockAlertCls = 'stock-alert-color';
                     $alertQtySum ++;
                 }
             }
             if($item->type == 'General_Product' || $item->type == 'Installment_Product' || ($item->type == 'Medicine_Product' && $item->expiry_date_maintain == 'No')){
-                $generalStock = ((int)$item->out_qty - (int)$item->stock_qty);
+                $generalStock = ((int)$item->stock_qty - (int)$item->out_qty);
                 $genConvertedPrice = (float)$item->last_three_purchase_avg / (int)$item->conversion_rate;
                 $purchasePriceSum = ($genConvertedPrice) * $generalStock;
                 if($item->unit_type == '1'){
@@ -166,7 +166,7 @@ class Stock extends Cl_Controller {
                                             <div>' . lang('type') . '</div>
                                             <div>' . lang('imei_serial_number') . '</div>
                                         </li>';
-                $expStock = ((int)$item->out_qty - (int)$item->stock_qty);
+                $expStock = ((int)$item->stock_qty - (int)$item->out_qty);
                 $expConvertedPrice = (float)$item->last_three_purchase_avg % (int)$item->conversion_rate;
                 $purchasePriceSum = ($expConvertedPrice) * $expStock;
                 $purchaseUnitSum = (int)$expStock;
@@ -185,7 +185,7 @@ class Stock extends Cl_Controller {
                 $variation .= '</ul>
                             </div>';
             } elseif (($item->type == 'Medicine_Product' && $item->expiry_date_maintain == 'Yes')) {
-                $purchasePriceSum = ((float)$item->last_three_purchase_avg / (int)$item->conversion_rate) * ((int)$item->out_qty - (int)$item->stock_qty);
+                $purchasePriceSum = ((float)$item->last_three_purchase_avg / (int)$item->conversion_rate) * ((int)$item->stock_qty - (int)$item->out_qty);
                 $variation .= '<div id="stockInnerTable">
                                     <ul>
                                         <li>

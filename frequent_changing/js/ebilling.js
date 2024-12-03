@@ -46,6 +46,14 @@ $(function () {
     $(document).on('click', '.pdf_invoice', function() {
         a4InvoicePDF($(this).attr('sale_id'));
     });*/
+    $(document).on('click', '.detail_invoice', function() {
+        $("#view_fe_detail_modal").modal('show');
+        let email_status_html = $(this).parent().find('#email_status_html').html();
+        $("#modal_view_fe_html_set").html("");
+        $("#modal_view_fe_html_set").html(email_status_html);
+    });
+
+    
     
     /*$(document).ready(function(){
         $(document).on('click', '.delivered', function (e) {
@@ -121,12 +129,13 @@ $(function () {
             },
     });
 
-    $(document).on('click', '#view_fe_detail', function(){
+    /*$(document).on('click', '#view_fe_detail', function(){
         $("#view_fe_detail_modal").modal('show');
         let email_status_html = $(this).parent().find('#email_status_html').html();
         $("#modal_view_fe_html_set").html("");
         $("#modal_view_fe_html_set").html(email_status_html);
-      });
+      });*/
+      
 
     /*function  viewInvoice(id) {
         let print_format = $('#print_type').val();

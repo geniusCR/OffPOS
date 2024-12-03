@@ -18,10 +18,9 @@
                     <div class="col-xl-6 col-lg-6 col-md-10 col-sm-12">
                         <table class="table view_details_table">
                             <tr>
-                                <td>
+                                <td colspan="2">
                                     <h4 class="m-0"><?php echo lang('information');?> <?php echo lang('of');?> <?php echo escape_output($customer_details->name);?></h4>
                                 </td>
-                                <td></td>
                             </tr>
                             <tr>
                                 <td class="view_detail_border_right"><strong><?php echo lang('name');?></strong></td>

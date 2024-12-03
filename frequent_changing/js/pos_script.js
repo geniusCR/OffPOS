@@ -8020,6 +8020,7 @@ $(function () {
         }
         $("#finalize_total_paid").html(tmp_total.toFixed(op_precision));
         $("#paid_amt").html(tmp_total.toFixed(op_precision));
+        $("#paid_amt").val(tmp_total.toFixed(op_precision));
 
         $("#finalize_total_due").html((finalize_total_payable - tmp_total).toFixed(op_precision));
         let default_remaining_cash = (finalize_total_payable - tmp_total) && (finalize_total_payable - tmp_total)>0?(finalize_total_payable - tmp_total):0;
