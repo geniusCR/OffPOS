@@ -294,11 +294,22 @@ $company_short_name =  $getCompanyInfo->short_name;
             <div class="left_item">
                 <div class="header_part_middle">
                     <ul class="icon__menu">
+
                         <li class="has__children main_menu">
                             <a tabindex="-1" href="javascript:void(0)" class="header_menu_icon dropdown-menu" data-tippy-content="<?php echo lang('Main_Menu');?>">
                                 <iconify-icon icon="solar:user-check-broken" width="22"></iconify-icon>
                             </a>
                             <ul class="sub__menu custom_dropdown" role="menu">
+                                <li class="common-margin">
+                                    <div class="ps-2">
+                                        <p class="user-name mb-0 font-weight-700"><?php echo escape_output($this->session->userdata('full_name')); ?></p>
+                                        <?php
+                                            $role = getRoleNameById($this->session->userdata('role'));
+                                        ?>
+                                        <span class="user-role user-role-second"><?php echo escape_output($role)?></span>
+                                    </div>
+                                </li>
+                                <li><div class="dropdown-divider"></div></li>
                                 <li>
                                     <a tabindex="-1" href="<?php echo base_url();?>User/changeProfile" class="offline_prevent"><?php echo lang('change_profile');?></a>
                                 </li>

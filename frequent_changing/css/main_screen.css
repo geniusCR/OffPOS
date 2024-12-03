@@ -2097,3 +2097,24 @@ label{
 }
 /*###########  Place the following codes at the bottom of this file for user experience ###########*/
 
+.ps-2 {
+  padding-left: 1.0rem !important;
+}
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+.custom_dropdown .dropdown-divider {
+  margin: 0 !important;
+}
+.dropdown-divider {
+  height: 0;
+  margin: .5rem 0;
+  overflow: hidden;
+  border-top: 1px solid rgba(0, 0, 0, .15);
+}
+.custom_dropdown .common-margin {
+  margin: 0.35rem 0.35rem !important;
+}
+.user-name {
+  margin-top: 5px !important;
+}
