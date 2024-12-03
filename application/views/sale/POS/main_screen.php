@@ -782,7 +782,7 @@ $company_short_name =  $getCompanyInfo->short_name;
                                     <button id="hold_sale" class="bg_hold off-btn d-flex align-items-center justify-content-center">
                                         <iconify-icon icon="solar:rocket-2-line-duotone" width="22"></iconify-icon>
                                         <span class="p-l-3">
-                                            <?php echo lang('hold'); ?>
+                                            <?php echo lang('hold_pos'); ?>
                                         </span>
                                     </button>
                                 </div>

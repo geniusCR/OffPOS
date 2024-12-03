@@ -1858,7 +1858,8 @@ $(function () {
                     method: "GET",
                     async: false,
                     dataType: 'json',
-                    data: { controller: "4", function: "edit" },
+                    //data: { controller: "4", function: "edit" },
+                    data: { controller: "138", function: "hold" },                  
                     success: function (response) {
                         if (response == false) {
                             toastr['error']((no_access), '');
