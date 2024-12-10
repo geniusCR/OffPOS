@@ -1012,14 +1012,18 @@ class Sale_model extends CI_Model {
    */
   public function getAllSaleByPayment($date,$payment_id){
     $user_id = $this->session->userdata('user_id');
-    $this->db->select("sum(sp.amount) as total_amount");
-    $this->db->from('tbl_sale_payments sp');
-    $this->db->join('tbl_sales s', 's.id = sp.sale_id', 'left');
-    $this->db->where("sp.user_id", $user_id);
-    $this->db->where("sp.payment_id", $payment_id);
+    //$this->db->select("sum(sp.amount) as total_amount");
+    $this->db->select("sum(CASE WHEN sp.payment_id IS NULL AND pm.id = " . $this->db->escape($payment_id) . " THEN s.total_payable 
+	   			                      WHEN sp.payment_id = 1 THEN sp.amount + s.due_amount 
+	   			                      WHEN sp.payment_id = 2 THEN sp.amount 
+	   			                      WHEN sp.payment_id = 4 THEN sp.amount ELSE 0 END) as total_amount");
+    $this->db->from('tbl_sales s');
+    $this->db->join('tbl_payment_methods pm', 's.account_type = pm.account_type', 'left');
+    $this->db->join('tbl_sale_payments sp', 's.id = sp.sale_id AND sp.payment_id = ' . $this->db->escape($payment_id), 'left');
+    $this->db->where("s.user_id", $user_id);
     $this->db->where("s.delivery_status", 'Cash Received');
-    $this->db->where("sp.added_date	>=", $date);
-    $this->db->where("sp.added_date	<=", date('Y-m-d H:i:s'));
+    $this->db->where("s.added_date	>=", $date);
+    $this->db->where("s.added_date	<=", date('Y-m-d H:i:s'));
     $this->db->where("currency_type", null);
     $data =  $this->db->get()->row();
     return (isset($data->total_amount) && $data->total_amount?$data->total_amount:0);

@@ -930,6 +930,7 @@ $lang['i_data'] = 'I.Date';
 $lang['installment_date'] = 'Installment Date';
 $lang['paid_date'] = 'Paid Date';
 $lang['paid_amount'] = 'Paid Amount';
+$lang['paid_vat'] = 'IVA';
 $lang['p_date'] = 'P.Date';
 $lang['p_amount'] = 'P.Amount';
 $lang['r_due'] = 'R.Due';

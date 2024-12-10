@@ -111,7 +111,7 @@
                                 <th class="w-19"><?php echo lang('customer'); ?></th>
                                 <th class="w-10 text-center"><?php echo lang('items'); ?></th>
                                 <th class="w-18 text-center"><?php echo lang('total_payable'); ?></th>
-                                <th class="w-18 text-center"><?php echo lang('paid_amount'); ?></th>
+                                <th class="w-18 text-center"><?php echo lang('paid_vat'); ?></th>
                                 <th class="w-15"><?php echo lang('sale_date'); ?></th>
                             </tr>
                         </thead>
@@ -123,7 +123,7 @@
                                 <td><?php echo escape_output($sale->customer_name) ?><?php echo escape_output($sale->customer_phone) ? '(' . $sale->customer_name . ')' : '' ?></td>
                                 <td class="text-center"><?php echo escape_output($sale->total_items) ?></td>
                                 <td class="text-center"><?php echo getAmtCustom($sale->total_payable) ?></td>
-                                <td class="text-center"><?php echo getAmtCustom($sale->paid_amount) ?></td>
+                                <td class="text-center"><?php echo getAmtCustom($sale->vat) ?></td>
                                 <td><?php echo dateFormatWithTime($sale->date_time) ?></td>
                             </tr>
                             <?php endforeach;?>

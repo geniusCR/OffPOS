@@ -2443,7 +2443,7 @@ class Common_model extends CI_Model {
      */
     public function getSaleInfoByUserId($user_id){
         $company_id = $this->session->userdata('company_id');
-        $this->db->select('s.id, s.sale_no, s.total_items, s.total_payable, s.paid_amount, s.date_time, c.name as customer_name, c.phone as customer_phone');
+        $this->db->select('s.id, s.sale_no, s.total_items, s.total_payable, s.paid_amount, s.vat, s.date_time, c.name as customer_name, c.phone as customer_phone');
         $this->db->from('tbl_sales s');
         $this->db->join('tbl_customers c', 'c.id = s.customer_id', 'left');
         $this->db->where('s.user_id', $user_id);
