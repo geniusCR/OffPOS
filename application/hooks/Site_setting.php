@@ -134,7 +134,11 @@ class Site_setting {
             }
         }
 
-        
+        /**
+         * FCCPATH
+         * empty
+         */
+        define('FCCPATH', '-'); 
 
         
 

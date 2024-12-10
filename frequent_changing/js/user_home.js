@@ -393,8 +393,8 @@ $(function($) {
                 text: "No se ha cerrado la caja aún!",
                 showDenyButton: true,
                 showCancelButton: false,
-                confirmButtonText: "Cancelar",
-                denyButtonText: `Finalizar?`
+                confirmButtonText: "Salir sin cerrar",
+                denyButtonText: `Salir y cerrar?`
             }).then((result) => {
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {

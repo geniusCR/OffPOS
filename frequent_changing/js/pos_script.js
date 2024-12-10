@@ -3293,13 +3293,13 @@ $(function () {
         toastr.options = {
             "toas-container": "toast-top-right"
         };
-        toastr.success('Product Successfully added in cart', '');
+        toastr.success('Producto agregado satisfactoriamente', '');
     }
     function cartMobileRemoveMsgAndItemCount(){
         toastr.options = {
             "toas-container": "toast-top-right"
         };
-        toastr.success('Product Successfully remove from cart', '');
+        toastr.success('Producto removido satisfactoriamente', '');
     }
     function cartMobileItemCount(){
         let cart_item = $('.single_order').length;
@@ -11101,8 +11101,8 @@ $(function () {
                     text: "No se ha cerrado la caja aún!",
                     showDenyButton: true,
                     showCancelButton: false,
-                    confirmButtonText: "Cancelar",
-                    denyButtonText: `Finalizar?`
+                    confirmButtonText: "Salir sin cerrar",
+                    denyButtonText: `Salir y cerrar?`
                 }).then((result) => {
                     /* Read more about isConfirmed, isDenied below */
                     if (result.isConfirmed) {
